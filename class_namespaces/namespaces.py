@@ -5,8 +5,6 @@ import functools
 import itertools
 import weakref
 
-import pytest
-
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 _SENTINEL = object()
