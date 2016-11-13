@@ -208,17 +208,20 @@ class NamespaceProxy:
                 return
             except KeyError:
                 raise AttributeError(name)
-        value = real_map.get(name)
         try:
-            deleter = value.__delete__
-        except AttributeError:
-            instance_map = Namespace.get_namespace(instance, dct.path)
-            try:
-                del instance_map[name]
+            value = real_map[name]
+        except KeyError:
+            pass
+        else:
+            value = DescriptorInspector(value)
+            if value.has_delete:
+                value.delete(value.object, instance)
                 return
-            except KeyError:
-                raise AttributeError(name)
-        deleter(instance)
+        instance_map = Namespace.get_namespace(instance, dct.path)
+        try:
+            del instance_map[name]
+        except KeyError:
+            raise AttributeError(name)
 
     def __enter__(self):
         dct, _, _ = _PROXY_INFOS[self]
