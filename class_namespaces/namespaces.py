@@ -10,6 +10,50 @@ _PROXY_INFOS = weakref.WeakKeyDictionary()
 _SENTINEL = object()
 
 
+class DescriptorInspector(collections.namedtuple('DescriptorInspector',
+                                                 ['object', 'dict'])):
+
+    def __new__(cls, obj):
+        dct = collections.ChainMap(*[vars(cls) for cls in type(obj).__mro__])
+        return super().__new__(cls, obj, dct)
+
+    @property
+    def has_get(self):
+        return '__get__' in self.dict
+
+    @property
+    def has_set(self):
+        return '__set__' in self.dict
+
+    @property
+    def has_delete(self):
+        return '__delete__' in self.dict
+
+    @property
+    def is_data(self):
+        return self.has_set or self.has_delete
+
+    @property
+    def is_non_data(self):
+        return self.has_get and not self.is_data
+
+    @property
+    def is_descriptor(self):
+        return self.has_get or self.has_set or self.has_delete
+
+    @property
+    def get(self):
+        return self.dict['__get__']
+
+    @property
+    def set(self):
+        return self.dict['__set__']
+
+    @property
+    def delete(self):
+        return self.dict['__delete__']
+
+
 def _is_getter(descriptor):
     d_type_dict = vars(type(descriptor))
     return '__get__' in d_type_dict
@@ -92,28 +136,41 @@ class NamespaceProxy:
             return dct[name]
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
+        try:
+            instance_value = instance_map[name]
+        except KeyError:
+            instance_value = None
+        else:
+            instance_value = DescriptorInspector(instance_value)
+        try:
+            mro_value = mro_map[name]
+        except KeyError:
+            mro_value = None
+        else:
+            mro_value = DescriptorInspector(mro_value)
         if issubclass(owner, type):
-            if name in mro_map and _is_data(mro_map[name]):
-                return _get(mro_map[name], instance, owner)
-            elif name in instance_map and _is_getter(instance_map[name]):
-                return _get(instance_map[name], None, instance)
-            elif name in instance_map:
-                return instance_map[name]
-            elif name in mro_map and _is_non_data(mro_map[name]):
-                return _get(mro_map[name], instance, owner)
-            elif name in mro_map:
-                return mro_map[name]
+            if mro_value is not None and mro_value.is_data:
+                return mro_value.get(mro_value.object, instance, owner)
+            elif instance_value is not None and instance_value.has_get:
+                return instance_value.get(
+                    instance_value.object, None, instance)
+            elif instance_value is not None:
+                return instance_value.object
+            elif mro_value is not None and mro_value.is_non_data:
+                return mro_value.get(mro_value.object, instance, owner)
+            elif mro_value is not None:
+                return mro_value.object
             else:
                 raise AttributeError(name)
         else:
-            if name in mro_map and _is_data(mro_map[name]):
-                return _get(mro_map[name], instance, owner)
-            elif name in instance_map:
-                return instance_map[name]
-            elif name in mro_map and _is_non_data(mro_map[name]):
-                return _get(mro_map[name], instance, owner)
-            elif name in mro_map:
-                return mro_map[name]
+            if mro_value is not None and mro_value.is_data:
+                return mro_value.get(mro_value.object, instance, owner)
+            elif instance_value is not None:
+                return instance_value.object
+            elif mro_value is not None and mro_value.is_non_data:
+                return mro_value.get(mro_value.object, instance, owner)
+            elif mro_value is not None:
+                return mro_value.object
             else:
                 raise AttributeError(name)
 
