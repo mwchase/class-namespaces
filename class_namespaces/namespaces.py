@@ -184,14 +184,17 @@ class NamespaceProxy:
             real_map[name] = value
             return
         mro_map = _mro_map(self)
-        target_value = mro_map.get(name)
         try:
-            setter = type(target_value).__set__
-        except AttributeError:
-            instance_map = Namespace.get_namespace(instance, dct.path)
-            instance_map[name] = value
-            return
-        setter(target_value, instance, value)
+            target_value = mro_map[name]
+        except KeyError:
+            pass
+        else:
+            target_value = DescriptorInspector(target_value)
+            if target_value.has_set:
+                target_value.set(target_value.object, instance, value)
+                return
+        instance_map = Namespace.get_namespace(instance, dct.path)
+        instance_map[name] = value
 
     def __delattr__(self, name):
         dct, instance, owner = _PROXY_INFOS[self]
