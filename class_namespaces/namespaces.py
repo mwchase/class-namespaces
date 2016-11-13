@@ -54,36 +54,6 @@ class DescriptorInspector(collections.namedtuple('DescriptorInspector',
         return self.dict['__delete__']
 
 
-def _is_getter(descriptor):
-    d_type_dict = vars(type(descriptor))
-    return '__get__' in d_type_dict
-
-
-def _is_data(descriptor):
-    d_type_dict = vars(type(descriptor))
-    return '__set__' in d_type_dict or '__delete__' in d_type_dict
-
-
-def _is_non_data(descriptor):
-    return _is_getter(descriptor) and not _is_data(descriptor)
-
-
-def _get(descriptor, instance, owner):
-    getter = getattr(type(descriptor), '__get__', _SENTINEL)
-    if getter is _SENTINEL:
-        return descriptor
-    else:
-        return getter(descriptor, instance, owner)
-
-
-def _set(descriptor, instance, value):
-    type(descriptor).__set__(descriptor, instance, value)
-
-
-def _delete(descriptor, instance):
-    type(descriptor).__delete__(descriptor, instance)
-
-
 def _no_blocker(dct, cls):
     try:
         namespace = vars(cls)
