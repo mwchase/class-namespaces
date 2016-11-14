@@ -47,17 +47,14 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
         except KeyError:
             raise AttributeError(key)
 
-    @property
-    def get(self):
-        return self.get_as_attribute('__get__')
+    def get(self, instance, owner):
+        return self.get_as_attribute('__get__')(self.object, instance, owner)
 
-    @property
-    def set(self):
-        return self.get_as_attribute('__set__')
+    def set(self, instance, value):
+        self.get_as_attribute('__set__')(self.object, instance, value)
 
-    @property
-    def delete(self):
-        return self.get_as_attribute('__delete__')
+    def delete(self, instance):
+        self.get_as_attribute('__delete__')(self.object, instance)
 
 
 def _no_blocker(dct, cls):
@@ -126,25 +123,24 @@ class _NamespaceProxy:
             mro_value = _DescriptorInspector(mro_value)
         if issubclass(owner, type):
             if mro_value is not None and mro_value.is_data:
-                return mro_value.get(mro_value.object, instance, owner)
+                return mro_value.get(instance, owner)
             elif instance_value is not None and instance_value.has_get:
-                return instance_value.get(
-                    instance_value.object, None, instance)
+                return instance_value.get(None, instance)
             elif instance_value is not None:
                 return instance_value.object
             elif mro_value is not None and mro_value.is_non_data:
-                return mro_value.get(mro_value.object, instance, owner)
+                return mro_value.get(instance, owner)
             elif mro_value is not None:
                 return mro_value.object
             else:
                 raise AttributeError(name)
         else:
             if mro_value is not None and mro_value.is_data:
-                return mro_value.get(mro_value.object, instance, owner)
+                return mro_value.get(instance, owner)
             elif instance_value is not None:
                 return instance_value.object
             elif mro_value is not None and mro_value.is_non_data:
-                return mro_value.get(mro_value.object, instance, owner)
+                return mro_value.get(instance, owner)
             elif mro_value is not None:
                 return mro_value.object
             else:
@@ -167,7 +163,7 @@ class _NamespaceProxy:
         else:
             target_value = _DescriptorInspector(target_value)
             if target_value.is_data:
-                target_value.set(target_value.object, instance, value)
+                target_value.set(instance, value)
                 return
         instance_map = Namespace.get_namespace(instance, dct.path)
         instance_map[name] = value
@@ -191,7 +187,7 @@ class _NamespaceProxy:
         else:
             value = _DescriptorInspector(value)
             if value.is_data:
-                value.delete(value.object, instance)
+                value.delete(instance)
                 return
         instance_map = Namespace.get_namespace(instance, dct.path)
         try:
