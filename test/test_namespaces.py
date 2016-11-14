@@ -179,7 +179,7 @@ def test_rename(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             pass
-        with pytest.raises(ValueError):
+        with pytest.raises(namespaces.namespace_exception(ValueError)):
             with ns as ns2:
                 pass
 
