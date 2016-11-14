@@ -41,17 +41,23 @@ class DescriptorInspector(collections.namedtuple('DescriptorInspector',
     def is_descriptor(self):
         return self.has_get or self.has_set or self.has_delete
 
+    def get_as_attribute(self, key):
+        try:
+            return self.dict[key]
+        except KeyError:
+            raise AttributeError(key)
+
     @property
     def get(self):
-        return self.dict['__get__']
+        return self.get_as_attribute('__get__')
 
     @property
     def set(self):
-        return self.dict['__set__']
+        return self.get_as_attribute('__set__')
 
     @property
     def delete(self):
-        return self.dict['__delete__']
+        return self.get_as_attribute('__delete__')
 
 
 def _no_blocker(dct, cls):
