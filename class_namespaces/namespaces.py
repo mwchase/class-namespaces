@@ -166,7 +166,7 @@ class NamespaceProxy:
             pass
         else:
             target_value = DescriptorInspector(target_value)
-            if target_value.has_set:
+            if target_value.is_data:
                 target_value.set(target_value.object, instance, value)
                 return
         instance_map = Namespace.get_namespace(instance, dct.path)
@@ -190,7 +190,7 @@ class NamespaceProxy:
             pass
         else:
             value = DescriptorInspector(value)
-            if value.has_delete:
+            if value.is_data:
                 value.delete(value.object, instance)
                 return
         instance_map = Namespace.get_namespace(instance, dct.path)
