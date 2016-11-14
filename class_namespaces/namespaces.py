@@ -10,8 +10,8 @@ _PROXY_INFOS = weakref.WeakKeyDictionary()
 _SENTINEL = object()
 
 
-class DescriptorInspector(collections.namedtuple('DescriptorInspector',
-                                                 ['object', 'dict'])):
+class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
+                                                  ['object', 'dict'])):
 
     def __new__(cls, obj):
         dct = collections.ChainMap(*[vars(cls) for cls in type(obj).__mro__])
@@ -98,7 +98,7 @@ def _mro_map(ns_proxy):
     return _mro_to_chained(mro, dct)
 
 
-class NamespaceProxy:
+class _NamespaceProxy:
 
     def __init__(self, dct, instance, owner):
         _PROXY_INFOS[self] = dct, instance, owner
@@ -117,13 +117,13 @@ class NamespaceProxy:
         except KeyError:
             instance_value = None
         else:
-            instance_value = DescriptorInspector(instance_value)
+            instance_value = _DescriptorInspector(instance_value)
         try:
             mro_value = mro_map[name]
         except KeyError:
             mro_value = None
         else:
-            mro_value = DescriptorInspector(mro_value)
+            mro_value = _DescriptorInspector(mro_value)
         if issubclass(owner, type):
             if mro_value is not None and mro_value.is_data:
                 return mro_value.get(mro_value.object, instance, owner)
@@ -165,7 +165,7 @@ class NamespaceProxy:
         except KeyError:
             pass
         else:
-            target_value = DescriptorInspector(target_value)
+            target_value = _DescriptorInspector(target_value)
             if target_value.is_data:
                 target_value.set(target_value.object, instance, value)
                 return
@@ -189,7 +189,7 @@ class NamespaceProxy:
         except KeyError:
             pass
         else:
-            value = DescriptorInspector(value)
+            value = _DescriptorInspector(value)
             if value.is_data:
                 value.delete(value.object, instance)
                 return
@@ -315,10 +315,10 @@ class Namespace(dict):
             self.scope.dicts.pop()
 
     def __get__(self, instance, owner):
-        return NamespaceProxy(self, instance, owner)
+        return _NamespaceProxy(self, instance, owner)
 
 
-class NamespaceScope(collections.abc.MutableMapping):
+class _NamespaceScope(collections.abc.MutableMapping):
 
     def __init__(self):
         self.dicts = [{}]
@@ -327,12 +327,12 @@ class NamespaceScope(collections.abc.MutableMapping):
     def __getitem__(self, key):
         value = self.dicts[-1][key]
         if isinstance(value, Namespace):
-            value = NamespaceProxy(value, None, None)
+            value = _NamespaceProxy(value, None, None)
         return value
 
     def __setitem__(self, key, value):
         dct = self.dicts[-1]
-        if isinstance(value, NamespaceProxy):
+        if isinstance(value, _NamespaceProxy):
             value, _, _ = _PROXY_INFOS[value]
         if isinstance(value, Namespace) and value.name != key:
             value.push(key, self)
@@ -352,7 +352,7 @@ class Namespaceable(type):
 
     @classmethod
     def __prepare__(mcs, name, bases):
-        return NamespaceScope()
+        return _NamespaceScope()
 
     def __new__(mcs, name, bases, dct):
         cls = super().__new__(mcs, name, bases, dct.dicts[-1])
