@@ -227,6 +227,10 @@ class NamespaceException(Exception):
     """Base class for exceptions thrown from Class Namespaces."""
 
 
+def namespace_exception(exception):
+    pass
+
+
 class Namespace(dict):
 
     """Namespace."""
