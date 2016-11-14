@@ -1,3 +1,10 @@
+"""Class Namespaces (internal module)
+
+All of the guts of the class namespace implementation.
+
+"""
+
+
 # See https://blog.ionelmc.ro/2015/02/09/understanding-python-metaclasses/
 
 import collections.abc
@@ -19,41 +26,51 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
 
     @property
     def has_get(self):
+        """Return whether self.object's mro provides __get__."""
         return '__get__' in self.dict
 
     @property
     def has_set(self):
+        """Return whether self.object's mro provides __set__."""
         return '__set__' in self.dict
 
     @property
     def has_delete(self):
+        """Return whether self.object's mro provides __delete__."""
         return '__delete__' in self.dict
 
     @property
     def is_data(self):
+        """Returns whether self.object is a data descriptor."""
         return self.has_set or self.has_delete
 
     @property
     def is_non_data(self):
+        """Returns whether self.object is a non-data descriptor."""
         return self.has_get and not self.is_data
 
     @property
     def is_descriptor(self):
+        """Returns whether self.object is a descriptor."""
         return self.has_get or self.has_set or self.has_delete
 
     def get_as_attribute(self, key):
+        """Return attribute with the given name, or raise AttributeError."""
         try:
             return self.dict[key]
         except KeyError:
             raise AttributeError(key)
 
     def get(self, instance, owner):
+        """Return the result of __get__, bypassing descriptor protocol."""
         return self.get_as_attribute('__get__')(self.object, instance, owner)
 
     def set(self, instance, value):
+        """Return the result of __set__, bypassing descriptor protocol."""
         self.get_as_attribute('__set__')(self.object, instance, value)
 
     def delete(self, instance):
+        """Return the result of __delete__, bypassing descriptor protocol."""
         self.get_as_attribute('__delete__')(self.object, instance)
 
 
@@ -78,7 +95,7 @@ def _mro_to_chained(mro, dct):
 
 
 def _instance_map(ns_proxy):
-    dct, instance, owner = _PROXY_INFOS[ns_proxy]
+    dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
         if isinstance(instance, Namespaceable):
             return _mro_to_chained(instance.__mro__, dct)
@@ -96,6 +113,8 @@ def _mro_map(ns_proxy):
 
 
 class _NamespaceProxy:
+
+    """Proxy object for manipulating and querying namespaces."""
 
     def __init__(self, dct, instance, owner):
         _PROXY_INFOS[self] = dct, instance, owner
@@ -205,10 +224,12 @@ class _NamespaceProxy:
 
 
 class NamespaceException(Exception):
-    pass
+    """Base class for exceptions thrown from Class Namespaces."""
 
 
 class Namespace(dict):
+
+    """Namespace."""
 
     name = None
     scope = None
@@ -220,6 +241,7 @@ class Namespace(dict):
 
     @classmethod
     def premake(cls, name, parent):
+        """Return an empty namespace with the given name and parent."""
         self = cls()
         self.name = name
         self.parent = parent
@@ -236,6 +258,7 @@ class Namespace(dict):
 
     @property
     def path(self):
+        """Return the full path of the namespace."""
         if self.name is None or self.parent is None:
             raise ValueError
         if isinstance(self.parent, Namespace):
@@ -260,11 +283,13 @@ class Namespace(dict):
 
     @classmethod
     def namespace_exists(cls, target, path):
+        """Return whether the given namespace exists."""
         path_, namespaces = cls.__get_helper(target, path)
         return path_ in namespaces
 
     @classmethod
     def get_namespace(cls, target, path):
+        """Return a namespace with given target and path, create if needed."""
         path_, namespaces = cls.__get_helper(target, path)
         try:
             return namespaces[path_]
@@ -276,6 +301,7 @@ class Namespace(dict):
             return namespaces.setdefault(path_, cls.premake(path[-1], parent))
 
     def add(self, target):
+        """Add self as a namespace under target."""
         path, namespaces = self.__get_helper(target, self.path)
         res = namespaces.setdefault(path, self)
         if res is self:
@@ -283,6 +309,7 @@ class Namespace(dict):
         return res
 
     def push(self, name, scope):
+        """Bind self to the given name and scope, and activate."""
         if self.name is None:
             self.name = name
         if self.scope is None:
@@ -299,6 +326,7 @@ class Namespace(dict):
         self.activate()
 
     def activate(self):
+        """Take over as the scope for the target."""
         if self.scope is not None and not self.active:
             if self.scope.dicts[-1] is not self.parent:
                 raise ValueError('Cannot reparent namespace')
@@ -306,6 +334,7 @@ class Namespace(dict):
             self.scope.dicts.append(self)
 
     def deactivate(self):
+        """Stop being the scope for the target."""
         if self.scope is not None and self.active:
             self.active = False
             self.scope.dicts.pop()
@@ -345,6 +374,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
 
 class Namespaceable(type):
+
+    """Metaclass for classes that can contain namespaces."""
 
     @classmethod
     def __prepare__(mcs, name, bases):
