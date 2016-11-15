@@ -6,6 +6,5 @@ python:
   - "3.5-dev" # 3.5 development branch
   - "3.6-dev" # 3.6 development branch
   - "nightly" # currently points to 3.7-dev
-install: "pip install pytest"
 # command to run tests
-script: pytest
+script: python -m pytest
