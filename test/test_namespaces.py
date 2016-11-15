@@ -219,3 +219,8 @@ def test_override_method(namespaces):
     Test.ns.foo = 3
     assert Test.ns.foo == 3
     assert test.ns.foo == 3
+
+
+def test_can_t_preload_with_namespace(namespaces):
+    with pytest.raises(namespaces.namespace_exception(ValueError)):
+        namespaces.Namespace(ns=namespaces.Namespace())
