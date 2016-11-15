@@ -235,6 +235,7 @@ _EXCEPTIONS = weakref.WeakKeyDictionary()
 
 
 def namespace_exception(exception):
+    """Return a subclass of the given exception type. Results are cached."""
     return _EXCEPTIONS.setdefault(
         exception,
         type('Namespace' + exception.__name__,
