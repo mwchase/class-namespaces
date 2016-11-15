@@ -242,37 +242,6 @@ def namespace_exception(exception):
              {}))
 
 
-class _DefaultingSlot(collections.namedtuple('DefaultingSlot',
-                                             ['slot', 'default'])):
-
-    __slots__ = ()
-
-    def __get__(self, instance, owner):
-        try:
-            return self.slot.__get__(instance, owner)
-        except AttributeError:
-            return self.default
-
-    def __set__(self, instance, value):
-        self.slot.__set__(instance, value)
-
-    def __delete__(self, instance):
-        try:
-            self.slot.__delete__(instance)
-        except AttributeError:
-            pass
-
-    @classmethod
-    def add(cls, **kwargs):
-        def replace(target):
-            for name, default in kwargs.items():
-                setattr(target, name, cls(getattr(target, name), default))
-            return target
-        return replace
-
-
-@_DefaultingSlot.add(
-    name=None, scope=None, parent=None, active=False, parent_object=None)
 class Namespace(dict):
 
     """Namespace."""
@@ -289,6 +258,11 @@ class Namespace(dict):
         if bad_values:
             raise namespace_exception(ValueError)(
                 'Bad values: {}'.format(bad_values))
+        self.name = None
+        self.scope = None
+        self.parent = None
+        self.active = False
+        self.parent = None
 
     @classmethod
     def premake(cls, name, parent):
