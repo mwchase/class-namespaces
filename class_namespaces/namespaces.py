@@ -242,8 +242,8 @@ def namespace_exception(exception):
              {}))
 
 
-class DefaultingSlot(collections.namedtuple('DefaultingSlot',
-                                            ['slot', 'default'])):
+class _DefaultingSlot(collections.namedtuple('DefaultingSlot',
+                                             ['slot', 'default'])):
 
     __slots__ = ()
 
@@ -271,7 +271,7 @@ class DefaultingSlot(collections.namedtuple('DefaultingSlot',
         return replace
 
 
-@DefaultingSlot.add(
+@_DefaultingSlot.add(
     name=None, scope=None, parent=None, active=False, parent_object=None)
 class Namespace(dict):
 
