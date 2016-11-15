@@ -271,15 +271,13 @@ class DefaultingSlot(collections.namedtuple('DefaultingSlot',
         return replace
 
 
+@DefaultingSlot.add(
+    name=None, scope=None, parent=None, active=False, parent_object=None)
 class Namespace(dict):
 
     """Namespace."""
 
-    name = None
-    scope = None
-    parent = None
-    active = False
-    parent_object = None
+    __slots__ = 'name', 'scope', 'parent', 'active', 'parent_object'
 
     __namespaces = {}
 
