@@ -262,7 +262,7 @@ class Namespace(dict):
         self.scope = None
         self.parent = None
         self.active = False
-        self.parent = None
+        self.parent_object = None
 
     @classmethod
     def premake(cls, name, parent):
