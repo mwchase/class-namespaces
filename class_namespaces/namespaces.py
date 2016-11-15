@@ -283,6 +283,12 @@ class Namespace(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        bad_values = tuple(
+            value for value in self.values() if
+            isinstance(value, (Namespace, _NamespaceProxy)))
+        if bad_values:
+            raise namespace_exception(ValueError)(
+                'Bad values: {}'.format(bad_values))
 
     @classmethod
     def premake(cls, name, parent):
