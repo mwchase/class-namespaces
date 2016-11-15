@@ -20,6 +20,8 @@ _SENTINEL = object()
 class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
                                                   ['object', 'dict'])):
 
+    __slots__ = ()
+
     def __new__(cls, obj):
         dct = collections.ChainMap(*[vars(cls) for cls in type(obj).__mro__])
         return super().__new__(cls, obj, dct)
@@ -115,6 +117,8 @@ def _mro_map(ns_proxy):
 class _NamespaceProxy:
 
     """Proxy object for manipulating and querying namespaces."""
+
+    __slots__ = '__weakref__',
 
     def __init__(self, dct, instance, owner):
         _PROXY_INFOS[self] = dct, instance, owner
@@ -357,6 +361,8 @@ class Namespace(dict):
 
 class _NamespaceScope(collections.abc.MutableMapping):
 
+    __slots__ = 'dicts', 'namespaces'
+
     def __init__(self):
         self.dicts = [{}]
         self.namespaces = []
@@ -388,6 +394,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
 class Namespaceable(type):
 
     """Metaclass for classes that can contain namespaces."""
+
+    __slots__ = ()
 
     @classmethod
     def __prepare__(mcs, name, bases):
