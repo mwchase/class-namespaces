@@ -281,6 +281,9 @@ class Namespace(dict):
 
     __namespaces = {}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     @classmethod
     def premake(cls, name, parent):
         """Return an empty namespace with the given name and parent."""
