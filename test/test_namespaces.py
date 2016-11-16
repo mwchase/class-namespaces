@@ -224,3 +224,15 @@ def test_override_method(namespaces):
 def test_can_t_preload_with_namespace(namespaces):
     with pytest.raises(namespaces.namespace_exception(ValueError)):
         namespaces.Namespace(ns=namespaces.Namespace())
+
+
+def test_add_later(namespaces):
+    class Test(metaclass=namespaces.Namespaceable):
+        pass
+
+    Test.ns = namespaces.Namespace()
+    Test.ns.ns = namespaces.Namespace()
+    Test.ns.value = 1
+    Test.ns.ns.value = 2
+    assert Test.ns.value == 1
+    assert Test.ns.ns.value == 2
