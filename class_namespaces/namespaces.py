@@ -68,11 +68,11 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
         return self.get_as_attribute('__get__')(self.object, instance, owner)
 
     def set(self, instance, value):
-        """Return the result of __set__, bypassing descriptor protocol."""
+        """Call __set__, bypassing descriptor protocol."""
         self.get_as_attribute('__set__')(self.object, instance, value)
 
     def delete(self, instance):
-        """Return the result of __delete__, bypassing descriptor protocol."""
+        """Call __delete__, bypassing descriptor protocol."""
         self.get_as_attribute('__delete__')(self.object, instance)
 
 
