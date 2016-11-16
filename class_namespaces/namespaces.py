@@ -340,7 +340,6 @@ class Namespace(dict):
         res = namespaces.setdefault(path, self)
         if res is self:
             self.parent_object = target
-        return res
 
     def push(self, name, scope):
         """Bind self to the given name and scope, and activate."""
