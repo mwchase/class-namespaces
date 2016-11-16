@@ -425,8 +425,8 @@ class Namespaceable(type):
         cls.__scope = dct
         return cls
 
-    def __setattr__(self, name, value):
+    def __setattr__(cls, name, value):
         if isinstance(value, Namespace) and value.name != name:
-            value.push(name, self.__scope)
-            value.add(self)
+            value.push(name, cls.__scope)
+            value.add(cls)
         super().__setattr__(name, value)
