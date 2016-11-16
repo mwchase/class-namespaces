@@ -414,4 +414,11 @@ class Namespaceable(type):
         cls = super().__new__(mcs, name, bases, dct.dicts[-1])
         for namespace in dct.namespaces:
             namespace.add(cls)
+        cls.__scope = dct
         return cls
+
+    def __setattr__(self, name, value):
+        if isinstance(value, Namespace) and value.name != name:
+            value.push(name, self.__scope)
+            value.add(self)
+        super().__setattr__(name, value)
