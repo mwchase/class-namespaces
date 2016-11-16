@@ -273,6 +273,14 @@ class Namespace(dict):
         self.parent = parent
         return self
 
+    def __setitem__(self, key, value):
+        if (
+                self.parent_object is not None and
+                isinstance(value, Namespace) and value.name != key):
+            value.push(key, self.scope)
+            value.add(self.parent_object)
+        super().__setitem__(key, value)
+
     def __enter__(self):
         self.activate()
         return self
