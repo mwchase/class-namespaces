@@ -406,8 +406,6 @@ class Namespaceable(type):
 
     """Metaclass for classes that can contain namespaces."""
 
-    __slots__ = ()
-
     @classmethod
     def __prepare__(mcs, name, bases):
         return _NamespaceScope()
