@@ -10,6 +10,7 @@ All of the guts of the class namespace implementation.
 import collections.abc
 import functools
 import itertools
+import sys
 import weakref
 
 
@@ -41,6 +42,22 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
         """Return whether self.object's mro provides __delete__."""
         return '__delete__' in self.dict
 
+    if sys.version_info >= (3, 6):
+        @property
+        def has_set_name(self):
+            """Return whether self.object's mro provides __set_name__."""
+            return '__set_name__' in self.dict
+
+        def set_name(self, owner, name):
+            """Call __set_name__, bypassing descriptor protocol."""
+            self.get_as_attribute('__set_name__')(self.object, owner, name)
+
+        @property
+        def has_non_data(self):
+            return self.has_get or self.has_set_name
+    else:
+        has_non_data = has_get
+
     @property
     def is_data(self):
         """Returns whether self.object is a data descriptor."""
@@ -49,12 +66,12 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
     @property
     def is_non_data(self):
         """Returns whether self.object is a non-data descriptor."""
-        return self.has_get and not self.is_data
+        return self.has_non_data and not self.is_data
 
     @property
     def is_descriptor(self):
         """Returns whether self.object is a descriptor."""
-        return self.has_get or self.has_set or self.has_delete
+        return self.has_non_data or self.is_data
 
     def get_as_attribute(self, key):
         """Return attribute with the given name, or raise AttributeError."""
