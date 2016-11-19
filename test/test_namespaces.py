@@ -249,3 +249,9 @@ def test_3_6_descriptor(namespaces):
             self.name = name
     assert namespaces.namespaces._DescriptorInspector(
         Descriptor()).is_descriptor
+
+    class Test(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            d = Descriptor()
+
+    assert Test.ns.d.name == 'd'
