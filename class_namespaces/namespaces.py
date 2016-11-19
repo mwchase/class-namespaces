@@ -436,9 +436,14 @@ class Namespaceable(type):
 
     def __new__(mcs, name, bases, dct):
         cls = super().__new__(mcs, name, bases, dct.dicts[-1])
+        cls.__scope = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
-        cls.__scope = dct
+            if sys.version_info >= (3, 6):
+                for name, value in namespace.items():
+                    wrapped = _DescriptorInspector(value)
+                    if wrapped.has_set_name:
+                        wrapped.set_name(cls, name)
         return cls
 
     def __setattr__(cls, name, value):
