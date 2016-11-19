@@ -54,6 +54,7 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
 
         @property
         def has_non_data(self):
+            """Return whether self.object's mro provides non-data methods."""
             return self.has_get or self.has_set_name
     else:
         has_non_data = has_get
