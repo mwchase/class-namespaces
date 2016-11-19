@@ -14,6 +14,9 @@ import sys
 import weakref
 
 
+ENABLE_SET_NAME = sys.version_info >= (3, 6)
+
+
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 _SENTINEL = object()
 
@@ -42,7 +45,7 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
         """Return whether self.object's mro provides __delete__."""
         return '__delete__' in self.dict
 
-    if sys.version_info >= (3, 6):
+    if ENABLE_SET_NAME:
         @property
         def has_set_name(self):
             """Return whether self.object's mro provides __set_name__."""
@@ -440,7 +443,7 @@ class Namespaceable(type):
         cls.__scope = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
-            if sys.version_info >= (3, 6):
+            if ENABLE_SET_NAME:
                 for name, value in namespace.items():
                     wrapped = _DescriptorInspector(value)
                     if wrapped.has_set_name:
