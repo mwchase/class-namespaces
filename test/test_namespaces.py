@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 
@@ -236,3 +238,14 @@ def test_add_later(namespaces):
     Test.ns.ns.value = 2
     assert Test.ns.value == 1
     assert Test.ns.ns.value == 2
+
+
+@pytest.mark.xfail(sys.version_info < (3, 6),
+                   reason="python3.6 api changes", strict=True)
+def test_3_6_descriptor(namespaces):
+    class Descriptor:
+        def __set_name__(self, owner, name):
+            self.owner = owner
+            self.name = name
+    assert namespaces.namespaces._DescriptorInspector(
+        Descriptor()).is_descriptor
