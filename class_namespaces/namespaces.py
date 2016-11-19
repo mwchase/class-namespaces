@@ -168,7 +168,7 @@ class _NamespaceProxy:
                 return instance_value.get(None, instance)
             elif instance_value is not None:
                 return instance_value.object
-            elif mro_value is not None and mro_value.is_non_data:
+            elif mro_value is not None and mro_value.has_get:
                 return mro_value.get(instance, owner)
             elif mro_value is not None:
                 return mro_value.object
@@ -179,7 +179,7 @@ class _NamespaceProxy:
                 return mro_value.get(instance, owner)
             elif instance_value is not None:
                 return instance_value.object
-            elif mro_value is not None and mro_value.is_non_data:
+            elif mro_value is not None and mro_value.has_get:
                 return mro_value.get(instance, owner)
             elif mro_value is not None:
                 return mro_value.object
