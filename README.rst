@@ -36,3 +36,7 @@ Things that don't work:
 * Various ways of putting a Namespace in a Namespace that I didn't see an obvious way to handle. In particular...
 
   * There is no way to put an established namespace directly into another namespace.
+
+Things that might work:
+
+* New namespace features in Python 3.6. Current testing is spotty.
