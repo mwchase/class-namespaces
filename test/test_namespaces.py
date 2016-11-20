@@ -165,14 +165,14 @@ def test_advanced_overlap(namespaces):
 
 def test_empty_nameless(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
-        with pytest.raises(namespaces.NamespaceException):
+        with pytest.raises(RuntimeError):
             with namespaces.Namespace():
                 pass
 
 
 def test_non_empty_nameless(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
-        with pytest.raises(namespaces.NamespaceException):
+        with pytest.raises(RuntimeError):
             with namespaces.Namespace():
                 a = 1
 
@@ -181,7 +181,7 @@ def test_rename(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             pass
-        with pytest.raises(namespaces.namespace_exception(ValueError)):
+        with pytest.raises(ValueError):
             with ns as ns2:
                 pass
 
@@ -224,7 +224,7 @@ def test_override_method(namespaces):
 
 
 def test_can_t_preload_with_namespace(namespaces):
-    with pytest.raises(namespaces.namespace_exception(ValueError)):
+    with pytest.raises(ValueError):
         namespaces.Namespace(ns=namespaces.Namespace())
 
 

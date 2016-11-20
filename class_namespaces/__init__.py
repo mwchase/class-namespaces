@@ -11,5 +11,3 @@ from . import namespaces
 
 Namespaceable = namespaces.Namespaceable
 Namespace = namespaces.Namespace
-NamespaceException = namespaces.NamespaceException
-namespace_exception = namespaces.namespace_exception

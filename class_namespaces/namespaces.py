@@ -82,7 +82,7 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
         try:
             return self.dict[key]
         except KeyError:
-            raise namespace_exception(AttributeError)(key)
+            raise AttributeError(key)
 
     def get(self, instance, owner):
         """Return the result of __get__, bypassing descriptor protocol."""
@@ -177,7 +177,7 @@ class _NamespaceProxy:
             elif mro_value is not None:
                 return mro_value.object
             else:
-                raise namespace_exception(AttributeError)(name)
+                raise AttributeError(name)
         else:
             if mro_value is not None and mro_value.is_data:
                 return mro_value.get(instance, owner)
@@ -188,7 +188,7 @@ class _NamespaceProxy:
             elif mro_value is not None:
                 return mro_value.object
             else:
-                raise namespace_exception(AttributeError)(name)
+                raise AttributeError(name)
 
     def __setattr__(self, name, value):
         dct, instance, owner = _PROXY_INFOS[self]
@@ -223,7 +223,7 @@ class _NamespaceProxy:
                 del real_map[name]
                 return
             except KeyError:
-                raise namespace_exception(AttributeError)(name)
+                raise AttributeError(name)
         try:
             value = real_map[name]
         except KeyError:
@@ -237,7 +237,7 @@ class _NamespaceProxy:
         try:
             del instance_map[name]
         except KeyError:
-            raise namespace_exception(AttributeError)(name)
+            raise AttributeError(name)
 
     def __enter__(self):
         dct, _, _ = _PROXY_INFOS[self]
@@ -246,22 +246,6 @@ class _NamespaceProxy:
     def __exit__(self, exc_type, exc_value, traceback):
         dct, _, _ = _PROXY_INFOS[self]
         return dct.__exit__(exc_type, exc_value, traceback)
-
-
-class NamespaceException(Exception):
-    """Base class for exceptions thrown from Class Namespaces."""
-
-
-_EXCEPTIONS = weakref.WeakKeyDictionary()
-
-
-def namespace_exception(exception):
-    """Return a subclass of the given exception type. Results are cached."""
-    return _EXCEPTIONS.setdefault(
-        exception,
-        type('Namespace' + exception.__name__,
-             (NamespaceException, exception),
-             {}))
 
 
 class Namespace(dict):
@@ -278,8 +262,7 @@ class Namespace(dict):
             value for value in self.values() if
             isinstance(value, (Namespace, _NamespaceProxy)))
         if bad_values:
-            raise namespace_exception(ValueError)(
-                'Bad values: {}'.format(bad_values))
+            raise ValueError('Bad values: {}'.format(bad_values))
         self.name = None
         self.scope = None
         self.parent = None
@@ -308,14 +291,14 @@ class Namespace(dict):
 
     def __exit__(self, exc_type, exc_value, traceback):
         if self.name is None:
-            raise namespace_exception(RuntimeError)('Namespace must be named.')
+            raise RuntimeError('Namespace must be named.')
         self.deactivate()
 
     @property
     def path(self):
         """Return the full path of the namespace."""
         if self.name is None or self.parent is None:
-            raise namespace_exception(ValueError)
+            raise ValueError
         if isinstance(self.parent, Namespace):
             parent_path = self.parent.path
         else:
@@ -371,11 +354,11 @@ class Namespace(dict):
         if self.parent is None:
             self.parent = scope.dicts[-1]
         if name != self.name:
-            raise namespace_exception(ValueError)('Cannot rename namespace')
+            raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
-            raise namespace_exception(ValueError)('Cannot reuse namespace')
+            raise ValueError('Cannot reuse namespace')
         if scope.dicts[-1] is not self.parent:
-            raise namespace_exception(ValueError)('Cannot reparent namespace')
+            raise ValueError('Cannot reparent namespace')
         self.scope.namespaces.append(self)
         self.activate()
 
@@ -383,8 +366,7 @@ class Namespace(dict):
         """Take over as the scope for the target."""
         if self.scope is not None and not self.active:
             if self.scope.dicts[-1] is not self.parent:
-                raise namespace_exception(ValueError)(
-                    'Cannot reparent namespace')
+                raise ValueError('Cannot reparent namespace')
             self.active = True
             self.scope.dicts.append(self)
 
