@@ -9,12 +9,11 @@ python:
 install:
   - pip install coveralls
   - pip install codecov
+  - pip install codeclimate-test-reporter
 # command to run tests
 script:
   coverage run --source=class_namespaces -m pytest
 after_success:
   - coveralls
   - codecov
-addons:
-    code_climate:
-        repo_token: 3d0451505f214ce48df076eef5d02e4b606a6be6eea4e3ca70cbbb56e24270fd
+  - codeclimate-test-reporter
