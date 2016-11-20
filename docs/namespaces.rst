@@ -1,7 +1,9 @@
 Namespaces
 ==========
 
-Class Namespaces provides a small collection of types.
+Class Namespaces provides a small collection of types. Neither type has public
+methods of interest; they are used solely in the context of Python's own
+protocols.
 
 Namespaceable
 -------------
