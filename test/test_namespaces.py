@@ -278,7 +278,19 @@ def test_3_6_descriptor(namespaces):
     assert Test.ns.d.name == 'd'
 
 
-def test_as_meta(namespaces):
+def test_basic_meta(namespaces):
+    class Meta(type, metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            meta_var = 1
+
+    class Test(metaclass=Meta):
+        pass
+
+    assert Meta.ns.meta_var == 1
+    assert Test.ns.meta_var == 1
+
+
+def test_weird_meta(namespaces):
     class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             meta_var = 1
