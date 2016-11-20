@@ -10,6 +10,7 @@ install:
   - pip install coveralls
   - pip install codecov
   - pip install codeclimate-test-reporter
+  - pip install scrutinizer-ocular
 # command to run tests
 script:
   coverage run --source=class_namespaces -m pytest
@@ -17,3 +18,4 @@ after_success:
   - coveralls
   - codecov
   - codeclimate-test-reporter
+  - ocular
