@@ -379,3 +379,13 @@ def test_meta_plus_classmethod(namespaces):
 
     assert Test().ns.cls_mthd() == 'called'
     assert Test.ns.cls_mthd() == 'called'
+
+
+def test_get_through_namespace(namespaces):
+    class Test(metaclass=namespaces.Namespaceable):
+        var = 1
+        with namespaces.Namespace() as ns:
+            var2 = var
+
+    assert Test.var == 1
+    assert Test.ns.var2 == 1
