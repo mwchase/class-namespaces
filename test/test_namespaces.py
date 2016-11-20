@@ -22,6 +22,16 @@ def test_basic_namespace(namespaces):
     assert Test().ns
 
 
+def test_delete(namespaces):
+    class Test(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            a = 1
+            del a
+        assert ns
+    assert Test
+    assert Test().ns
+
+
 def test_shadow(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
         foo = 1
