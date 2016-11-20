@@ -4,6 +4,8 @@ class-namespaces
 
 .. image:: https://travis-ci.org/mwchase/class-namespaces.svg?branch=master
     :target: https://travis-ci.org/mwchase/class-namespaces
+.. image:: https://coveralls.io/repos/github/mwchase/class-namespaces/badge.svg?branch=master
+    :target: https://coveralls.io/github/mwchase/class-namespaces?branch=master
 
 Well-behaved class namespacing in Python. Inspired by https://erezsh.wordpress.com/2008/06/27/namespaces-lets-do-more-of-those-python-hackery/
 
