@@ -66,17 +66,17 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
 
     @property
     def is_data(self):
-        """Returns whether self.object is a data descriptor."""
+        """Return whether self.object is a data descriptor."""
         return self.has_set or self.has_delete
 
     @property
     def is_non_data(self):
-        """Returns whether self.object is a non-data descriptor."""
+        """Return whether self.object is a non-data descriptor."""
         return self.has_non_data and not self.is_data
 
     @property
     def is_descriptor(self):
-        """Returns whether self.object is a descriptor."""
+        """Return whether self.object is a descriptor."""
         return self.has_non_data or self.is_data
 
     def get_as_attribute(self, key):
