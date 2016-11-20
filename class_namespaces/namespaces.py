@@ -436,7 +436,7 @@ class Namespaceable(type):
         if isinstance(value, Namespace) and value.name != name:
             value.push(name, cls.__scope)
             value.add(cls)
-        if issubclass(cls, type):
+        if issubclass(cls, Namespaceable):
             super().__setattr__(cls, name, value)
         else:
             super().__setattr__(name, value)
