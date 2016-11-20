@@ -363,12 +363,12 @@ class Namespace(dict):
         if self.scope is None:
             self.scope = scope
         if self.parent is None:
-            self.parent = scope.dicts[-1]
+            self.parent = scope.dicts[0]
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
             raise ValueError('Cannot reuse namespace')
-        if scope.dicts[-1] is not self.parent:
+        if scope.dicts[0] is not self.parent:
             raise ValueError('Cannot reparent namespace')
         self.scope.namespaces.append(self)
         self.activate()
@@ -376,16 +376,16 @@ class Namespace(dict):
     def activate(self):
         """Take over as the scope for the target."""
         if self.scope is not None and not self.active:
-            if self.scope.dicts[-1] is not self.parent:
+            if self.scope.dicts[0] is not self.parent:
                 raise ValueError('Cannot reparent namespace')
             self.active = True
-            self.scope.dicts.append(self)
+            self.scope.dicts.insert(0, self)
 
     def deactivate(self):
         """Stop being the scope for the target."""
         if self.scope is not None and self.active:
             self.active = False
-            self.scope.dicts.pop()
+            self.scope.dicts.pop(0)
 
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
@@ -400,13 +400,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
         self.namespaces = []
 
     def __getitem__(self, key):
-        value = self.dicts[-1][key]
+        value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
             value = _NamespaceProxy(value, None, None)
         return value
 
     def __setitem__(self, key, value):
-        dct = self.dicts[-1]
+        dct = self.dicts[0]
         if isinstance(value, _NamespaceProxy):
             value, _, _ = _PROXY_INFOS[value]
         if isinstance(value, Namespace) and value.name != key:
@@ -414,7 +414,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct[key] = value
 
     def __delitem__(self, key):
-        del self.dicts[-1][key]
+        del self.dicts[0][key]
 
     def __iter__(self):
         return iter(collections.ChainMap(*self.dicts))
@@ -432,7 +432,7 @@ class Namespaceable(type):
         return _NamespaceScope()
 
     def __new__(mcs, name, bases, dct):
-        cls = super().__new__(mcs, name, bases, dct.dicts[-1])
+        cls = super().__new__(mcs, name, bases, dct.dicts[0])
         cls.__scope = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
