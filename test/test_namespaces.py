@@ -276,3 +276,20 @@ def test_3_6_descriptor(namespaces):
             d = Descriptor()
 
     assert Test.ns.d.name == 'd'
+
+
+def test_as_meta(namespaces):
+    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            meta_var = 1
+
+    class Test(metaclass=Meta):
+        with namespaces.Namespace() as ns:
+            cls_var = 2
+
+    assert Meta.ns.meta_var == 1
+    assert Test.ns.meta_var == 1
+    assert Test.ns.cls_var == 2
+    assert Test().ns.cls_var == 2
+    with pytest.raises(AttributeError):
+        Test().ns.meta_var
