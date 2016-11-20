@@ -363,6 +363,8 @@ def test_somewhat_weirder_meta(namespaces):
         Meta.ns.cls_var
     Test.var = 3
     assert Test.var == 3
+    Meta.var = 4
+    assert Meta.var == 4
 
 
 def test_classmethod_basic(namespaces):
