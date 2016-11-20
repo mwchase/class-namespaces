@@ -191,6 +191,18 @@ def _is_data(value):
     return value is not None and value.is_data
 
 
+def _get_data(dct, name):
+    """Return the data descriptor associated with `name` in `dct`, if any."""
+    try:
+        value = dct[name]
+    except KeyError:
+        pass
+    else:
+        value = _DescriptorInspector(value)
+        if value.is_data:
+            return value
+
+
 class _NamespaceProxy:
 
     """Proxy object for manipulating and querying namespaces."""
@@ -236,15 +248,10 @@ class _NamespaceProxy:
             real_map[name] = value
             return
         mro_map = _mro_map(self)
-        try:
-            target_value = mro_map[name]
-        except KeyError:
-            pass
-        else:
-            target_value = _DescriptorInspector(target_value)
-            if target_value.is_data:
-                target_value.set(instance, value)
-                return
+        target_value = _get_data(mro_map, name)
+        if target_value is not None:
+            target_value.set(instance, value)
+            return
         instance_map = Namespace.get_namespace(instance, dct.path)
         instance_map[name] = value
 
@@ -258,15 +265,10 @@ class _NamespaceProxy:
         if instance is None:
             _delete(real_map, name)
             return
-        try:
-            value = real_map[name]
-        except KeyError:
-            pass
-        else:
-            value = _DescriptorInspector(value)
-            if value.is_data:
-                value.delete(instance)
-                return
+        value = _get_data(real_map, name)
+        if value is not None:
+            value.delete(instance)
+            return
         instance_map = Namespace.get_namespace(instance, dct.path)
         _delete(instance_map, name)
 
