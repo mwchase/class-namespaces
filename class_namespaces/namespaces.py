@@ -153,6 +153,14 @@ def _get(a_map, name):
         return _DescriptorInspector(value)
 
 
+def _has_get(value):
+    return value is not None and value.has_get
+
+
+def _is_data(value):
+    return value is not None and value.is_data
+
+
 class _NamespaceProxy:
 
     """Proxy object for manipulating and querying namespaces."""
@@ -174,14 +182,13 @@ class _NamespaceProxy:
         mro_map = _mro_map(self)
         instance_value = _get(instance_map, name)
         mro_value = _get(mro_map, name)
-        if mro_value is not None and mro_value.is_data:
+        if _is_data(mro_value):
             return mro_value.get(instance, owner)
-        elif (issubclass(owner, type) and instance_value is not None and
-              instance_value.has_get):
+        elif issubclass(owner, type) and _has_get(instance_value):
             return instance_value.get(None, instance)
         elif instance_value is not None:
             return instance_value.object
-        elif mro_value is not None and mro_value.has_get:
+        elif _has_get(mro_value):
             return mro_value.get(instance, owner)
         elif mro_value is not None:
             return mro_value.object
