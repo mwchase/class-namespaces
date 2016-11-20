@@ -304,7 +304,6 @@ def test_somewhat_weird_meta(namespaces):
         Test().ns.meta_var
 
 
-@pytest.mark.xfail(reason='Code is missing an edge case.', strict=True)
 def test_somewhat_weirder_meta(namespaces):
     class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:

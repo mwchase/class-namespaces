@@ -151,6 +151,10 @@ class _NamespaceProxy:
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
             return dct[name]
+        if instance is None and isinstance(type(owner), Namespaceable):
+            instance, owner = owner, type(owner)
+            dct = Namespace.get_namespace(owner, dct.path)
+            self = _NamespaceProxy(dct, instance, owner)
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
         try:
