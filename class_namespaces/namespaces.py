@@ -135,6 +135,15 @@ def _mro_map(ns_proxy):
     return _mro_to_chained(mro, dct)
 
 
+def _retarget(ns_proxy):
+    dct, instance, owner = _PROXY_INFOS[ns_proxy]
+    if instance is None and isinstance(type(owner), Namespaceable):
+        instance, owner = owner, type(owner)
+        dct = Namespace.get_namespace(owner, dct.path)
+        ns_proxy = _NamespaceProxy(dct, instance, owner)
+    return ns_proxy
+
+
 class _NamespaceProxy:
 
     """Proxy object for manipulating and querying namespaces."""
@@ -148,13 +157,10 @@ class _NamespaceProxy:
         return collections.ChainMap(_instance_map(self), _mro_map(self))
 
     def __getattribute__(self, name):
+        self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
             return dct[name]
-        if instance is None and isinstance(type(owner), Namespaceable):
-            instance, owner = owner, type(owner)
-            dct = Namespace.get_namespace(owner, dct.path)
-            self = _NamespaceProxy(dct, instance, owner)
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
         try:
@@ -195,6 +201,7 @@ class _NamespaceProxy:
                 raise AttributeError(name)
 
     def __setattr__(self, name, value):
+        self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
             dct[name] = value
@@ -217,6 +224,7 @@ class _NamespaceProxy:
         instance_map[name] = value
 
     def __delattr__(self, name):
+        self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
             del dct[name]
