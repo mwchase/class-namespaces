@@ -27,6 +27,9 @@ class-namespaces
 .. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/gpa.svg
    :target: https://codeclimate.com/github/mwchase/class-namespaces
    :alt: Code Climate
+.. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/coverage.svg
+   :target: https://codeclimate.com/github/mwchase/class-namespaces/coverage
+   :alt: Test Coverage
 .. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/issue_count.svg
    :target: https://codeclimate.com/github/mwchase/class-namespaces
    :alt: Issue Count
