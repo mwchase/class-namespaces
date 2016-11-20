@@ -365,14 +365,16 @@ class Namespace(dict):
         if res is self:
             self.parent_object = target
 
+    def set_if_none(self, name, value):
+        """Set the attribute `name` to `value`, if it's initially None."""
+        if getattr(self, name) is None:
+            setattr(self, name, value)
+
     def push(self, name, scope):
         """Bind self to the given name and scope, and activate."""
-        if self.name is None:
-            self.name = name
-        if self.scope is None:
-            self.scope = scope
-        if self.parent is None:
-            self.parent = scope.dicts[0]
+        self.set_if_none('name', name)
+        self.set_if_none('scope', scope)
+        self.set_if_none('parent', scope.dicts[0])
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
