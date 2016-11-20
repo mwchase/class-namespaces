@@ -290,20 +290,15 @@ def test_basic_meta(namespaces):
     assert Test.ns.meta_var == 1
 
 
-def test_weird_meta(namespaces):
+def test_somewhat_weird_meta(namespaces):
     class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
     class Test(metaclass=Meta):
-        with namespaces.Namespace() as ns:
-            cls_var = 2
+        pass
 
-    assert issubclass(Meta, type)  # Sanity check.
-    assert type(Test) is Meta  # More sanity check.
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
-    assert Test.ns.cls_var == 2
-    assert Test().ns.cls_var == 2
     with pytest.raises(AttributeError):
         Test().ns.meta_var
