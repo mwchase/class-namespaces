@@ -32,6 +32,17 @@ def test_delete(namespaces):
     assert Test().ns
 
 
+@pytest.mark.xfail(sys.version_info < (3, 4),
+                   reason="python3.4 api changes?", strict=True)
+def test_dir(namespaces):
+    class Test(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            a = 1
+        assert ns
+    assert dir(Test.ns) == ['a']
+    assert dir(Test().ns) == ['a']
+
+
 def test_shadow(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
         foo = 1
