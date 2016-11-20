@@ -311,9 +311,11 @@ def test_somewhat_weirder_meta(namespaces):
 
     class Test(metaclass=Meta):
         with namespaces.Namespace() as ns:
-            cls_var = 1
+            cls_var = 2
 
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
+    assert Test.ns.cls_var == 2
+    assert Test().ns.cls_var == 2
     with pytest.raises(AttributeError):
         Test().ns.meta_var
