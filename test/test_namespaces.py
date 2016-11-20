@@ -299,6 +299,7 @@ def test_weird_meta(namespaces):
         with namespaces.Namespace() as ns:
             cls_var = 2
 
+    assert issubclass(Meta, type)  # Sanity check.
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
     assert Test.ns.cls_var == 2
