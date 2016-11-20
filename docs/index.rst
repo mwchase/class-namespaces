@@ -6,6 +6,11 @@
 Welcome to Class Namespaces's documentation!
 ============================================
 
+Class Namespaces is a library for Python 3.3+, that allows you to break your
+Python classes into distinct namespaces. If your classes have a bunch of
+responsibilities, cushion the blow a bit by dividing methods, attributes, and
+descriptors into those responsibilities.
+
 Contents:
 
 .. toctree::
