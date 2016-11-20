@@ -415,6 +415,9 @@ class _NamespaceScope(collections.abc.MutableMapping):
         return len(collections.ChainMap(*self.dicts))
 
 
+_NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
+
+
 class Namespaceable(type):
 
     """Metaclass for classes that can contain namespaces."""
@@ -425,7 +428,7 @@ class Namespaceable(type):
 
     def __new__(mcs, name, bases, dct, **kwargs):
         cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
-        cls.__scope = dct
+        _NAMESPACE_SCOPES[cls] = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
             if ENABLE_SET_NAME:
@@ -437,7 +440,7 @@ class Namespaceable(type):
 
     def __setattr__(cls, name, value):
         if isinstance(value, Namespace) and value.name != name:
-            value.push(name, cls.__scope)
+            value.push(name, _NAMESPACE_SCOPES[cls])
             value.add(cls)
         if issubclass(cls, Namespaceable):
             super().__setattr__(cls, name, value)
