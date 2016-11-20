@@ -193,14 +193,9 @@ def _is_data(value):
 
 def _get_data(dct, name):
     """Return the data descriptor associated with `name` in `dct`, if any."""
-    try:
-        value = dct[name]
-    except KeyError:
-        pass
-    else:
-        value = _DescriptorInspector(value)
-        if value.is_data:
-            return value
+    value = _get(dct, name)
+    if _is_data(value):
+        return value
 
 
 class _NamespaceProxy:
