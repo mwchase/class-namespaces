@@ -302,3 +302,19 @@ def test_somewhat_weird_meta(namespaces):
     assert Test.ns.meta_var == 1
     with pytest.raises(AttributeError):
         Test().ns.meta_var
+
+
+@pytest.mark.xfail(reason='Code is missing an edge case.', strict=True)
+def test_somewhat_weirder_meta(namespaces):
+    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            meta_var = 1
+
+    class Test(metaclass=Meta):
+        with namespaces.Namespace() as ns:
+            cls_var = 1
+
+    assert Meta.ns.meta_var == 1
+    assert Test.ns.meta_var == 1
+    with pytest.raises(AttributeError):
+        Test().ns.meta_var
