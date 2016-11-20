@@ -5,5 +5,7 @@ max-line-length: 80
 autodetect: true
 ignore-paths:
   - docs
+ignore-patterns:
+  - (^|/)docs(/|$)
 python-targets:
   - 3
