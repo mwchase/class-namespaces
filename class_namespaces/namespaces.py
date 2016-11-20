@@ -387,8 +387,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     __slots__ = 'dicts', 'namespaces'
 
-    def __init__(self):
-        self.dicts = [{}]
+    def __init__(self, dct):
+        self.dicts = [dct]
         self.namespaces = []
 
     def __getitem__(self, key):
@@ -420,11 +420,11 @@ class Namespaceable(type):
     """Metaclass for classes that can contain namespaces."""
 
     @classmethod
-    def __prepare__(mcs, name, bases):
-        return _NamespaceScope()
+    def __prepare__(mcs, name, bases, **kwargs):
+        return _NamespaceScope(super().__prepare__(name, bases, **kwargs))
 
-    def __new__(mcs, name, bases, dct):
-        cls = super().__new__(mcs, name, bases, dct.dicts[0])
+    def __new__(mcs, name, bases, dct, **kwargs):
+        cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
         cls.__scope = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
