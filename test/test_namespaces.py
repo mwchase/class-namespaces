@@ -361,6 +361,8 @@ def test_somewhat_weirder_meta(namespaces):
         Test.ns.var
     with pytest.raises(AttributeError):
         Meta.ns.cls_var
+    Test.var = 3
+    assert Test.var == 3
 
 
 def test_classmethod_basic(namespaces):
