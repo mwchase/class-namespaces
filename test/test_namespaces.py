@@ -353,6 +353,10 @@ def test_somewhat_weirder_meta(namespaces):
     assert Test().ns.cls_var == 2
     with pytest.raises(AttributeError):
         Test().ns.meta_var
+    with pytest.raises(AttributeError):
+        Test.ns.var
+    with pytest.raises(AttributeError):
+        Meta.ns.cls_var
 
 
 def test_classmethod_basic(namespaces):
