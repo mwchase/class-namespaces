@@ -300,6 +300,7 @@ def test_weird_meta(namespaces):
             cls_var = 2
 
     assert issubclass(Meta, type)  # Sanity check.
+    assert type(Test) is Meta  # More sanity check.
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
     assert Test.ns.cls_var == 2
