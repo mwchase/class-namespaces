@@ -353,3 +353,29 @@ def test_somewhat_weirder_meta(namespaces):
     assert Test().ns.cls_var == 2
     with pytest.raises(AttributeError):
         Test().ns.meta_var
+
+
+def test_classmethod_basic(namespaces):
+    class Test(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            @classmethod
+            def cls_mthd(cls):
+                return 'called'
+
+    assert Test.ns.cls_mthd() == 'called'
+    assert Test().ns.cls_mthd() == 'called'
+
+
+def test_meta_plus_classmethod(namespaces):
+    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            pass
+
+    class Test(metaclass=Meta):
+        with namespaces.Namespace() as ns:
+            @classmethod
+            def cls_mthd(cls):
+                return 'called'
+
+    assert Test().ns.cls_mthd() == 'called'
+    assert Test.ns.cls_mthd() == 'called'
