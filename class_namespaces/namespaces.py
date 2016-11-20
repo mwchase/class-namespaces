@@ -174,30 +174,19 @@ class _NamespaceProxy:
         mro_map = _mro_map(self)
         instance_value = _get(instance_map, name)
         mro_value = _get(mro_map, name)
-        if issubclass(owner, type):
-            if mro_value is not None and mro_value.is_data:
-                return mro_value.get(instance, owner)
-            elif instance_value is not None and instance_value.has_get:
-                return instance_value.get(None, instance)
-            elif instance_value is not None:
-                return instance_value.object
-            elif mro_value is not None and mro_value.has_get:
-                return mro_value.get(instance, owner)
-            elif mro_value is not None:
-                return mro_value.object
-            else:
-                raise AttributeError(name)
+        if mro_value is not None and mro_value.is_data:
+            return mro_value.get(instance, owner)
+        elif (issubclass(owner, type) and instance_value is not None and
+              instance_value.has_get):
+            return instance_value.get(None, instance)
+        elif instance_value is not None:
+            return instance_value.object
+        elif mro_value is not None and mro_value.has_get:
+            return mro_value.get(instance, owner)
+        elif mro_value is not None:
+            return mro_value.object
         else:
-            if mro_value is not None and mro_value.is_data:
-                return mro_value.get(instance, owner)
-            elif instance_value is not None:
-                return instance_value.object
-            elif mro_value is not None and mro_value.has_get:
-                return mro_value.get(instance, owner)
-            elif mro_value is not None:
-                return mro_value.object
-            else:
-                raise AttributeError(name)
+            raise AttributeError(name)
 
     def __setattr__(self, name, value):
         self = _retarget(self)
