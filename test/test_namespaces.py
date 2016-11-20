@@ -27,9 +27,19 @@ def test_delete(namespaces):
         with namespaces.Namespace() as ns:
             a = 1
             del a
+            b = 2
         assert ns
     assert Test
     assert Test().ns
+    assert Test.ns.b == 2
+    assert Test().ns.b == 2
+    with pytest.raises(AttributeError):
+        del Test().ns.b
+    del Test.ns.b
+    with pytest.raises(AttributeError):
+        Test.ns.b
+    with pytest.raises(AttributeError):
+        Test().ns.b
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
