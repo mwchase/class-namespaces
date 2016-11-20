@@ -2,6 +2,9 @@
 class-namespaces
 ================
 
+.. image:: https://readthedocs.org/projects/class-namespaces/badge/?version=latest
+    :target: http://class-namespaces.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 .. image:: https://travis-ci.org/mwchase/class-namespaces.svg?branch=master
     :target: https://travis-ci.org/mwchase/class-namespaces
 .. image:: https://coveralls.io/repos/github/mwchase/class-namespaces/badge.svg?branch=master
@@ -10,6 +13,20 @@ class-namespaces
     :target: https://www.codacy.com/app/max-chase/class-namespaces?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mwchase/class-namespaces&amp;utm_campaign=Badge_Grade
 .. image:: https://ci.appveyor.com/api/projects/status/ik5ci1icjmib9fi7?svg=true
     :target: https://ci.appveyor.com/project/mwchase/class-namespaces
+.. image:: https://codecov.io/gh/mwchase/class-namespaces/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/mwchase/class-namespaces
+.. image:: https://landscape.io/github/mwchase/class-namespaces/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/mwchase/class-namespaces/master
+    :alt: Code Health
+.. image:: https://scrutinizer-ci.com/g/mwchase/class-namespaces/badges/quality-score.png?b=master
+    :target: https://scrutinizer-ci.com/g/mwchase/class-namespaces/?branch=master
+    :alt: Scrutinizer Code Quality
+.. image:: https://scrutinizer-ci.com/g/mwchase/class-namespaces/badges/build.png?b=master
+    :target: https://scrutinizer-ci.com/g/mwchase/class-namespaces/build-status/master
+    :alt: Build Status
+.. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/gpa.svg
+   :target: https://codeclimate.com/github/mwchase/class-namespaces
+   :alt: Code Climate
 
 
 Well-behaved class namespacing in Python. Inspired by https://erezsh.wordpress.com/2008/06/27/namespaces-lets-do-more-of-those-python-hackery/
