@@ -1,4 +1,4 @@
-"""Class Namespaces (internal module)
+"""Class Namespaces (internal module).
 
 All of the guts of the class namespace implementation.
 
@@ -118,7 +118,7 @@ def _is_namespaceable(cls):
 
 
 def _has_namespace_at(path, cls):
-    """Return whether there is a namespace for cls at the given path?"""
+    """Return whether there is a namespace for cls at the given path."""
     return Namespace.namespace_exists(cls, path)
 
 
