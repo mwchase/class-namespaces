@@ -144,6 +144,15 @@ def _retarget(ns_proxy):
     return ns_proxy
 
 
+def _get(a_map, name):
+    try:
+        value = a_map[name]
+    except KeyError:
+        return None
+    else:
+        return _DescriptorInspector(value)
+
+
 class _NamespaceProxy:
 
     """Proxy object for manipulating and querying namespaces."""
@@ -163,18 +172,8 @@ class _NamespaceProxy:
             return dct[name]
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
-        try:
-            instance_value = instance_map[name]
-        except KeyError:
-            instance_value = None
-        else:
-            instance_value = _DescriptorInspector(instance_value)
-        try:
-            mro_value = mro_map[name]
-        except KeyError:
-            mro_value = None
-        else:
-            mro_value = _DescriptorInspector(mro_value)
+        instance_value = _get(instance_map, name)
+        mro_value = _get(mro_map, name)
         if issubclass(owner, type):
             if mro_value is not None and mro_value.is_data:
                 return mro_value.get(instance, owner)
