@@ -112,13 +112,24 @@ def _no_blocker(dct, cls):
     return True
 
 
+def _is_namespaceable(cls):
+    """Partial function for filter."""
+    return isinstance(cls, Namespaceable)
+
+
+def _has_namespace_at(path, cls):
+    return Namespace.namespace_exists(cls, path)
+
+
 def _mro_to_chained(mro, dct):
     """Return a chained map of lookups for the given namespace and mro."""
-    mro = (cls for cls in mro if isinstance(cls, Namespaceable))
-    mro = itertools.takewhile(functools.partial(_no_blocker, dct), mro)
-    mro = (cls for cls in mro if Namespace.namespace_exists(cls, dct.path))
-    return collections.ChainMap(
-        *[Namespace.get_namespace(cls, dct.path) for cls in mro])
+    return collections.ChainMap(*[
+        Namespace.get_namespace(cls, dct.path) for cls in
+        filter(
+            functools.partial(_has_namespace_at, dct.path),
+            itertools.takewhile(
+                functools.partial(_no_blocker, dct),
+                filter(_is_namespaceable, mro)))])
 
 
 def _instance_map(ns_proxy):
