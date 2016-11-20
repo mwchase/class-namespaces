@@ -161,6 +161,14 @@ def _get(a_map, name):
         return _DescriptorInspector(value)
 
 
+def _delete(dct, name):
+    """Attempt to delete `name` from `dct`. Raise AttributeError if missing."""
+    try:
+        del dct[name]
+    except KeyError:
+        raise AttributeError(name)
+
+
 def _has_get(value):
     """Return whether the value is a wrapped getter descriptor."""
     return value is not None and value.has_get
@@ -232,18 +240,12 @@ class _NamespaceProxy:
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
-            try:
-                del dct[name]
-            except KeyError:
-                raise AttributeError(name)
+            _delete(dct, name)
             return
         real_map = Namespace.get_namespace(owner, dct.path)
         if instance is None:
-            try:
-                del real_map[name]
-                return
-            except KeyError:
-                raise AttributeError(name)
+            _delete(real_map, name)
+            return
         try:
             value = real_map[name]
         except KeyError:
@@ -254,10 +256,7 @@ class _NamespaceProxy:
                 value.delete(instance)
                 return
         instance_map = Namespace.get_namespace(instance, dct.path)
-        try:
-            del instance_map[name]
-        except KeyError:
-            raise AttributeError(name)
+        _delete(instance_map, name)
 
     def __enter__(self):
         dct, _, _ = _PROXY_INFOS[self]
