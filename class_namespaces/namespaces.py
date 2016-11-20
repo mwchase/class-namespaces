@@ -24,6 +24,8 @@ _SENTINEL = object()
 class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
                                                   ['object', 'dict'])):
 
+    """Wrapper around objects. Provides access to descriptor protocol."""
+
     __slots__ = ()
 
     def __new__(cls, obj):
@@ -98,6 +100,7 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
 
 
 def _no_blocker(dct, cls):
+    """Return True if there's a non-Namespace object in the path for cls."""
     try:
         namespace = vars(cls)
         for name in dct.path:
@@ -110,6 +113,7 @@ def _no_blocker(dct, cls):
 
 
 def _mro_to_chained(mro, dct):
+    """Return a chained map of lookups for the given namespace and mro."""
     mro = (cls for cls in mro if isinstance(cls, Namespaceable))
     mro = itertools.takewhile(functools.partial(_no_blocker, dct), mro)
     mro = (cls for cls in mro if Namespace.namespace_exists(cls, dct.path))
@@ -118,6 +122,7 @@ def _mro_to_chained(mro, dct):
 
 
 def _instance_map(ns_proxy):
+    """Return a map, possibly chained, of lookups for the given instance."""
     dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
         if isinstance(instance, Namespaceable):
@@ -129,6 +134,7 @@ def _instance_map(ns_proxy):
 
 
 def _mro_map(ns_proxy):
+    """Return a chained map of lookups for the given owner class."""
     dct, _, owner = _PROXY_INFOS[ns_proxy]
     mro = owner.__mro__
     mro = mro[mro.index(dct.parent_object):]
@@ -136,6 +142,7 @@ def _mro_map(ns_proxy):
 
 
 def _retarget(ns_proxy):
+    """Convert a class lookup to an instance lookup, if needed."""
     dct, instance, owner = _PROXY_INFOS[ns_proxy]
     if instance is None and isinstance(type(owner), Namespaceable):
         instance, owner = owner, type(owner)
@@ -145,6 +152,7 @@ def _retarget(ns_proxy):
 
 
 def _get(a_map, name):
+    """Return a _DescriptorInspector around the attribute, or None."""
     try:
         value = a_map[name]
     except KeyError:
@@ -154,10 +162,12 @@ def _get(a_map, name):
 
 
 def _has_get(value):
+    """Return whether the value is a wrapped getter descriptor."""
     return value is not None and value.has_get
 
 
 def _is_data(value):
+    """Return whether the value is a wrapped data descriptor."""
     return value is not None and value.is_data
 
 
