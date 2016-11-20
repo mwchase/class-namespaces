@@ -215,7 +215,10 @@ class _NamespaceProxy:
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if owner is None:
-            del dct[name]
+            try:
+                del dct[name]
+            except KeyError:
+                raise AttributeError(name)
             return
         real_map = Namespace.get_namespace(owner, dct.path)
         if instance is None:

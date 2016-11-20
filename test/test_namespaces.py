@@ -245,9 +245,13 @@ def test_use_namespace(namespaces):
     class Test(metaclass=namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 1
+            qux = 3
         assert ns.foo == 1
         ns.bar = 2
         assert ns.bar == 2
+        del ns.qux
+        with pytest.raises(AttributeError):
+            del ns.qux
     assert Test.ns.foo == 1
     assert Test.ns.bar == 2
 
