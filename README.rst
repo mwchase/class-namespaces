@@ -27,7 +27,9 @@ class-namespaces
 .. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/gpa.svg
    :target: https://codeclimate.com/github/mwchase/class-namespaces
    :alt: Code Climate
-
+.. image:: https://codeclimate.com/github/mwchase/class-namespaces/badges/issue_count.svg
+   :target: https://codeclimate.com/github/mwchase/class-namespaces
+   :alt: Issue Count
 
 Well-behaved class namespacing in Python. Inspired by https://erezsh.wordpress.com/2008/06/27/namespaces-lets-do-more-of-those-python-hackery/
 
