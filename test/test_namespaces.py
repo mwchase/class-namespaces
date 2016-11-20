@@ -57,6 +57,13 @@ def test_set(namespaces):
     test.ns.b = 3
     assert Test.ns.b == 2
     assert test.ns.b == 3
+    test2 = Test()
+    test2.ns.c = 3
+    with pytest.raises(AttributeError):
+        Test.ns.c
+    with pytest.raises(AttributeError):
+        test.ns.c
+    assert test2.ns.c == 3
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
