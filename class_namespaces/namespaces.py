@@ -255,6 +255,7 @@ class Namespace(dict):
 
     @classmethod
     def __get_helper(cls, target, path):
+        """Return the namespace for `target` at `path`, create if needed."""
         if isinstance(target, Namespaceable):
             path_ = target, path
             namespaces = cls.__namespaces
@@ -331,6 +332,8 @@ class Namespace(dict):
 
 
 class _NamespaceScope(collections.abc.MutableMapping):
+
+    """The class creation namespace for Namespaceables."""
 
     __slots__ = 'dicts', 'namespaces'
 
