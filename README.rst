@@ -46,7 +46,7 @@ Example code::
 
     import class_namespaces as cn
     
-    class MyCls(metaclass=cn.Namespaceable):
+    class MyCls(cn.Namespaceable):
     
         var = 1
     
