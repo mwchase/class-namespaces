@@ -94,14 +94,14 @@ def _get_data(dct, name):
         return value
 
 
-class _BaseProxy:
+class _Proxy:
 
     """Base class for proxies."""
 
     __slots__ = ()
 
 
-class _NamespaceProxy(_BaseProxy):
+class _NamespaceProxy(_Proxy):
 
     """Proxy object for manipulating and querying namespaces."""
 
@@ -163,7 +163,7 @@ class _NamespaceProxy(_BaseProxy):
         _delete(instance_map, name)
 
 
-class _ScopeProxy(_BaseProxy):
+class _ScopeProxy(_Proxy):
 
     """Proxy object for manipulating namespaces during class creation."""
 
@@ -207,7 +207,7 @@ class Namespace(dict):
         super().__init__(*args, **kwargs)
         bad_values = tuple(
             value for value in self.values() if
-            isinstance(value, (Namespace, _BaseProxy)))
+            isinstance(value, (Namespace, _Proxy)))
         if bad_values:
             raise ValueError('Bad values: {}'.format(bad_values))
         self.name = None
