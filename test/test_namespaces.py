@@ -401,3 +401,20 @@ def test_get_through_namespace(namespaces):
 
     assert Test.var == 1
     assert Test.ns.var2 == 1
+
+
+def test_multiple_inheritance(namespaces):
+    class Test1(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                var = 1
+
+    class Test2(metaclass=namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            var = 2
+
+    class Test3(Test2, Test1):
+        pass
+
+    assert Test3.ns.ns.var == 1
+    assert Test3.ns.var == 2
