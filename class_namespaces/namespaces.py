@@ -348,14 +348,16 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __init__(self, dct):
         self.dicts = [dct]
         self.namespaces = []
-        self.proxies = weakref.WeakKeyDictionary()
+        self.proxies = proxies = weakref.WeakKeyDictionary()
 
         class ScopeProxy(_ScopeProxy):
 
+            """Local version of ScopeProxy for this scope."""
+
             __slots__ = ()
 
-            def __init__(self_, dct):
-                _ScopeProxy.__init__(self_, dct, self.proxies)
+            def __init__(self, dct):
+                super().__init__(dct, proxies)
 
         self.ScopeProxy = ScopeProxy
 
