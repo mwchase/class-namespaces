@@ -18,7 +18,6 @@ ENABLE_SET_NAME = sys.version_info >= (3, 6)
 
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
-_SENTINEL = object()
 
 
 class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
