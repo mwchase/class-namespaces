@@ -28,11 +28,10 @@ def _mro_to_chained(mro, dct):
     """Return a chained map of lookups for the given namespace and mro."""
     return collections.ChainMap(*[
         Namespace.get_namespace(cls, dct.path) for cls in
-        filter(
-            functools.partial(Namespace.namespace_exists, dct.path),
-            itertools.takewhile(
-                functools.partial(Namespace.no_blocker, dct),
-                filter(_is_namespaceable, mro)))])
+        itertools.takewhile(
+            functools.partial(Namespace.no_blocker, dct),
+            filter(_is_namespaceable, mro)) if
+        Namespace.namespace_exists(dct.path, cls)])
 
 
 def _instance_map(ns_proxy):
