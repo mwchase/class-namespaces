@@ -19,18 +19,13 @@ from .flags import ENABLE_SET_NAME
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 
 
-def _is_namespaceable(cls):
-    """Partial function for filter."""
-    return isinstance(cls, Namespaceable)
-
-
 def _mro_to_chained(mro, dct):
     """Return a chained map of lookups for the given namespace and mro."""
     return collections.ChainMap(*[
         Namespace.get_namespace(cls, dct.path) for cls in
         itertools.takewhile(
             functools.partial(Namespace.no_blocker, dct),
-            filter(_is_namespaceable, mro)) if
+            (cls for cls in mro if isinstance(cls, Namespaceable))) if
         Namespace.namespace_exists(dct.path, cls)])
 
 
