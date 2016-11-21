@@ -32,7 +32,7 @@ class _ScopeProxy(_Proxy):
         _PROXY_INFOS[self][self][name] = value
 
     def __delattr__(self, name):
-        ops._delete(_PROXY_INFOS[self][self], name)
+        ops.delete(_PROXY_INFOS[self][self], name)
 
     def __enter__(self):
         return _PROXY_INFOS[self][self].__enter__()
