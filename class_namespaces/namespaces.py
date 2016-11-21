@@ -94,7 +94,14 @@ def _get_data(dct, name):
         return value
 
 
-class _NamespaceProxy:
+class _BaseProxy:
+
+    """Base class for proxies."""
+
+    __slots__ = ()
+
+
+class _NamespaceProxy(_BaseProxy):
 
     """Proxy object for manipulating and querying namespaces."""
 
@@ -109,8 +116,6 @@ class _NamespaceProxy:
     def __getattribute__(self, name):
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
-        if owner is None:
-            return dct[name]
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
         instance_value = _get(instance_map, name)
@@ -131,9 +136,6 @@ class _NamespaceProxy:
     def __setattr__(self, name, value):
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
-        if owner is None:
-            dct[name] = value
-            return
         if instance is None:
             real_map = Namespace.get_namespace(owner, dct.path)
             real_map[name] = value
@@ -149,9 +151,6 @@ class _NamespaceProxy:
     def __delattr__(self, name):
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
-        if owner is None:
-            _delete(dct, name)
-            return
         real_map = Namespace.get_namespace(owner, dct.path)
         if instance is None:
             _delete(real_map, name)
@@ -163,13 +162,37 @@ class _NamespaceProxy:
         instance_map = Namespace.get_namespace(instance, dct.path)
         _delete(instance_map, name)
 
+
+class _ScopeProxy(_BaseProxy):
+
+    """Proxy object for manipulating namespaces during class creation."""
+
+    __slots__ = '__weakref__',
+
+    def __init__(self, dct):
+        _PROXY_INFOS[self] = dct
+
+    def __dir__(self):
+        return _PROXY_INFOS[self]
+
+    def __getattribute__(self, name):
+        dct = _PROXY_INFOS[self]
+        try:
+            return dct[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        _PROXY_INFOS[self][name] = value
+
+    def __delattr__(self, name):
+        _delete(_PROXY_INFOS[self], name)
+
     def __enter__(self):
-        dct, _, _ = _PROXY_INFOS[self]
-        return dct.__enter__()
+        return _PROXY_INFOS[self].__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        dct, _, _ = _PROXY_INFOS[self]
-        return dct.__exit__(exc_type, exc_value, traceback)
+        return _PROXY_INFOS[self].__exit__(exc_type, exc_value, traceback)
 
 
 class Namespace(dict):
@@ -184,7 +207,7 @@ class Namespace(dict):
         super().__init__(*args, **kwargs)
         bad_values = tuple(
             value for value in self.values() if
-            isinstance(value, (Namespace, _NamespaceProxy)))
+            isinstance(value, (Namespace, _BaseProxy)))
         if bad_values:
             raise ValueError('Bad values: {}'.format(bad_values))
         self.name = None
@@ -333,13 +356,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
-            value = _NamespaceProxy(value, None, None)
+            value = _ScopeProxy(value)
         return value
 
     def __setitem__(self, key, value):
         dct = self.dicts[0]
-        if isinstance(value, _NamespaceProxy):
-            value, _, _ = _PROXY_INFOS[value]
+        if isinstance(value, _ScopeProxy):
+            value = _PROXY_INFOS[value]
         if isinstance(value, Namespace) and value.name != key:
             value.push(key, self)
         dct[key] = value
