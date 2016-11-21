@@ -276,7 +276,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     """The class creation namespace for Namespaceables."""
 
-    __slots__ = 'dicts', 'namespaces', 'proxies', 'ScopeProxy'
+    __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy'
 
     def __init__(self, dct):
         self.dicts = [dct]
@@ -292,17 +292,17 @@ class _NamespaceScope(collections.abc.MutableMapping):
             def __init__(self, dct):
                 super().__init__(dct, proxies)
 
-        self.ScopeProxy = ScopeProxy
+        self.scope_proxy = ScopeProxy
 
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
-            value = self.ScopeProxy(value)
+            value = self.scope_proxy(value)
         return value
 
     def __setitem__(self, key, value):
         dct = self.dicts[0]
-        if isinstance(value, self.ScopeProxy):
+        if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
         if isinstance(value, Namespace) and value.name != key:
             value.push(key, self)
