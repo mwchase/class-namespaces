@@ -163,30 +163,32 @@ class _ScopeProxy(_Proxy):
 
     __slots__ = '__weakref__',
 
-    def __init__(self, dct):
-        _PROXY_INFOS[self] = dct
+    def __init__(self, dct, container):
+        _PROXY_INFOS[self] = container
+        container[self] = dct
 
     def __dir__(self):
-        return _PROXY_INFOS[self]
+        return _PROXY_INFOS[self][self]
 
     def __getattribute__(self, name):
-        dct = _PROXY_INFOS[self]
+        dct = _PROXY_INFOS[self][self]
         try:
             return dct[name]
         except KeyError:
             raise AttributeError(name)
 
     def __setattr__(self, name, value):
-        _PROXY_INFOS[self][name] = value
+        _PROXY_INFOS[self][self][name] = value
 
     def __delattr__(self, name):
-        _delete(_PROXY_INFOS[self], name)
+        _delete(_PROXY_INFOS[self][self], name)
 
     def __enter__(self):
-        return _PROXY_INFOS[self].__enter__()
+        return _PROXY_INFOS[self][self].__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return _PROXY_INFOS[self].__exit__(exc_type, exc_value, traceback)
+        return _PROXY_INFOS[self][self].__exit__(
+            exc_type, exc_value, traceback)
 
 
 class Namespace(dict):
@@ -341,22 +343,23 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     """The class creation namespace for Namespaceables."""
 
-    __slots__ = 'dicts', 'namespaces'
+    __slots__ = 'dicts', 'namespaces', 'proxies'
 
     def __init__(self, dct):
         self.dicts = [dct]
         self.namespaces = []
+        self.proxies = weakref.WeakKeyDictionary()
 
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
-            value = _ScopeProxy(value)
+            value = _ScopeProxy(value, self.proxies)
         return value
 
     def __setitem__(self, key, value):
         dct = self.dicts[0]
         if isinstance(value, _ScopeProxy):
-            value = _PROXY_INFOS[value]
+            value = self.proxies[value]
         if isinstance(value, Namespace) and value.name != key:
             value.push(key, self)
         dct[key] = value
