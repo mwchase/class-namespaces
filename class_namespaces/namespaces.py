@@ -115,7 +115,7 @@ class _NamespaceProxy(_BaseProxy):
 
     def __getattribute__(self, name):
         self = _retarget(self)
-        dct, instance, owner = _PROXY_INFOS[self]
+        _, instance, owner = _PROXY_INFOS[self]
         instance_map = _instance_map(self)
         mro_map = _mro_map(self)
         instance_value = _get(instance_map, name)
