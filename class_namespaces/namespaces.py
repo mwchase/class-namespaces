@@ -24,17 +24,12 @@ def _is_namespaceable(cls):
     return isinstance(cls, Namespaceable)
 
 
-def _has_namespace_at(path, cls):
-    """Return whether there is a namespace for cls at the given path."""
-    return Namespace.namespace_exists(cls, path)
-
-
 def _mro_to_chained(mro, dct):
     """Return a chained map of lookups for the given namespace and mro."""
     return collections.ChainMap(*[
         Namespace.get_namespace(cls, dct.path) for cls in
         filter(
-            functools.partial(_has_namespace_at, dct.path),
+            functools.partial(Namespace.namespace_exists, dct.path),
             itertools.takewhile(
                 functools.partial(Namespace.no_blocker, dct),
                 filter(_is_namespaceable, mro)))])
@@ -256,7 +251,7 @@ class Namespace(dict):
         return path_, namespaces
 
     @classmethod
-    def namespace_exists(cls, target, path):
+    def namespace_exists(cls, path, target):
         """Return whether the given namespace exists."""
         path_, namespaces = cls.__get_helper(target, path)
         return path_ in namespaces
