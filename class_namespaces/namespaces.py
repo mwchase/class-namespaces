@@ -28,7 +28,7 @@ def _mro_to_chained(mro, dct):
         Namespace.get_namespace(cls, dct.path) for cls in
         itertools.takewhile(
             functools.partial(Namespace.no_blocker, dct),
-            (cls for cls in mro if isinstance(cls, Namespaceable))) if
+            (cls for cls in mro if isinstance(cls, _Namespaceable))) if
         Namespace.namespace_exists(dct.path, cls)])
 
 
@@ -36,7 +36,7 @@ def _instance_map(ns_proxy):
     """Return a map, possibly chained, of lookups for the given instance."""
     dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
-        if isinstance(instance, Namespaceable):
+        if isinstance(instance, _Namespaceable):
             return _mro_to_chained(instance.__mro__, dct)
         else:
             return Namespace.get_namespace(instance, dct.path)
@@ -55,7 +55,7 @@ def _mro_map(ns_proxy):
 def _retarget(ns_proxy):
     """Convert a class lookup to an instance lookup, if needed."""
     dct, instance, owner = _PROXY_INFOS[ns_proxy]
-    if instance is None and isinstance(type(owner), Namespaceable):
+    if instance is None and isinstance(type(owner), _Namespaceable):
         instance, owner = owner, type(owner)
         dct = Namespace.get_namespace(owner, dct.path)
         ns_proxy = _NamespaceProxy(dct, instance, owner)
@@ -184,7 +184,7 @@ class Namespace(dict):
     @classmethod
     def __get_helper(cls, target, path):
         """Return the namespace for `target` at `path`, create if needed."""
-        if isinstance(target, Namespaceable):
+        if isinstance(target, _Namespaceable):
             path_ = target, path
             namespaces = cls.__namespaces
         else:
@@ -274,7 +274,7 @@ class Namespace(dict):
 
 class _NamespaceScope(collections.abc.MutableMapping):
 
-    """The class creation namespace for Namespaceables."""
+    """The class creation namespace for _Namespaceables."""
 
     __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy'
 
@@ -321,9 +321,12 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
-class Namespaceable(type):
+class _Namespaceable(type):
 
-    """Metaclass for classes that can contain namespaces."""
+    """Metaclass for classes that can contain namespaces.
+
+    Using the metaclass directly is a bad idea. Use a base class instead.
+    """
 
     @classmethod
     def __prepare__(mcs, name, bases, **kwargs):
@@ -345,7 +348,12 @@ class Namespaceable(type):
         if isinstance(value, Namespace) and value.name != name:
             value.push(name, _NAMESPACE_SCOPES[cls])
             value.add(cls)
-        if issubclass(cls, Namespaceable):
+        if issubclass(cls, _Namespaceable):
             super().__setattr__(cls, name, value)
         else:
             super().__setattr__(name, value)
+
+
+class Namespaceable(metaclass=_Namespaceable):
+
+    """Base class for classes that can contain namespaces."""

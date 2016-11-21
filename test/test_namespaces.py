@@ -317,26 +317,11 @@ def test_3_6_descriptor(namespaces):
 
 
 def test_basic_meta(namespaces):
-    class Meta(namespaces.Namespaceable, type):
+    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
-    class Test(metaclass=Meta):
-        pass
-
-    assert Meta.ns.meta_var == 1
-    assert Test.ns.meta_var == 1
-
-
-def test_somewhat_weird_meta(namespaces):
-    class MetaMeta(namespaces.Namespaceable, type):
-        pass
-
-    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
-        with namespaces.Namespace() as ns:
-            meta_var = 1
-
-    class Test(metaclass=Meta):
+    class Test(namespaces.Namespaceable, metaclass=Meta):
         pass
 
     assert Meta.ns.meta_var == 1
@@ -346,14 +331,11 @@ def test_somewhat_weird_meta(namespaces):
 
 
 def test_somewhat_weirder_meta(namespaces):
-    class MetaMeta(namespaces.Namespaceable, type):
-        pass
-
-    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
+    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
-    class Test(metaclass=Meta):
+    class Test(namespaces.Namespaceable, metaclass=Meta):
         with namespaces.Namespace() as ns:
             cls_var = 2
 
@@ -385,14 +367,11 @@ def test_classmethod_basic(namespaces):
 
 
 def test_meta_plus_classmethod(namespaces):
-    class MetaMeta(namespaces.Namespaceable, type):
-        pass
-
-    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
+    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
         with namespaces.Namespace() as ns:
             pass
 
-    class Test(metaclass=Meta):
+    class Test(namespaces.Namespaceable, metaclass=Meta):
         with namespaces.Namespace() as ns:
             @classmethod
             def cls_mthd(cls):
