@@ -334,6 +334,10 @@ class _Namespaceable(type):
 
     def __new__(mcs, name, bases, dct, **kwargs):
         cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
+        if Namespaceable is not None and not issubclass(cls, Namespaceable):
+            raise ValueError(
+                'Cannot create a _Namespaceable that does not inherit from '
+                'Namespaceable')
         _NAMESPACE_SCOPES[cls] = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
@@ -352,6 +356,9 @@ class _Namespaceable(type):
             super().__setattr__(cls, name, value)
         else:
             super().__setattr__(name, value)
+
+
+Namespaceable = None
 
 
 class Namespaceable(metaclass=_Namespaceable):
