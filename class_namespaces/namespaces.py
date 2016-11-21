@@ -10,11 +10,9 @@ All of the guts of the class namespace implementation.
 import collections.abc
 import functools
 import itertools
-import sys
 import weakref
 
-
-ENABLE_SET_NAME = sys.version_info >= (3, 6)
+from .flags import ENABLE_SET_NAME
 
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
