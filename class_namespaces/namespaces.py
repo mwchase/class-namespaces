@@ -14,6 +14,7 @@ import weakref
 
 from .descriptor_inspector import _DescriptorInspector
 from .flags import ENABLE_SET_NAME
+from .proxy import _Proxy
 
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
@@ -92,13 +93,6 @@ def _get_data(dct, name):
     value = _get(dct, name)
     if _is_data(value):
         return value
-
-
-class _Proxy:
-
-    """Base class for proxies."""
-
-    __slots__ = ()
 
 
 class _NamespaceProxy(_Proxy):
