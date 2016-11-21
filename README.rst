@@ -21,6 +21,9 @@ class-namespaces
 .. image:: https://scrutinizer-ci.com/g/mwchase/class-namespaces/badges/quality-score.png?b=master
     :target: https://scrutinizer-ci.com/g/mwchase/class-namespaces/?branch=master
     :alt: Scrutinizer Code Quality
+.. image:: https://scrutinizer-ci.com/g/mwchase/class-namespaces/badges/coverage.png?b=master
+    :target: https://scrutinizer-ci.com/g/mwchase/class-namespaces/?branch=master
+    :alt: Code Coverage
 .. image:: https://scrutinizer-ci.com/g/mwchase/class-namespaces/badges/build.png?b=master
     :target: https://scrutinizer-ci.com/g/mwchase/class-namespaces/build-status/master
     :alt: Build Status
