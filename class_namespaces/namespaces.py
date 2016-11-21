@@ -19,19 +19,6 @@ from .flags import ENABLE_SET_NAME
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 
 
-def _no_blocker(dct, cls):
-    """Return True if there's a non-Namespace object in the path for cls."""
-    try:
-        namespace = vars(cls)
-        for name in dct.path:
-            namespace = namespace[name]
-            if not isinstance(namespace, Namespace):
-                return False
-    except KeyError:
-        pass
-    return True
-
-
 def _is_namespaceable(cls):
     """Partial function for filter."""
     return isinstance(cls, Namespaceable)
@@ -49,7 +36,7 @@ def _mro_to_chained(mro, dct):
         filter(
             functools.partial(_has_namespace_at, dct.path),
             itertools.takewhile(
-                functools.partial(_no_blocker, dct),
+                functools.partial(Namespace.no_blocker, dct),
                 filter(_is_namespaceable, mro)))])
 
 
@@ -286,6 +273,19 @@ class Namespace(dict):
             else:
                 parent = cls.get_namespace(target, path[:-1])
             return namespaces.setdefault(path_, cls.premake(path[-1], parent))
+
+    @classmethod
+    def no_blocker(cls, dct, cls_):
+        """Return False if there's a non-Namespace object in the path."""
+        try:
+            namespace = vars(cls_)
+            for name in dct.path:
+                namespace = namespace[name]
+                if not isinstance(namespace, cls):
+                    return False
+        except KeyError:
+            pass
+        return True
 
     def add(self, target):
         """Add self as a namespace under target."""
