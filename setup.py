@@ -7,14 +7,14 @@ https://github.com/pypa/sampleproject
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
-from codecs import open
+from codecs import open as c_open
 from os import path
 
-here = path.abspath(path.dirname(__file__))
+HERE = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+with c_open(path.join(HERE, 'README.rst'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
 
 setup(
     name='class_namespaces',
@@ -22,7 +22,7 @@ setup(
     version='0.4.3',
 
     description='Class Namespaces',
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
 
     url='https://github.com/mwchase/class-namespaces',
 
