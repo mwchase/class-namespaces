@@ -8,13 +8,13 @@ def test_import(namespaces):
 
 
 def test_meta_basic(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         pass
     assert Test
 
 
 def test_basic_namespace(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             a = 1
         assert ns
@@ -23,7 +23,7 @@ def test_basic_namespace(namespaces):
 
 
 def test_delete(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             a = 1
             del a
@@ -43,7 +43,7 @@ def test_delete(namespaces):
 
 
 def test_set(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             a = 1
             del a
@@ -69,7 +69,7 @@ def test_set(namespaces):
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
 def test_dir(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             a = 1
         assert ns
@@ -78,7 +78,7 @@ def test_dir(namespaces):
 
 
 def test_shadow(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         foo = 1
         with namespaces.Namespace() as ns:
             foo = 2
@@ -89,7 +89,7 @@ def test_shadow(namespaces):
 
 
 def test_resume(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         foo = 1
         with namespaces.Namespace() as ns:
             foo = 2
@@ -103,7 +103,7 @@ def test_resume(namespaces):
 
 
 def test_redundant_resume(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         foo = 1
         with namespaces.Namespace() as ns:
             foo = 2
@@ -118,7 +118,7 @@ def test_redundant_resume(namespaces):
 
 
 def test_basic_inherit(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         foo = 1
         with namespaces.Namespace() as ns:
             foo = 2
@@ -130,7 +130,7 @@ def test_basic_inherit(namespaces):
 
 
 def test_basic_super(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             def hello(self):
                 return 1
@@ -145,7 +145,7 @@ def test_basic_super(namespaces):
 
 
 def test_private(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as __ns:
             foo = 2
 
@@ -160,7 +160,7 @@ def test_private(namespaces):
 
 
 def test_nested_namespace(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
                 a = 1
@@ -168,7 +168,7 @@ def test_nested_namespace(namespaces):
 
 
 def test_basic_shadow(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 2
 
@@ -178,7 +178,7 @@ def test_basic_shadow(namespaces):
 
 
 def test_double_shadow(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 2
 
@@ -192,7 +192,7 @@ def test_double_shadow(namespaces):
 
 
 def test_overlap(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 2
 
@@ -204,7 +204,7 @@ def test_overlap(namespaces):
 
 
 def test_advanced_overlap(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 2
             with namespaces.Namespace() as ns:
@@ -219,21 +219,21 @@ def test_advanced_overlap(namespaces):
 
 
 def test_empty_nameless(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with pytest.raises(RuntimeError):
             with namespaces.Namespace():
                 pass
 
 
 def test_non_empty_nameless(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with pytest.raises(RuntimeError):
             with namespaces.Namespace():
                 a = 1
 
 
 def test_rename(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             pass
         with pytest.raises(ValueError):
@@ -242,7 +242,7 @@ def test_rename(namespaces):
 
 
 def test_use_namespace(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             foo = 1
             qux = 3
@@ -257,7 +257,7 @@ def test_use_namespace(namespaces):
 
 
 def test_basic_prop(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             @property
             def foo(self):
@@ -266,7 +266,7 @@ def test_basic_prop(namespaces):
 
 
 def test_override_method(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             def foo(self):
                 return 1
@@ -288,7 +288,7 @@ def test_can_t_preload_with_namespace(namespaces):
 
 
 def test_add_later(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         pass
 
     Test.ns = namespaces.Namespace()
@@ -309,7 +309,7 @@ def test_3_6_descriptor(namespaces):
     assert namespaces.namespaces._DescriptorInspector(
         Descriptor()).is_descriptor
 
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             d = Descriptor()
 
@@ -317,7 +317,7 @@ def test_3_6_descriptor(namespaces):
 
 
 def test_basic_meta(namespaces):
-    class Meta(type, metaclass=namespaces.Namespaceable):
+    class Meta(namespaces.Namespaceable, type):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
@@ -329,7 +329,10 @@ def test_basic_meta(namespaces):
 
 
 def test_somewhat_weird_meta(namespaces):
-    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+    class MetaMeta(namespaces.Namespaceable, type):
+        pass
+
+    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
@@ -343,7 +346,10 @@ def test_somewhat_weird_meta(namespaces):
 
 
 def test_somewhat_weirder_meta(namespaces):
-    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+    class MetaMeta(namespaces.Namespaceable, type):
+        pass
+
+    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
         with namespaces.Namespace() as ns:
             meta_var = 1
 
@@ -368,7 +374,7 @@ def test_somewhat_weirder_meta(namespaces):
 
 
 def test_classmethod_basic(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             @classmethod
             def cls_mthd(cls):
@@ -379,7 +385,10 @@ def test_classmethod_basic(namespaces):
 
 
 def test_meta_plus_classmethod(namespaces):
-    class Meta(namespaces.Namespaceable, metaclass=namespaces.Namespaceable):
+    class MetaMeta(namespaces.Namespaceable, type):
+        pass
+
+    class Meta(namespaces.Namespaceable, metaclass=MetaMeta):
         with namespaces.Namespace() as ns:
             pass
 
@@ -394,7 +403,7 @@ def test_meta_plus_classmethod(namespaces):
 
 
 def test_get_through_namespace(namespaces):
-    class Test(metaclass=namespaces.Namespaceable):
+    class Test(namespaces.Namespaceable):
         var = 1
         with namespaces.Namespace() as ns:
             var2 = var
@@ -404,12 +413,12 @@ def test_get_through_namespace(namespaces):
 
 
 def test_multiple_inheritance(namespaces):
-    class Test1(metaclass=namespaces.Namespaceable):
+    class Test1(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
                 var = 1
 
-    class Test2(metaclass=namespaces.Namespaceable):
+    class Test2(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             var = 2
 
