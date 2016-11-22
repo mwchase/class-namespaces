@@ -17,7 +17,6 @@ from .descriptor_inspector import _DescriptorInspector
 from .flags import ENABLE_SET_NAME
 from .proxy import _Proxy
 from .scope_proxy import _ScopeProxy
-from .super_inspector import _SuperInspector
 
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
@@ -328,8 +327,11 @@ class _NamespaceBase:
 
     __slots__ = ()
 
+    def __setattr__(self, name, value):
+        super(_NamespaceBase, type(self)).__setattr__(self, name, value)
+
     def __delattr__(self, name):
-        _SuperInspector(super()).delattr(name)
+        super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
 class _Namespaceable(_NamespaceBase, type):
@@ -363,10 +365,7 @@ class _Namespaceable(_NamespaceBase, type):
         if isinstance(value, Namespace) and value.name != name:
             value.push(name, _NAMESPACE_SCOPES[cls])
             value.add(cls)
-        if issubclass(cls, _Namespaceable):
-            super().__setattr__(cls, name, value)
-        else:
-            super().__setattr__(name, value)
+        super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
 
 
 _DEFINED = False
