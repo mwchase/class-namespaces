@@ -14,9 +14,10 @@ class _SuperInspector(_Inspector):
     __slots__ = ()
 
     def __new__(cls, super_obj):
-        thisclass, self_class = super_obj.thisclass, super_obj.self_class
+        thisclass = super_obj.__thisclass__
+        self_class = super_obj.__self_class__
         mro = self_class.__mro__[self_class.__mro__.index(thisclass) + 1:]
-        return super().__new__(cls, super_obj, mro)
+        return super().__new__(cls, super_obj.__self__, mro)
 
     def getattribute(self, name):
         """Forward to __getattribute__ without touching super() directly."""

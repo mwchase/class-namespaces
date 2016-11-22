@@ -17,6 +17,7 @@ from .descriptor_inspector import _DescriptorInspector
 from .flags import ENABLE_SET_NAME
 from .proxy import _Proxy
 from .scope_proxy import _ScopeProxy
+from .super_inspector import _SuperInspector
 
 
 _PROXY_INFOS = weakref.WeakKeyDictionary()
@@ -326,6 +327,9 @@ class _NamespaceBase:
     """Common base class for Namespaceable and its metaclass."""
 
     __slots__ = ()
+
+    def __delattr__(self, name):
+        _SuperInspector(super()).delattr(name)
 
 
 class _Namespaceable(_NamespaceBase, type):
