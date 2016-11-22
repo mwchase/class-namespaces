@@ -14,6 +14,9 @@ class _DescriptorInspector(_Inspector):
 
     __slots__ = ()
 
+    def __new__(cls, obj):
+        return super().__new__(cls, obj, type(obj).__mro__)
+
     @property
     def has_get(self):
         """Return whether self.object's mro provides __get__."""
