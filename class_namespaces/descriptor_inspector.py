@@ -4,21 +4,15 @@ Wrapper around objects, helps expose descriptor protocol.
 
 """
 
-import collections
-
 from .flags import ENABLE_SET_NAME
+from .inspector import _Inspector
 
 
-class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
-                                                  ['object', 'dict'])):
+class _DescriptorInspector(_Inspector):
 
     """Wrapper around objects. Provides access to descriptor protocol."""
 
     __slots__ = ()
-
-    def __new__(cls, obj):
-        dct = collections.ChainMap(*[vars(cls) for cls in type(obj).__mro__])
-        return super().__new__(cls, obj, dct)
 
     @property
     def has_get(self):
@@ -66,13 +60,6 @@ class _DescriptorInspector(collections.namedtuple('_DescriptorInspector',
     def is_descriptor(self):
         """Return whether self.object is a descriptor."""
         return self.has_non_data or self.is_data
-
-    def get_as_attribute(self, key):
-        """Return attribute with the given name, or raise AttributeError."""
-        try:
-            return self.dict[key]
-        except KeyError:
-            raise AttributeError(key)
 
     def get(self, instance, owner):
         """Return the result of __get__, bypassing descriptor protocol."""
