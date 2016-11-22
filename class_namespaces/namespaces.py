@@ -321,7 +321,14 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
-class _Namespaceable(type):
+class _NamespaceBase:
+
+    """Common base class for Namespaceable and its metaclass."""
+
+    __slots__ = ()
+
+
+class _Namespaceable(_NamespaceBase, type):
 
     """Metaclass for classes that can contain namespaces.
 
@@ -361,6 +368,6 @@ class _Namespaceable(type):
 Namespaceable = None
 
 
-class Namespaceable(metaclass=_Namespaceable):
+class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
 
     """Base class for classes that can contain namespaces."""
