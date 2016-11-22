@@ -341,7 +341,7 @@ class _Namespaceable(_NamespaceBase, type):
 
     def __new__(mcs, name, bases, dct, **kwargs):
         cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
-        if Namespaceable is not None and not issubclass(cls, Namespaceable):
+        if _DEFINED and not issubclass(cls, Namespaceable):
             raise ValueError(
                 'Cannot create a _Namespaceable that does not inherit from '
                 'Namespaceable')
@@ -365,9 +365,12 @@ class _Namespaceable(_NamespaceBase, type):
             super().__setattr__(name, value)
 
 
-Namespaceable = None
+_DEFINED = False
 
 
 class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
 
     """Base class for classes that can contain namespaces."""
+
+
+_DEFINED = True
