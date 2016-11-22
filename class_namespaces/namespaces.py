@@ -327,6 +327,9 @@ class _NamespaceBase:
 
     __slots__ = ()
 
+    def __getattribute__(self, name):
+        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
+
     def __setattr__(self, name, value):
         super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
