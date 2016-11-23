@@ -329,7 +329,10 @@ class _NamespaceBase:
 
     def __maps(self, parent):
         path = tuple(parent.split('.'))
-        parent_namespace = Namespace.get_namespace(type(self), path)
+        if isinstance(type(self), _Namespaceable):
+            parent_namespace = Namespace.get_namespace(type(self), path)
+        else:
+            parent_namespace = None
         instance_namespace = Namespace.get_namespace(self, path)
 
     def __getattribute__(self, name):
