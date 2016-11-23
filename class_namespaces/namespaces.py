@@ -332,6 +332,7 @@ class _NamespaceBase:
         instance_namespace = Namespace.get_namespace(self, path)
         if isinstance(type(self), _Namespaceable):
             owner_namespace = Namespace.get_namespace(type(self), path)
+            instance_value = ops.get(instance_map, name)
         else:
             owner_namespace = None
 
@@ -384,6 +385,18 @@ class _Namespaceable(_NamespaceBase, type):
                     if wrapped.has_set_name:
                         wrapped.set_name(cls, name)
         return cls
+
+    def __getattribute__(self, name):
+        parent, is_namespace, name = name.rpartition('.')
+        if is_namespace:
+            dct = Namespace.get_namespace(self, tuple(parent.split('.')))
+            instance_map = _mro_to_chained(self.__mro__, dct)
+            instance_value = ops.get(instance_map, name)
+            if ops.has_get(instance_value):
+                return instance_value.get(None, self)
+            elif instance_value is not None:
+                return instance_value.object
+        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
     def __setattr__(cls, name, value):
         if isinstance(value, Namespace) and value.name != name:
