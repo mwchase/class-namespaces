@@ -327,14 +327,32 @@ class _NamespaceBase:
 
     __slots__ = ()
 
+    def __maps(self, parent):
+        path = tuple(parent.split('.'))
+        parent_namespace = Namespace.get_namespace(type(self), path)
+        instance_namespace = Namespace.get_namespace(self, path)
+
     def __getattribute__(self, name):
-        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
+        parent, is_namespace, name = name.rpartition('.')
+        if is_namespace:
+            maps = self.__maps(parent)
+        else:
+            return super(
+                _NamespaceBase, type(self)).__getattribute__(self, name)
 
     def __setattr__(self, name, value):
-        super(_NamespaceBase, type(self)).__setattr__(self, name, value)
+        parent, is_namespace, name = name.rpartition('.')
+        if is_namespace:
+            maps = self.__maps(parent)
+        else:
+            super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
     def __delattr__(self, name):
-        super(_NamespaceBase, type(self)).__delattr__(self, name)
+        parent, is_namespace, name = name.rpartition('.')
+        if is_namespace:
+            maps = self.__maps(parent)
+        else:
+            super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
 class _Namespaceable(_NamespaceBase, type):
