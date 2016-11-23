@@ -396,7 +396,7 @@ class _Namespaceable(_NamespaceBase, type):
                 return instance_value.get(None, self)
             elif instance_value is not None:
                 return instance_value.object
-        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
+        return super(_Namespaceable, type(self)).__getattribute__(self, name)
 
     def __setattr__(cls, name, value):
         if isinstance(value, Namespace) and value.name != name:
