@@ -332,6 +332,11 @@ class _NamespaceBase:
 
     __slots__ = ()
 
+    # Note: the dot format of invocation can "escape" self into other objects.
+    # This is not intended behavior, and the result of using dots "too deeply"
+    # should be considered undefined.
+    # I would like it to be an error, if I can figure out how.
+
     def __getattribute__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
