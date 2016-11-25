@@ -384,7 +384,9 @@ class _Namespaceable(_NamespaceBase, type):
         return cls
 
     def __setattr__(cls, name, value):
-        if isinstance(value, Namespace) and value.name != name:
+        if (
+                '.' not in name and isinstance(value, Namespace) and
+                value.name != name):
             value.push(name, _NAMESPACE_SCOPES[cls])
             value.add(cls)
         super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
