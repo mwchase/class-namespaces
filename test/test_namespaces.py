@@ -406,3 +406,18 @@ def test_multiple_inheritance(namespaces):
 
     assert Test3.ns.ns.var == 1
     assert Test3.ns.var == 2
+
+
+def test_star_attr_functions(namespaces):
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                with namespaces.Namespace() as ns:
+                    pass
+
+    setattr(Test, 'ns.ns.ns.var', 1)
+    assert hasattr(Test, 'ns.ns.ns.var')
+    assert getattr(Test, 'ns.ns.ns.var') == 1
+    assert Test.ns.ns.ns.var == 1
+    delattr(Test, 'ns.ns.ns.var')
+    assert not hasattr(Test, 'ns.ns.ns.var')
