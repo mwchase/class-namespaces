@@ -27,7 +27,7 @@ def _mro_to_chained(mro, dct):
     return collections.ChainMap(*[
         Namespace.get_namespace(cls, dct.path) for cls in
         itertools.takewhile(
-            functools.partial(Namespace.no_blocker, dct),
+            functools.partial(Namespace.no_blocker, dct.path),
             (cls for cls in mro if isinstance(cls, _Namespaceable))) if
         Namespace.namespace_exists(dct.path, cls)])
 
@@ -216,20 +216,7 @@ class Namespace(dict):
             return namespaces.setdefault(path_, cls.premake(path[-1], parent))
 
     @classmethod
-    def no_blocker(cls, dct, cls_):
-        """Return False if there's a non-Namespace object in the path."""
-        try:
-            namespace = vars(cls_)
-            for name in dct.path:
-                namespace = namespace[name]
-                if not isinstance(namespace, cls):
-                    return False
-        except KeyError:
-            pass
-        return True
-
-    @classmethod
-    def no_blocker_path(cls, path, cls_):
+    def no_blocker(cls, path, cls_):
         """Return False if there's a non-Namespace object in the path."""
         try:
             namespace = vars(cls_)
@@ -334,49 +321,16 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
-def _mro_and_path_to_chained(mro, path):
-    """Return a chained map of lookups for the given namespace and mro."""
-    return collections.ChainMap(*[
-        Namespace.get_namespace(cls, path) for cls in
-        itertools.takewhile(
-            functools.partial(Namespace.no_blocker_path, path),
-            (cls for cls in mro if isinstance(cls, _Namespaceable))) if
-        Namespace.namespace_exists(path, cls)])
-
-
-def _get_instance_target(instance, path, name):
-    if isinstance(instance, _Namespaceable):
-        dct = _mro_and_path_to_chained(instance.__mro__, path)
-    else:
-        dct = Namespace.get_namespace(instance, path)
-    return ops.get(dct, name)
-
-
-def _get_class_target(instance, path, name):
-    class_ = type(instance)
-    if isinstance(class_, _NamespaceBase):
-        pass  # How do we support super() now? Unless...
-
-
 class _NamespaceBase:
 
     """Common base class for Namespaceable and its metaclass."""
 
     __slots__ = ()
 
-    def __maps(self, parent):
-        path = tuple(parent.split('.'))
-        instance_namespace = Namespace.get_namespace(self, path)
-        if isinstance(type(self), _Namespaceable):
-            owner_namespace = Namespace.get_namespace(type(self), path)
-            instance_value = ops.get(instance_map, name)
-        else:
-            owner_namespace = None
-
     def __getattribute__(self, name):
-        parent, is_namespace, name = name.rpartition('.')
+        parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            maps = self.__maps(parent)
+            pass
             # Okay, here's the deal. The current proxy implementations are just
             # plain weird relative to putting the logic on the instances. What
             # I need in terms of __getattribute__ is to be able to detect the
@@ -397,23 +351,19 @@ class _NamespaceBase:
             # Like, maybe some kind of data-driven thing associating a sequence
             # of checks to a class. Crawl the mro and execute every check in
             # order, returning the result, if any. Maybe cache failed checks?
-        else:
-            return super(
-                _NamespaceBase, type(self)).__getattribute__(self, name)
+        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
     def __setattr__(self, name, value):
-        parent, is_namespace, name = name.rpartition('.')
+        parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            maps = self.__maps(parent)
-        else:
-            super(_NamespaceBase, type(self)).__setattr__(self, name, value)
+            pass
+        super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
     def __delattr__(self, name):
-        parent, is_namespace, name = name.rpartition('.')
+        parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            maps = self.__maps(parent)
-        else:
-            super(_NamespaceBase, type(self)).__delattr__(self, name)
+            pass
+        super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
 class _Namespaceable(_NamespaceBase, type):
@@ -442,18 +392,6 @@ class _Namespaceable(_NamespaceBase, type):
                     if wrapped.has_set_name:
                         wrapped.set_name(cls, name)
         return cls
-
-    def __getattribute__(self, name):
-        parent, is_namespace, name = name.rpartition('.')
-        if is_namespace:
-            dct = Namespace.get_namespace(self, tuple(parent.split('.')))
-            instance_map = _mro_to_chained(self.__mro__, dct)
-            instance_value = ops.get(instance_map, name)
-            if ops.has_get(instance_value):
-                return instance_value.get(None, self)
-            elif instance_value is not None:
-                return instance_value.object
-        return super(_Namespaceable, type(self)).__getattribute__(self, name)
 
     def __setattr__(cls, name, value):
         if isinstance(value, Namespace) and value.name != name:
