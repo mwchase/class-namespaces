@@ -397,7 +397,24 @@ _DEFINED = False
 
 class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
 
-    """Base class for classes that can contain namespaces."""
+    """Base class for classes that can contain namespaces.
+
+    A note for people extending the functionality:
+    The base class for Namespaceable and its metaclass uses a non-standard
+    super() invocation in its definitions of several methods. This was the only
+    way I could find to mitigate some bugs I encountered with a standard
+    invocation. If you override any of methods defined on built-in types, I
+    recommend this form for maximal reusability:
+
+    super(class, type(self)).__method__(self, ...)
+
+    This avoids confusing error messages in case self is a subclass of class,
+    in addition to being an instance.
+
+    If you're not delegating above Namespaceable, you can probably use the
+    standard invocation, unless you bring about the above situation on your own
+    types.
+    """
 
 
 _DEFINED = True
