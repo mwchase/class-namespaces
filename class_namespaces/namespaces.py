@@ -337,12 +337,14 @@ class _NamespaceBase:
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
             setattr(getattr(self, parent), name_, value)
+            return
         super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
     def __delattr__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
             delattr(getattr(self, parent), name_)
+            return
         super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
