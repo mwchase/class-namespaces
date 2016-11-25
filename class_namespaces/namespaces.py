@@ -228,6 +228,19 @@ class Namespace(dict):
             pass
         return True
 
+    @classmethod
+    def no_blocker_path(cls, path, cls_):
+        """Return False if there's a non-Namespace object in the path."""
+        try:
+            namespace = vars(cls_)
+            for name in path:
+                namespace = namespace[name]
+                if not isinstance(namespace, cls):
+                    return False
+        except KeyError:
+            pass
+        return True
+
     def add(self, target):
         """Add self as a namespace under target."""
         path, namespaces = self.__get_helper(target, self.path)
@@ -321,6 +334,30 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
+def _mro_and_path_to_chained(mro, path):
+    """Return a chained map of lookups for the given namespace and mro."""
+    return collections.ChainMap(*[
+        Namespace.get_namespace(cls, path) for cls in
+        itertools.takewhile(
+            functools.partial(Namespace.no_blocker_path, path),
+            (cls for cls in mro if isinstance(cls, _Namespaceable))) if
+        Namespace.namespace_exists(path, cls)])
+
+
+def _get_instance_target(instance, path, name):
+    if isinstance(instance, _Namespaceable):
+        dct = _mro_and_path_to_chained(instance.__mro__, path)
+    else:
+        dct = Namespace.get_namespace(instance, path)
+    return ops.get(dct, name)
+
+
+def _get_class_target(instance, path, name):
+    class_ = type(instance)
+    if isinstance(class_, _NamespaceBase):
+        pass  # How do we support super() now? Unless...
+
+
 class _NamespaceBase:
 
     """Common base class for Namespaceable and its metaclass."""
@@ -340,6 +377,26 @@ class _NamespaceBase:
         parent, is_namespace, name = name.rpartition('.')
         if is_namespace:
             maps = self.__maps(parent)
+            # Okay, here's the deal. The current proxy implementations are just
+            # plain weird relative to putting the logic on the instances. What
+            # I need in terms of __getattribute__ is to be able to detect the
+            # two possible namespace sources: instance and class.
+            # Instance should always be valid, and class may or may not be.
+            # An object is a valid namespace target if it's an instance of
+            # _NamespaceBase.
+            # There will always be an instance target, and there may be a
+            # class target.
+            # I believe the quick way to get this stuff would be two helper
+            # functions at the module level:
+            # _get_instance_target(instance, path, name)
+            # _get_class_target(instance, path, name)
+            # Both would return a _DescriptorInspector, or None. Then lookup
+            # would be processed, with all the logic (including the
+            # type-specfic stuff) occurring in _NamespaceBase until I come up
+            # with a better idea.
+            # Like, maybe some kind of data-driven thing associating a sequence
+            # of checks to a class. Crawl the mro and execute every check in
+            # order, returning the result, if any. Maybe cache failed checks?
         else:
             return super(
                 _NamespaceBase, type(self)).__getattribute__(self, name)
