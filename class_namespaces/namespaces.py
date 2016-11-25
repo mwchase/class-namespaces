@@ -330,39 +330,19 @@ class _NamespaceBase:
     def __getattribute__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            pass
-            # Okay, here's the deal. The current proxy implementations are just
-            # plain weird relative to putting the logic on the instances. What
-            # I need in terms of __getattribute__ is to be able to detect the
-            # two possible namespace sources: instance and class.
-            # Instance should always be valid, and class may or may not be.
-            # An object is a valid namespace target if it's an instance of
-            # _NamespaceBase.
-            # There will always be an instance target, and there may be a
-            # class target.
-            # I believe the quick way to get this stuff would be two helper
-            # functions at the module level:
-            # _get_instance_target(instance, path, name)
-            # _get_class_target(instance, path, name)
-            # Both would return a _DescriptorInspector, or None. Then lookup
-            # would be processed, with all the logic (including the
-            # type-specfic stuff) occurring in _NamespaceBase until I come up
-            # with a better idea.
-            # Like, maybe some kind of data-driven thing associating a sequence
-            # of checks to a class. Crawl the mro and execute every check in
-            # order, returning the result, if any. Maybe cache failed checks?
+            return getattr(getattr(self, parent), name_)
         return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
     def __setattr__(self, name, value):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            pass
+            setattr(getattr(self, parent), name_, value)
         super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
     def __delattr__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            pass
+            delattr(getattr(self, parent), name_)
         super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
