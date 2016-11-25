@@ -330,6 +330,9 @@ class _NamespaceBase:
     def __getattribute__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
+            self_ = self
+            for element in parent.split('.'):
+                self_ = getattr(self_, element)
             return getattr(getattr(self, parent), name_)
         return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
