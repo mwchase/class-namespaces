@@ -22,14 +22,14 @@ from .scope_proxy import _ScopeProxy
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 
 
-def _mro_to_chained(mro, dct):
+def _mro_to_chained(mro, path):
     """Return a chained map of lookups for the given namespace and mro."""
     return collections.ChainMap(*[
-        Namespace.get_namespace(cls, dct.path) for cls in
+        Namespace.get_namespace(cls, path) for cls in
         itertools.takewhile(
-            functools.partial(Namespace.no_blocker, dct.path),
+            functools.partial(Namespace.no_blocker, path),
             (cls for cls in mro if isinstance(cls, _Namespaceable))) if
-        Namespace.namespace_exists(dct.path, cls)])
+        Namespace.namespace_exists(path, cls)])
 
 
 def _instance_map(ns_proxy):
@@ -37,7 +37,7 @@ def _instance_map(ns_proxy):
     dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
         if isinstance(instance, _Namespaceable):
-            return _mro_to_chained(instance.__mro__, dct)
+            return _mro_to_chained(instance.__mro__, dct.path)
         else:
             return Namespace.get_namespace(instance, dct.path)
     else:
@@ -49,7 +49,7 @@ def _mro_map(ns_proxy):
     dct, _, owner = _PROXY_INFOS[ns_proxy]
     mro = owner.__mro__
     mro = mro[mro.index(dct.parent_object):]
-    return _mro_to_chained(mro, dct)
+    return _mro_to_chained(mro, dct.path)
 
 
 def _retarget(ns_proxy):
