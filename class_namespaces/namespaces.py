@@ -337,26 +337,32 @@ class _NamespaceBase:
     # should be considered undefined.
     # I would like it to be an error, if I can figure out how.
 
+    @staticmethod
+    def __is_proxy(value):
+        if not isinstance(value, _NamespaceProxy):
+            raise ValueError('Given a dot attribute that went too deep.')
+        return value
+
     def __getattribute__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
             self_ = self
             for element in parent.split('.'):
-                self_ = getattr(self_, element)
+                self_ = self.__is_proxy(getattr(self_, element))
             return getattr(getattr(self, parent), name_)
         return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
     def __setattr__(self, name, value):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            setattr(getattr(self, parent), name_, value)
+            setattr(self.__is_proxy(getattr(self, parent)), name_, value)
             return
         super(_NamespaceBase, type(self)).__setattr__(self, name, value)
 
     def __delattr__(self, name):
         parent, is_namespace, name_ = name.rpartition('.')
         if is_namespace:
-            delattr(getattr(self, parent), name_)
+            delattr(self.__is_proxy(getattr(self, parent)), name_)
             return
         super(_NamespaceBase, type(self)).__delattr__(self, name)
 
