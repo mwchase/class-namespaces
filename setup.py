@@ -15,7 +15,7 @@ with c_open(path.join(HERE, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='class_namespaces',
 
-    version='0.5.1',
+    version='0.5.2',
 
     description='Class Namespaces',
     long_description=LONG_DESCRIPTION,
