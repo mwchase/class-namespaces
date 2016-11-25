@@ -397,20 +397,5 @@ class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
 
     """Base class for classes that can contain namespaces."""
 
-    def __maps(self, parent):
-        path = tuple(parent.split('.'))
-        instance_namespace = Namespace.get_namespace(self, path)
-        if isinstance(type(self), _Namespaceable):
-            owner_namespace = Namespace.get_namespace(type(self), path)
-            instance_value = ops.get(instance_map, name)
-        else:
-            owner_namespace = None
-
-    def __getattribute__(self, name):
-        parent, is_namespace, name = name.rpartition('.')
-        if is_namespace:
-            maps = self.__maps(parent)
-        return super(Namespaceable, type(self)).__getattribute__(self, name)
-
 
 _DEFINED = True
