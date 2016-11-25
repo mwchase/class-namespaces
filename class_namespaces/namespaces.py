@@ -153,6 +153,8 @@ class Namespace(dict):
         self.parent = parent
         return self
 
+    # Hold up. Do we need a symmetric addon to __delitem__?
+    # I forget how this works.
     def __setitem__(self, key, value):
         if (
                 self.parent_object is not None and
@@ -293,6 +295,9 @@ class _NamespaceScope(collections.abc.MutableMapping):
                 super().__init__(dct, proxies)
 
         self.scope_proxy = ScopeProxy
+
+    # Mapping methods need to know about the dot syntax.
+    # Possibly namespaces themselves should know. Would simplify some things.
 
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
