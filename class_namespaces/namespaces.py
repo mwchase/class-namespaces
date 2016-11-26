@@ -162,11 +162,10 @@ class Namespace(dict):
     # Hold up. Do we need a symmetric addon to __delitem__?
     # I forget how this works.
     def __setitem__(self, key, value):
-        if (
-                self.parent_object is not None and
-                isinstance(value, Namespace)):
-            value.push(key, self.scope, self)
-            value.add(self.parent_object)
+        if isinstance(value, Namespace):
+            if self.parent_object is not None:
+                value.push(key, self.scope, self)
+                value.add(self.parent_object)
         super().__setitem__(key, value)
 
     def __enter__(self):
@@ -260,9 +259,7 @@ class Namespace(dict):
             raise ValueError('Cannot reuse namespace')
 
     def validate_parent(self, scope, parent=None):
-        if parent is None:
-            parent = scope.dicts[0]
-        if parent is not self.parent:
+        if (parent or scope.dicts[0]) is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
             raise ValueError('Cannot reparent namespace')
@@ -271,9 +268,7 @@ class Namespace(dict):
         """Bind self to the given name and scope, and activate."""
         self.set_if_none('name', name)
         self.set_if_none('scope', scope)
-        if parent is None:
-            parent = scope.dicts[0]
-        self.set_if_none('parent', parent)
+        self.set_if_none('parent', parent or scope.dicts[0])
         self.validate_assignment(name, scope)
         self.validate_parent(scope, parent)
         self.scope.namespaces.append(self)
@@ -297,6 +292,9 @@ class Namespace(dict):
 
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
+
+    def __bool__(self):
+        return True
 
 
 class _NamespaceScope(collections.abc.MutableMapping):
