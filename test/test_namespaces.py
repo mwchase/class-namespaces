@@ -103,14 +103,26 @@ def test_resume(namespaces):
     assert Test().ns.foo == 4
 
 
+def get_ns(ns):
+    from class_namespaces import scope_proxy
+    return scope_proxy._PROXY_INFOS[ns][ns]
+
+
+def scope_dicts_length_equals(ns, length):
+    scope = get_ns(ns).scope
+    assert len(scope.dicts) == length
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1
         with namespaces.Namespace() as ns:
             foo = 2
             assert foo == 2
+        scope_dicts_length_equals(ns, 1)
         foo = 3
         ns = ns
+        scope_dicts_length_equals(ns, 1)
         with ns as ns:
             foo = 4
         assert foo == 3

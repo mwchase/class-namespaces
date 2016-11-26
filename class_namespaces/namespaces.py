@@ -259,7 +259,7 @@ class Namespace(dict):
 
     def validate_parent(self, scope, parent=None):
         parent = parent or scope.dicts[0]
-        if scope.dicts[0] is not self.parent:
+        if parent is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
             raise ValueError('Cannot reparent namespace')
