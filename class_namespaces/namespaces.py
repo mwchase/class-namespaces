@@ -330,6 +330,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     def __setitem__(self, key, value):
         dct = self.dicts[0]
+        if value is dct and value.active:
+            dct = self.dicts[1]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
         if isinstance(value, Namespace):
