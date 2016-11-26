@@ -567,3 +567,7 @@ def test_partial_descriptors(namespaces):
         test.deleter = None
     with pytest.raises(AttributeError):
         del test.setter
+
+
+def test_namespace_is_truthy(namespaces):
+    assert namespaces.Namespace()
