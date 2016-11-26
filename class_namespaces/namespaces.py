@@ -257,16 +257,19 @@ class Namespace(dict):
             # into another class. It may not be, however.
             raise ValueError('Cannot reuse namespace')
 
+    def validate_parent(self, scope):
+        if scope.dicts[0] is not self.parent:
+            # This line can be hit by assigning a namespace into another
+            # namespace.
+            raise ValueError('Cannot reparent namespace')
+
     def push(self, name, scope):
         """Bind self to the given name and scope, and activate."""
         self.set_if_none('name', name)
         self.set_if_none('scope', scope)
         self.set_if_none('parent', scope.dicts[0])
         self.validate_assignment(name, scope)
-        if scope.dicts[0] is not self.parent:
-            # This line can be hit by assigning a namespace into another
-            # namespace.
-            raise ValueError('Cannot reparent namespace')
+        self.validate_parent(scope)
         self.scope.namespaces.append(self)
         if self.in_context:
             self.activate()
@@ -331,6 +334,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
         if isinstance(value, Namespace):
             if value.in_context:
                 value.push(key, self)
+            else:
+                value.validate_parent(self)
             value.validate_assignment(key, self)
         dct[key] = value
 
