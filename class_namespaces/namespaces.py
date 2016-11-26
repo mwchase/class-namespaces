@@ -258,16 +258,16 @@ class Namespace(dict):
             raise ValueError('Cannot reuse namespace')
 
     def validate_parent(self, scope, parent=None):
-        if (parent or scope.dicts[0]) is not self.parent:
+        if parent is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
             raise ValueError('Cannot reparent namespace')
 
-    def push(self, name, scope, parent=None):
+    def push(self, name, scope, parent):
         """Bind self to the given name and scope, and activate."""
         self.set_if_none('name', name)
         self.set_if_none('scope', scope)
-        self.set_if_none('parent', parent or scope.dicts[0])
+        self.set_if_none('parent', parent)
         self.validate_assignment(name, scope)
         self.validate_parent(scope, parent)
         self.scope.namespaces.append(self)
@@ -279,7 +279,7 @@ class Namespace(dict):
         if self.active:
             raise ValueError('Cannot double-activate.')
         if self.scope is not None:
-            self.validate_parent(self.scope)
+            self.validate_parent(self.scope, self.scope.dicts[0])
             self.active = True
             self.scope.dicts.insert(0, self)
             self.needs_setup = False
