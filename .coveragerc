@@ -1,2 +1,3 @@
 [run]
 omit = .tox/*
+branch = True
