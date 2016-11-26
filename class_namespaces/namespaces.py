@@ -166,8 +166,6 @@ class Namespace(dict):
         super().__setitem__(key, value)
 
     def __enter__(self):
-        if self.active:
-            raise ValueError('Cannot reenter namespace.')
         self.activate()
         return self
 
@@ -267,6 +265,8 @@ class Namespace(dict):
 
     def activate(self):
         """Take over as the scope for the target."""
+        if self.active:
+            raise ValueError('Cannot double-activate.')
         if self.scope is not None and not self.active:
             if self.scope.dicts[0] is not self.parent:
                 # This line can be hit by entering a namespace not under its

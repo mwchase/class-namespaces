@@ -479,6 +479,8 @@ def test_block_reparent(namespaces):
                     pass
             with pytest.raises(ValueError):
                 ns.ns = ns
+        with pytest.raises(ValueError):
+            ns.ns = ns
         with namespaces.Namespace() as ns2:
             with pytest.raises(ValueError):
                 with ns:
