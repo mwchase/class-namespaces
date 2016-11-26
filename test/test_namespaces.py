@@ -493,6 +493,8 @@ def test_too_deep(namespaces):
 
 
 def test_block_reparent(namespaces):
+    shadow_ns1 = None
+    shadow_ns2 = None
     class Test1(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with pytest.raises(ValueError):
@@ -506,10 +508,25 @@ def test_block_reparent(namespaces):
             with pytest.raises(ValueError):
                 with ns:
                     pass
+        nonlocal shadow_ns1
+        nonlocal shadow_ns2
+        with ns as shadow_ns1:
+            shadow_ns2 = ns
 
     class Test2(namespaces.Namespaceable):
         with pytest.raises(ValueError):
             ns = Test1.ns
+        with pytest.raises(ValueError):
+            ns = shadow_ns1
+        with pytest.raises(ValueError):
+            ns = shadow_ns2
+        with namespaces.Namespace() as ns:
+            pass
+
+    with pytest.raises(ValueError):
+        Test2.ns.ns = shadow_ns1
+    with pytest.raises(ValueError):
+        Test2.ns.ns = shadow_ns2
 
 
 def test_can_t_get_path(namespaces):
