@@ -462,3 +462,37 @@ def test_regular_delete(namespaces):
     Test.var = 1
     assert Test.var == 1
     del Test.var
+
+
+def test_too_deep(namespaces):
+    class Test(namespaces.Namespaceable):
+        var = None
+    with pytest.raises(ValueError):
+        getattr(Test, 'var.__str__')
+
+
+def test_block_reparent(namespaces):
+    class Test1(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with pytest.raises(ValueError):
+                with ns:
+                    pass
+            with pytest.raises(ValueError):
+                ns.ns = ns
+
+    class Test2(namespaces.Namespaceable):
+        with pytest.raises(ValueError):
+            ns = Test1.ns
+
+
+def test_can_t_get_path(namespaces):
+    with pytest.raises(ValueError):
+        namespaces.Namespace().path
+
+
+def test_non_existent_attribute_during_creation(namespaces):
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            pass
+        with pytest.raises(AttributeError):
+            ns.var
