@@ -173,8 +173,7 @@ class Namespace(dict):
             raise ValueError('Cannot move scopes between classes.')
         if isinstance(value, Namespace):
             value.push(key, self.scope, self)
-            if self.parent_object is not None:
-                value.add(self.parent_object)
+            value.add(self.parent_object)
         super().__setitem__(key, value)
 
     def __enter__(self):
@@ -248,10 +247,11 @@ class Namespace(dict):
 
     def add(self, target):
         """Add self as a namespace under target."""
-        path, namespaces = self.__get_helper(target, self.path)
-        res = namespaces.setdefault(path, self)
-        if res is self:
-            self.parent_object = target
+        if target is not None:
+            path, namespaces = self.__get_helper(target, self.path)
+            res = namespaces.setdefault(path, self)
+            if res is self:
+                self.parent_object = target
 
     def set_if_none(self, name, value):
         """Set the attribute `name` to `value`, if it's initially None."""
