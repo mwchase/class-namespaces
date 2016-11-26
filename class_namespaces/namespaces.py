@@ -166,7 +166,7 @@ class Namespace(dict):
                 self.scope is not None and
                 isinstance(value, self.scope.scope_proxy)):
             value = self.scope.proxies[value]
-        if isinstance(value, _ScopeProxy):
+        if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
             raise ValueError('Cannot move scopes between classes.')
         if isinstance(value, Namespace):
             value.push(key, self.scope, self)
@@ -345,6 +345,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
             value = self.proxies[value]
             value.validate_parent(dct)
             value.validate_assignment(key, self)
+        if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
+            raise ValueError('Cannot move scopes between classes.')
         dct[key] = value
 
     def __delitem__(self, key):
