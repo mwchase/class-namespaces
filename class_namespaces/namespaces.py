@@ -333,13 +333,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
         # We just entered the context successfully.
         if value is dct:
             dct = self.dicts[1]
+        if isinstance(value, Namespace):
+            value.push(key, self, dct)
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
-        if isinstance(value, Namespace):
-            if value.needs_setup:
-                value.push(key, self, dct)
-            else:
-                value.validate_parent(dct)
+            value.validate_parent(dct)
             value.validate_assignment(key, self)
         dct[key] = value
 
