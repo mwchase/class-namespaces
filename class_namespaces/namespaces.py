@@ -334,7 +334,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             value = self.proxies[value]
         if isinstance(value, Namespace):
             if value.in_context:
-                if value.name is None:
+                if not value.active:
                     value.push(key, self)
                 else:
                     value.validate_parent(self, self.dicts[1])
