@@ -133,7 +133,7 @@ class Namespace(dict):
     """Namespace."""
 
     __slots__ = (
-        'name', 'scope', 'parent', 'active', 'parent_object', 'in_context')
+        'name', 'scope', 'parent', 'active', 'parent_object', 'needs_setup')
 
     __namespaces = {}
 
@@ -149,7 +149,7 @@ class Namespace(dict):
         self.parent = None
         self.active = False
         self.parent_object = None
-        self.in_context = False
+        self.needs_setup = False
 
     @classmethod
     def premake(cls, name, parent):
@@ -169,12 +169,11 @@ class Namespace(dict):
         super().__setitem__(key, value)
 
     def __enter__(self):
-        self.in_context = True
+        self.needs_setup = True
         self.activate()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.in_context = False
         if self.name is None:
             raise RuntimeError('Namespace must be named.')
         self.deactivate()
@@ -272,7 +271,7 @@ class Namespace(dict):
         self.validate_assignment(name, scope)
         self.validate_parent(scope, parent)
         self.scope.namespaces.append(self)
-        if self.in_context:
+        if self.needs_setup:
             self.activate()
 
     def activate(self):
@@ -283,6 +282,7 @@ class Namespace(dict):
             self.validate_parent(self.scope)
             self.active = True
             self.scope.dicts.insert(0, self)
+            self.needs_setup = False
 
     def deactivate(self):
         """Stop being the scope for the target."""
@@ -333,13 +333,10 @@ class _NamespaceScope(collections.abc.MutableMapping):
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
         if isinstance(value, Namespace):
-            if value.in_context:
-                if not value.active:
-                    value.push(key, self)
-                else:
-                    value.validate_parent(self, self.dicts[1])
+            if value.needs_setup:
+                value.push(key, self)
             else:
-                value.validate_parent(self)
+                value.validate_parent(self, dct)
             value.validate_assignment(key, self)
         dct[key] = value
 
