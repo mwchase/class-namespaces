@@ -421,3 +421,9 @@ def test_star_attr_functions(namespaces):
     assert Test.ns.ns.ns.var == 1
     delattr(Test, 'ns.ns.ns.var')
     assert not hasattr(Test, 'ns.ns.ns.var')
+
+
+def test_must_inherit(namespaces):
+    with pytest.raises(ValueError):
+        class(metaclass=type(namespaces.Namespaceable)):
+            pass
