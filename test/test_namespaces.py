@@ -452,5 +452,5 @@ def test_star_attr_functions(namespaces):
 
 def test_must_inherit(namespaces):
     with pytest.raises(ValueError):
-        class(metaclass=type(namespaces.Namespaceable)):
+        class Test(metaclass=type(namespaces.Namespaceable)):
             pass
