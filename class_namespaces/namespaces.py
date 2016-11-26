@@ -325,8 +325,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct = self.dicts[0]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
-        if isinstance(value, Namespace) and value.in_context:
-            value.push(key, self)
+        if isinstance(value, Namespace):
+            if value.in_context:
+                value.push(key, self)
+            if value.name != key:
+                raise ValueError('Cannot rename namespace.')
         dct[key] = value
 
     def __delitem__(self, key):
