@@ -333,8 +333,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
         if isinstance(value, Namespace):
-            if value.in_context and value.name is None:
-                value.push(key, self)
+            if value.in_context:
+                if value.name is None:
+                    value.push(key, self)
+                else:
+                    value.validate_parent(self, self.dicts[1])
             else:
                 value.validate_parent(self)
             value.validate_assignment(key, self)
