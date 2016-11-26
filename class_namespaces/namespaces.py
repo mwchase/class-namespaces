@@ -325,7 +325,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct = self.dicts[0]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
-        if isinstance(value, Namespace) and not value.active:
+        if isinstance(value, Namespace) and value.in_context:
             value.push(key, self)
         dct[key] = value
 
