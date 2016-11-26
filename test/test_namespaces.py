@@ -540,3 +540,30 @@ def test_non_existent_attribute_during_creation(namespaces):
             pass
         with pytest.raises(AttributeError):
             ns.var
+
+
+def test_partial_descriptors(namespaces):
+    class Setter:
+        def __set__(self, instance, value):
+            pass
+
+    class Deleter:
+        def __delete__(self, instance):
+            pass
+
+    class Test(namespaces.Namespaceable):
+        setter = Setter()
+        deleter = Deleter()
+        with namespaces.Namespace() as ns:
+            setter = Setter()
+            deleter = Deleter()
+
+    test = Test()
+    with pytest.raises(AttributeError):
+        test.ns.deleter = None
+    with pytest.raises(AttributeError):
+        del test.ns.setter
+    with pytest.raises(AttributeError):
+        test.deleter = None
+    with pytest.raises(AttributeError):
+        del test.setter
