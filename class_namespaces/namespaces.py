@@ -330,7 +330,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     def __setitem__(self, key, value):
         dct = self.dicts[0]
-        if value is dct and value.active:
+        # We just entered the context successfully.
+        if value is dct:
             dct = self.dicts[1]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
