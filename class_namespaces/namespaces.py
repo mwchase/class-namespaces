@@ -280,10 +280,7 @@ class Namespace(dict):
         if self.active:
             raise ValueError('Cannot double-activate.')
         if self.scope is not None:
-            if self.scope.dicts[0] is not self.parent:
-                # This line can be hit by entering a namespace not under its
-                # parent.
-                raise ValueError('Cannot reparent namespace')
+            self.validate_parent(self.scope)
             self.active = True
             self.scope.dicts.insert(0, self)
 
