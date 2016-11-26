@@ -245,10 +245,6 @@ class Namespace(dict):
         res = namespaces.setdefault(path, self)
         if res is self:
             self.parent_object = target
-        print('parent:', self.parent)
-        print('path:', path)
-        print('self:', id(self))
-        print('res:', id(res))
 
     def set_if_none(self, name, value):
         """Set the attribute `name` to `value`, if it's initially None."""
