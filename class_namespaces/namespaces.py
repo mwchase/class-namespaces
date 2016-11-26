@@ -166,6 +166,8 @@ class Namespace(dict):
         super().__setitem__(key, value)
 
     def __enter__(self):
+        if self.active:
+            raise ValueError('Cannot reenter namespace.')
         self.activate()
         return self
 
