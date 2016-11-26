@@ -19,12 +19,15 @@ class _ScopeProxy(_Proxy):
         container[self] = dct
 
     def __dir__(self):
+        # This line will fire if dir(ns) is done during class creation.
         return _PROXY_INFOS[self][self]
 
     def __getattribute__(self, name):
         dct = _PROXY_INFOS[self][self]
         try:
             return dct[name]
+        # These lines will fire if a non-existent namespace attribute is gotten
+        # during class creation.
         except KeyError:
             raise AttributeError(name)
 

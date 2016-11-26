@@ -21,5 +21,7 @@ class _Inspector(collections.namedtuple('_Inspector', ['object', 'dict'])):
         """Return attribute with the given name, or raise AttributeError."""
         try:
             return self.dict[key]
+        # These lines will execute if an incomplete data descriptor is used for
+        # the operation it doesn't define.
         except KeyError:
             raise AttributeError(key)

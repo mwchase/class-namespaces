@@ -104,6 +104,7 @@ class _NamespaceProxy(_Proxy):
         mro_map = _mro_map(self)
         target_value = ops.get_data(mro_map, name)
         if target_value is not None:
+            # These lines will be called on a data descriptor.
             target_value.set(instance, value)
             return
         instance_map = Namespace.get_namespace(instance, dct.path)
@@ -118,6 +119,7 @@ class _NamespaceProxy(_Proxy):
             return
         value = ops.get_data(real_map, name)
         if value is not None:
+            # These lines will be called on a data descriptor.
             value.delete(instance)
             return
         instance_map = Namespace.get_namespace(instance, dct.path)
@@ -176,6 +178,7 @@ class Namespace(dict):
     def path(self):
         """Return the full path of the namespace."""
         if self.name is None or self.parent is None:
+            # This line can be hit by Namespace().path.
             raise ValueError
         if isinstance(self.parent, Namespace):
             parent_path = self.parent.path
@@ -250,8 +253,12 @@ class Namespace(dict):
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
+            # It should be possible to hit this line by assigning a namespace
+            # into another class. It may not be, however.
             raise ValueError('Cannot reuse namespace')
         if scope.dicts[0] is not self.parent:
+            # This line can be hit by assigning a namespace into another
+            # namespace.
             raise ValueError('Cannot reparent namespace')
         self.scope.namespaces.append(self)
         self.activate()
@@ -260,6 +267,8 @@ class Namespace(dict):
         """Take over as the scope for the target."""
         if self.scope is not None and not self.active:
             if self.scope.dicts[0] is not self.parent:
+                # This line can be hit by entering a namespace not under its
+                # parent.
                 raise ValueError('Cannot reparent namespace')
             self.active = True
             self.scope.dicts.insert(0, self)
@@ -316,6 +325,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __delitem__(self, key):
         del self.dicts[0][key]
 
+    # These functions are incorrect and need to be rewritten.
     def __iter__(self):
         return iter(collections.ChainMap(*self.dicts))
 
@@ -340,6 +350,7 @@ class _NamespaceBase:
     @staticmethod
     def __is_proxy(value):
         if not isinstance(value, _NamespaceProxy):
+            # This line can be hit by doing what the error message says.
             raise ValueError('Given a dot attribute that went too deep.')
         return value
 
@@ -364,6 +375,7 @@ class _NamespaceBase:
         if is_namespace:
             delattr(self.__is_proxy(getattr(self, parent)), name_)
             return
+        # This line can be hit by deleting an attribute that isn't a namespace.
         super(_NamespaceBase, type(self)).__delattr__(self, name)
 
 
@@ -381,6 +393,7 @@ class _Namespaceable(_NamespaceBase, type):
     def __new__(mcs, name, bases, dct, **kwargs):
         cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
         if _DEFINED and not issubclass(cls, Namespaceable):
+            # This line can be hit with class(metaclass=type(Namespaceable)):
             raise ValueError(
                 'Cannot create a _Namespaceable that does not inherit from '
                 'Namespaceable')

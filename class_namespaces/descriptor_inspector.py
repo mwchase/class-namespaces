@@ -54,6 +54,7 @@ class _DescriptorInspector(_Inspector):
         """Return whether self.object is a data descriptor."""
         return self.has_set or self.has_delete
 
+    # I guess I don't actually have a use for this property?
     @property
     def is_non_data(self):
         """Return whether self.object is a non-data descriptor."""
@@ -68,6 +69,7 @@ class _DescriptorInspector(_Inspector):
         """Return the result of __get__, bypassing descriptor protocol."""
         return self.get_as_attribute('__get__')(self.object, instance, owner)
 
+    # These functions will be called on data descriptors.
     def set(self, instance, value):
         """Call __set__, bypassing descriptor protocol."""
         self.get_as_attribute('__set__')(self.object, instance, value)
