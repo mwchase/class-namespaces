@@ -128,6 +128,9 @@ class _NamespaceProxy(_Proxy):
         ops.delete(instance_map, name)
 
 
+_NAMESPACE_INFOS = weakref.WeakKeyDictionary()
+
+
 class Namespace(dict):
 
     """Namespace."""
@@ -205,10 +208,10 @@ class Namespace(dict):
         else:
             path_ = path
             try:
-                namespaces = target.__namespaces
-            except AttributeError:
+                namespaces = _NAMESPACE_INFOS[target]
+            except KeyError:
                 namespaces = {}
-                target.__namespaces = namespaces
+                _NAMESPACE_INFOS[target] = namespaces
         return path_, namespaces
 
     @classmethod
