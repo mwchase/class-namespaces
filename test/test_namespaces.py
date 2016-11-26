@@ -266,6 +266,32 @@ def test_basic_prop(namespaces):
     assert Test().ns.foo == 1
 
 
+def test_complicated_prop(namespaces):
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            @property
+            def var(self):
+                return self.__private.var
+
+            @var.setter
+            def var(self, value):
+                self.__private.var = value + 1
+
+            @var.deleter
+            def var(self):
+                del self.__private.var
+
+        with namespaces.Namespace() as __private:
+            var = None
+
+    test = Test()
+    assert test.ns.var is None
+    test.ns.var = 1
+    assert test.ns.var == 2
+    del test.ns.var
+    assert test.ns.var is None
+
+
 def test_override_method(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
