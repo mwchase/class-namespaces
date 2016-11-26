@@ -13,7 +13,7 @@ class _Inspector(collections.namedtuple('_Inspector', ['object', 'dict'])):
 
     __slots__ = ()
 
-    def __new__(cls, obj, mro):
+    def __new__(cls, obj, *, mro):
         dct = collections.ChainMap(*[vars(cls) for cls in mro])
         return super().__new__(cls, obj, dct)
 
