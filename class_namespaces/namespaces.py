@@ -131,7 +131,7 @@ class Namespace(dict):
     """Namespace."""
 
     __slots__ = (
-        'name', 'scope', 'parent', 'active', 'parent_object', 'activating')
+        'name', 'scope', 'parent', 'active', 'parent_object', 'in_context')
 
     __namespaces = {}
 
@@ -147,7 +147,7 @@ class Namespace(dict):
         self.parent = None
         self.active = False
         self.parent_object = None
-        self.activating = False
+        self.in_context = False
 
     @classmethod
     def premake(cls, name, parent):
@@ -168,10 +168,12 @@ class Namespace(dict):
         super().__setitem__(key, value)
 
     def __enter__(self):
+        self.in_context = True
         self.activate()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.in_context = False
         if self.name is None:
             raise RuntimeError('Namespace must be named.')
         self.deactivate()
@@ -263,13 +265,13 @@ class Namespace(dict):
             # namespace.
             raise ValueError('Cannot reparent namespace')
         self.scope.namespaces.append(self)
-        self.activate()
+        if self.in_context:
+            self.activate()
 
     def activate(self):
         """Take over as the scope for the target."""
         if self.active:
             raise ValueError('Cannot double-activate.')
-        self.activating = True
         if self.scope is not None and not self.active:
             if self.scope.dicts[0] is not self.parent:
                 # This line can be hit by entering a namespace not under its
@@ -280,7 +282,6 @@ class Namespace(dict):
 
     def deactivate(self):
         """Stop being the scope for the target."""
-        self.activating = False
         if self.scope is not None and self.active:
             self.active = False
             self.scope.dicts.pop(0)
@@ -324,7 +325,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct = self.dicts[0]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
-        if isinstance(value, Namespace) and value.activating:
+        if isinstance(value, Namespace) and not value.active:
             value.push(key, self)
         dct[key] = value
 
