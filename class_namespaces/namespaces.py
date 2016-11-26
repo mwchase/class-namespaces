@@ -48,7 +48,9 @@ def _mro_map(ns_proxy):
     """Return a chained map of lookups for the given owner class."""
     dct, _, owner = _PROXY_INFOS[ns_proxy]
     mro = owner.__mro__
-    mro = mro[mro.index(dct.parent_object):]
+    parent_object = dct.parent_object
+    index = mro.index(parent_object)
+    mro = mro[index:]
     return _mro_to_chained(mro, dct.path)
 
 
