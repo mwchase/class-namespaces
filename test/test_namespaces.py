@@ -73,6 +73,7 @@ def test_dir(namespaces):
         with namespaces.Namespace() as ns:
             a = 1
         assert ns
+        assert dir(ns) == ['a']
     assert dir(Test.ns) == ['a']
     assert dir(Test().ns) == ['a']
 
