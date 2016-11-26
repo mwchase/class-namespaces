@@ -162,9 +162,13 @@ class Namespace(dict):
     # Hold up. Do we need a symmetric addon to __delitem__?
     # I forget how this works.
     def __setitem__(self, key, value):
+        if (
+                self.scope is not None and
+                isinstance(value, self.scope.scope_proxy)):
+            value = self.scope.proxies[value]
         if isinstance(value, Namespace):
+            value.push(key, self.scope, self)
             if self.parent_object is not None:
-                value.push(key, self.scope, self)
                 value.add(self.parent_object)
         super().__setitem__(key, value)
 
