@@ -333,9 +333,10 @@ def test_add_later(namespaces):
     Test.ns = namespaces.Namespace()
     Test.ns.ns = namespaces.Namespace()
     Test.ns.value = 1
-    Test.ns.ns.value = 2
     assert Test.ns.value == 1
+    Test.ns.ns.value = 2
     assert Test.ns.ns.value == 2
+    assert Test.ns.value == 1
 
 
 @pytest.mark.xfail(sys.version_info < (3, 6),
