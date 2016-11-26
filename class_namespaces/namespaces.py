@@ -130,7 +130,8 @@ class Namespace(dict):
 
     """Namespace."""
 
-    __slots__ = 'name', 'scope', 'parent', 'active', 'parent_object'
+    __slots__ = (
+        'name', 'scope', 'parent', 'active', 'parent_object', 'activating')
 
     __namespaces = {}
 
@@ -146,6 +147,7 @@ class Namespace(dict):
         self.parent = None
         self.active = False
         self.parent_object = None
+        self.activating = False
 
     @classmethod
     def premake(cls, name, parent):
@@ -267,6 +269,7 @@ class Namespace(dict):
         """Take over as the scope for the target."""
         if self.active:
             raise ValueError('Cannot double-activate.')
+        self.activating = True
         if self.scope is not None and not self.active:
             if self.scope.dicts[0] is not self.parent:
                 # This line can be hit by entering a namespace not under its
@@ -277,6 +280,7 @@ class Namespace(dict):
 
     def deactivate(self):
         """Stop being the scope for the target."""
+        self.activating = False
         if self.scope is not None and self.active:
             self.active = False
             self.scope.dicts.pop(0)
@@ -320,7 +324,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct = self.dicts[0]
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
-        if isinstance(value, Namespace) and value.name != key:
+        if isinstance(value, Namespace) and value.activating:
             value.push(key, self)
         dct[key] = value
 
