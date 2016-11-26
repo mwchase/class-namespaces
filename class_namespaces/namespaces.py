@@ -245,6 +245,10 @@ class Namespace(dict):
         res = namespaces.setdefault(path, self)
         if res is self:
             self.parent_object = target
+        print('parent:', self.parent)
+        print('path:', path)
+        print('self:', id(self))
+        print('res:', id(res))
 
     def set_if_none(self, name, value):
         """Set the attribute `name` to `value`, if it's initially None."""
@@ -260,7 +264,8 @@ class Namespace(dict):
             raise ValueError('Cannot reuse namespace')
 
     def validate_parent(self, scope, parent=None):
-        parent = parent or scope.dicts[0]
+        if parent is None:
+            parent = scope.dicts[0]
         if parent is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
@@ -270,7 +275,9 @@ class Namespace(dict):
         """Bind self to the given name and scope, and activate."""
         self.set_if_none('name', name)
         self.set_if_none('scope', scope)
-        self.set_if_none('parent', parent or scope.dicts[0])
+        if parent is None:
+            parent = scope.dicts[0]
+        self.set_if_none('parent', parent)
         self.validate_assignment(name, scope)
         self.validate_parent(scope, parent)
         self.scope.namespaces.append(self)

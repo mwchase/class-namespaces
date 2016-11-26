@@ -330,8 +330,16 @@ def test_add_later(namespaces):
     class Test(namespaces.Namespaceable):
         pass
 
-    Test.ns = namespaces.Namespace()
-    Test.ns.ns = namespaces.Namespace()
+    ns = namespaces.Namespace()
+    Test.ns = ns
+    print('ns props')
+    for slot in namespaces.Namespace.__slots__:
+        print(slot, getattr(ns, slot))
+    ns2 = namespaces.Namespace()
+    Test.ns.ns = ns2
+    print('ns2 props')
+    for slot in namespaces.Namespace.__slots__:
+        print(slot, getattr(ns2, slot))
     Test.ns.value = 1
     assert Test.ns.value == 1
     Test.ns.ns.value = 2
