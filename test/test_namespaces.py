@@ -454,3 +454,11 @@ def test_must_inherit(namespaces):
     with pytest.raises(ValueError):
         class Test(metaclass=type(namespaces.Namespaceable)):
             pass
+
+
+def test_regular_delete(namespaces):
+    class Test(namespaces.Namespaceable):
+        pass
+    Test.var = 1
+    assert Test.var == 1
+    del Test.var
