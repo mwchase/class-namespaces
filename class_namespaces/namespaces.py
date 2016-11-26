@@ -249,17 +249,20 @@ class Namespace(dict):
         if getattr(self, name) is None:
             setattr(self, name, value)
 
-    def push(self, name, scope):
-        """Bind self to the given name and scope, and activate."""
-        self.set_if_none('name', name)
-        self.set_if_none('scope', scope)
-        self.set_if_none('parent', scope.dicts[0])
+    def validate_assignment(self, name, scope):
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
             # It should be possible to hit this line by assigning a namespace
             # into another class. It may not be, however.
             raise ValueError('Cannot reuse namespace')
+
+    def push(self, name, scope):
+        """Bind self to the given name and scope, and activate."""
+        self.set_if_none('name', name)
+        self.set_if_none('scope', scope)
+        self.set_if_none('parent', scope.dicts[0])
+        self.validate_assignment(name, scope)
         if scope.dicts[0] is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
@@ -328,8 +331,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         if isinstance(value, Namespace):
             if value.in_context:
                 value.push(key, self)
-            if value.name != key:
-                raise ValueError('Cannot rename namespace.')
+            value.validate_assignment(key, self)
         dct[key] = value
 
     def __delitem__(self, key):
