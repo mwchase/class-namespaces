@@ -334,7 +334,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             value = self.proxies[value]
         if isinstance(value, Namespace):
             if value.needs_setup:
-                value.push(key, self)
+                value.push(key, self, dct)
             else:
                 value.validate_parent(self, dct)
             value.validate_assignment(key, self)
@@ -429,7 +429,8 @@ class _Namespaceable(_NamespaceBase, type):
         if (
                 '.' not in name and isinstance(value, Namespace) and
                 value.name != name):
-            value.push(name, _NAMESPACE_SCOPES[cls])
+            scope = _NAMESPACE_SCOPES[cls]
+            value.push(name, scope, scope.dicts[-1])
             value.add(cls)
         super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
 
