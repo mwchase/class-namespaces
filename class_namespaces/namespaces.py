@@ -290,7 +290,7 @@ class Namespace(dict):
         if self.active:
             raise ValueError('Cannot double-activate.')
         if self.scope is not None:
-            self.validate_parent(self.scope.dicts[0])
+            self.validate_parent(self.scope.head)
             self.active = True
             self.scope.dicts.insert(0, self)
             self.needs_setup = False
@@ -333,6 +333,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
     # Mapping methods need to know about the dot syntax.
     # Possibly namespaces themselves should know. Would simplify some things.
 
+    @property
+    def head(self):
+        """The innermost Namespace scope."""
+        return self.dicts[0]
+
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
@@ -340,7 +345,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         return value
 
     def __setitem__(self, key, value):
-        dct = self.dicts[0]
+        dct = self.head
         # We just entered the context successfully.
         if value is dct:
             dct = self.dicts[1]
@@ -355,7 +360,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         dct[key] = value
 
     def __delitem__(self, key):
-        del self.dicts[0][key]
+        del self.head[key]
 
     # These functions are incorrect and need to be rewritten.
     def __iter__(self):
