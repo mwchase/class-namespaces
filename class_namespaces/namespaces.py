@@ -388,10 +388,12 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     # These functions are incorrect and need to be rewritten.
     def __iter__(self):
-        return iter(collections.ChainMap(*self._dicts))
+        if not self.finalized:
+            raise ValueError('Iteration not defined on unfinalized scope.')
 
     def __len__(self):
-        return len(collections.ChainMap(*self._dicts))
+        if not self.finalized:
+            raise ValueError('Length not defined on unfinalized scope.')
 
 
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
