@@ -312,12 +312,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     """The class creation namespace for _Namespaceables."""
 
-    __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy'
+    __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
 
     def __init__(self, dct):
         self.dicts = [dct]
         self.namespaces = []
         self.proxies = proxies = weakref.WeakKeyDictionary()
+        self.finalized = False
 
         class ScopeProxy(_ScopeProxy):
 
@@ -344,8 +345,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             value = self.scope_proxy(value)
         return value
 
-    def __setitem__(self, key, value):
-        dct = self.head
+    def _store(self, key, value, dct):
         # We just entered the context successfully.
         if value is dct:
             dct = self.dicts[1]
@@ -355,6 +355,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
             value = self.proxies[value]
             value.validate_parent(dct)
             value.validate_assignment(key, self)
+        return value, dct
+
+    def __setitem__(self, key, value):
+        dct = self.head
+        value, dct = self._store(key, value, dct)
         if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
             raise ValueError('Cannot move scopes between classes.')
         dct[key] = value
