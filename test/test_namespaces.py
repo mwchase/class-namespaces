@@ -513,6 +513,9 @@ def test_block_reparent(namespaces):
         with ns as shadow_ns1:
             shadow_ns2 = ns
 
+    assert isinstance(shadow_ns1, namespaces.Namespace)
+    assert isinstance(shadow_ns2, shadow_ns1.scope.scope_proxy)
+
     class Test2(namespaces.Namespaceable):
         with pytest.raises(ValueError):
             ns = Test1.ns
