@@ -130,6 +130,23 @@ def test_finalization(namespaces):
         scopes[0].push(None)
 
 
+def test_basic_scope_len(namespaces):
+    scopes = {}
+    class Test1(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            scopes[1] = get_ns(ns).scope
+
+    class Test2(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns1:
+            scopes[2] = get_ns(ns1).scope
+        with namespaces.Namespace() as ns2:
+            pass
+
+    scope1 = scopes[1]
+    scope2 = scopes[2]
+    assert len(scope2) - len(scope1) == 1
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1

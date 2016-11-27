@@ -301,6 +301,11 @@ class Namespace(dict):
             self.active = False
             self.scope.pop_()
 
+    def total_length(self):
+        return len(self) + sum(
+            ns.total_length() for ns in self.values() if
+            isinstance(ns, Namespace))
+
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
 
@@ -394,6 +399,9 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __len__(self):
         if not self.finalized:
             raise ValueError('Length not defined on unfinalized scope.')
+        return len(self.head) + sum(
+            self.proxies[ns].total_length() for ns in self.head.values() if
+            isinstance(ns, self.scope_proxy))
 
 
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
