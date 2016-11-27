@@ -340,17 +340,20 @@ class _NamespaceScope(collections.abc.MutableMapping):
         return self._dicts[0]
 
     def finalize(self):
+        """Mark the scope as no longer active, and return the head."""
         if len(self._dicts) != 1:
             raise ValueError('Cannot finalize a pushed scope!')
         self.finalized = True
         return self.head
 
     def push(self, dct):
+        """Add a new active Namespace to the scope."""
         if self.finalized:
             raise ValueError('Cannot push a finalized scope!')
         self._dicts.insert(0, dct)
 
     def pop_(self):
+        """Remove the current active Namespace from the scope."""
         if len(self._dicts) == 1:
             raise ValueError('Cannot pop from a basal scope!')
         self._dicts.pop(0)
