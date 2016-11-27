@@ -292,14 +292,14 @@ class Namespace(dict):
         if self.scope is not None:
             self.validate_parent(self.scope.head)
             self.active = True
-            self.scope.dicts.insert(0, self)
+            self.scope.push(self)
             self.needs_setup = False
 
     def deactivate(self):
         """Stop being the scope for the target."""
         if self.scope is not None and self.active:
             self.active = False
-            self.scope.dicts.pop(0)
+            self.scope.pop_()
 
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
