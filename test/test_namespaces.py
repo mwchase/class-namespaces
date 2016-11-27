@@ -149,12 +149,21 @@ def test_basic_scope_len(namespaces):
             scopes[3] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
+    class Test3(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns1:
+            with namespaces.Namespace() as ns:
+                foo = 1
+            scopes[4] = get_ns(ns1).scope
+        with namespaces.Namespace() as ns2:
+            pass
 
     scope1 = scopes[1]
     scope2 = scopes[2]
     scope3 = scopes[3]
+    scope4 = scopes[4]
     assert len(scope2) - len(scope1) == 1
     assert len(scope3) - len(scope2) == 1
+    assert len(scope4) - len(scope3) == 1
 
 
 def test_redundant_resume(namespaces):
