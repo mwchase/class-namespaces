@@ -302,6 +302,7 @@ class Namespace(dict):
             self.scope.pop_()
 
     def total_length(self):
+        """Return the total number of elements in the Namespace tree."""
         return len(self) + sum(
             ns.total_length() for ns in self.values() if
             isinstance(ns, Namespace))
