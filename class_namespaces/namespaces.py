@@ -339,6 +339,22 @@ class _NamespaceScope(collections.abc.MutableMapping):
         """The innermost Namespace scope."""
         return self.dicts[0]
 
+    def finalize(self):
+        if len(self.dicts) != 1:
+            raise ValueError('Cannot finalize a pushed scope!')
+        self.finalized = True
+        return self.head
+
+    def push(self, dct):
+        if self.finalized:
+            raise ValueError('Cannot push a finalized scope!')
+        self.dicts.insert(0, dct)
+
+    def pop_(self):
+        if len(self.dicts) == 1:
+            raise ValueError('Cannot pop from a basal scope!')
+        self.dicts.pop(0)
+
     def __getitem__(self, key):
         value = collections.ChainMap(*self.dicts)[key]
         if isinstance(value, Namespace):
@@ -433,7 +449,7 @@ class _Namespaceable(_NamespaceBase, type):
         return _NamespaceScope(super().__prepare__(name, bases, **kwargs))
 
     def __new__(mcs, name, bases, dct, **kwargs):
-        cls = super().__new__(mcs, name, bases, dct.dicts[0], **kwargs)
+        cls = super().__new__(mcs, name, bases, dct.finalize(), **kwargs)
         if _DEFINED and not issubclass(cls, Namespaceable):
             # This line can be hit with class(metaclass=type(Namespaceable)):
             raise ValueError(
@@ -454,7 +470,7 @@ class _Namespaceable(_NamespaceBase, type):
                 '.' not in name and isinstance(value, Namespace) and
                 value.name != name):
             scope = _NAMESPACE_SCOPES[cls]
-            value.push(name, scope, scope.dicts[-1])
+            value.push(name, scope, scope.head)
             value.add(cls)
         super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
 
