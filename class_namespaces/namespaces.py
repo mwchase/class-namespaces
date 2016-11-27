@@ -400,8 +400,8 @@ class _NamespaceScope(collections.abc.MutableMapping):
         if not self.finalized:
             raise ValueError('Length not defined on unfinalized scope.')
         return len(self.head) + sum(
-            self.proxies[ns].total_length() for ns in self.head.values() if
-            isinstance(ns, self.scope_proxy))
+            ns.total_length() for ns in self.head.values() if
+            isinstance(ns, Namespace))
 
 
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()

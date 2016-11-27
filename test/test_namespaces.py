@@ -130,6 +130,8 @@ def test_finalization(namespaces):
         scopes[0].push(None)
 
 
+@pytest.mark.xfail(sys.version_info < (3, 4),
+                   reason="python3.4 api changes?", strict=True)
 def test_basic_scope_len(namespaces):
     scopes = {}
     class Test1(namespaces.Namespaceable):
