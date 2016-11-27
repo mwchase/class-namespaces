@@ -312,10 +312,10 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     """The class creation namespace for _Namespaceables."""
 
-    __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
+    __slots__ = '_dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
 
     def __init__(self, dct):
-        self.dicts = [dct]
+        self._dicts = [dct]
         self.namespaces = []
         self.proxies = proxies = weakref.WeakKeyDictionary()
         self.finalized = False
@@ -337,10 +337,10 @@ class _NamespaceScope(collections.abc.MutableMapping):
     @property
     def head(self):
         """The innermost Namespace scope."""
-        return self.dicts[0]
+        return self._dicts[0]
 
     def finalize(self):
-        if len(self.dicts) != 1:
+        if len(self._dicts) != 1:
             raise ValueError('Cannot finalize a pushed scope!')
         self.finalized = True
         return self.head
@@ -348,15 +348,15 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def push(self, dct):
         if self.finalized:
             raise ValueError('Cannot push a finalized scope!')
-        self.dicts.insert(0, dct)
+        self._dicts.insert(0, dct)
 
     def pop_(self):
-        if len(self.dicts) == 1:
+        if len(self._dicts) == 1:
             raise ValueError('Cannot pop from a basal scope!')
-        self.dicts.pop(0)
+        self._dicts.pop(0)
 
     def __getitem__(self, key):
-        value = collections.ChainMap(*self.dicts)[key]
+        value = collections.ChainMap(*self._dicts)[key]
         if isinstance(value, Namespace):
             value = self.scope_proxy(value)
         return value
@@ -364,7 +364,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def _store(self, key, value, dct):
         # We just entered the context successfully.
         if value is dct:
-            dct = self.dicts[1]
+            dct = self._dicts[1]
         if isinstance(value, Namespace):
             value.push(key, self, dct)
         if isinstance(value, self.scope_proxy):
@@ -385,10 +385,10 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     # These functions are incorrect and need to be rewritten.
     def __iter__(self):
-        return iter(collections.ChainMap(*self.dicts))
+        return iter(collections.ChainMap(*self._dicts))
 
     def __len__(self):
-        return len(collections.ChainMap(*self.dicts))
+        return len(collections.ChainMap(*self._dicts))
 
 
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()

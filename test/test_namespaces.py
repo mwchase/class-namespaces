@@ -110,7 +110,7 @@ def get_ns(ns):
 
 def scope_dicts_length_equals(ns, length):
     scope = get_ns(ns).scope
-    assert len(scope.dicts) == length
+    assert len(scope._dicts) == length
 
 
 def test_redundant_resume(namespaces):
