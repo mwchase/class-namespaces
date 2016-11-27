@@ -259,6 +259,7 @@ class Namespace(dict):
             setattr(self, name, value)
 
     def validate_assignment(self, name, scope):
+        """Confirm the instance can be assigned to the given name and scope."""
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
@@ -267,6 +268,7 @@ class Namespace(dict):
             raise ValueError('Cannot reuse namespace')
 
     def validate_parent(self, parent):
+        """Confirm that the instance has the correct parent dict."""
         if parent is not self.parent:
             # This line can be hit by assigning a namespace into another
             # namespace.
