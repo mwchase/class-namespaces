@@ -113,6 +113,19 @@ def scope_dicts_length_equals(ns, length):
     assert len(scope._dicts) == length
 
 
+def test_finalization(namespaces):
+    scopes = []
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with pytest.raises(ValueError):
+                get_ns(ns).scope.finalize()
+        with pytest.raises(ValueError):
+            get_ns(ns).scope.pop_()
+        scopes.append(get_ns(ns).scope)
+    with pytest.raises(ValueError):
+        scopes[0].push(None)
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1
