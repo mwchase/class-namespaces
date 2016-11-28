@@ -115,6 +115,7 @@ def scope_dicts_length_equals(ns, length):
 
 def test_finalization(namespaces):
     scopes = []
+
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with pytest.raises(ValueError):
@@ -134,6 +135,7 @@ def test_finalization(namespaces):
                    reason="python3.4 api changes?", strict=True)
 def test_basic_scope_len(namespaces):
     scopes = {}
+
     class Test1(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             scopes[1] = get_ns(ns).scope
@@ -143,13 +145,15 @@ def test_basic_scope_len(namespaces):
             scopes[2] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
+
     class Test3(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
             foo = 1
             scopes[3] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
-    class Test3(namespaces.Namespaceable):
+
+    class Test4(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
             with namespaces.Namespace() as ns:
                 foo = 1
