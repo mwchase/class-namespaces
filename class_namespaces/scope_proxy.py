@@ -10,7 +10,7 @@ _OWNERS = weakref.WeakKeyDictionary()
 
 
 def _ns(self):
-    return _NAMESPACES[self][self]
+    return _owner(self).proxies[self]
 
 
 def _owner(self):
@@ -25,8 +25,7 @@ class _ScopeProxy(_Proxy):
 
     def __init__(self, dct, container, owner):
         _OWNERS[self] = owner
-        _NAMESPACES[self] = container
-        container[self] = dct
+        owner.proxies[self] = dct
 
     def __dir__(self):
         # This line will fire if dir(ns) is done during class creation.
