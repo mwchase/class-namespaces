@@ -245,6 +245,50 @@ def test_scope_namespaced_get_error(namespaces):
         scope['ns.ns.bar']
 
 
+def test_scope_namespaced_get_non_ns(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
+
+    scope = scopes[0]
+
+    with pytest.raises(KeyError):
+        scope['ns.ns.foo.__str__']
+
+
+def test_scope_namespaced_get_non_existent(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
+
+    scope = scopes[0]
+
+    with pytest.raises(KeyError):
+        scope['ns.foo']
+
+
+def test_scope_namespaced_get_non_recursive(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
+
+    scope = scopes[0]
+
+    assert scope['ns'].ns.foo == 1
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1
