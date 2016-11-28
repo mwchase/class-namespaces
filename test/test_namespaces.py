@@ -243,6 +243,21 @@ def test_scope_namespaced_set(namespaces):
     assert Test.ns.ns.foo == 1
 
 
+def test_scope_namespaced_del(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
+
+    assert Test.ns.ns.foo == 1
+    del scopes[0]['ns.ns.foo']
+    with pytest.raises(AttributeError):
+        Test.ns.ns.foo
+
+
 def test_scope_namespaced_get_error(namespaces):
     scopes = {}
 
