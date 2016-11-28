@@ -218,16 +218,16 @@ def test_basic_scope_iter(namespaces):
         {'ns1.ns', 'ns1.ns.foo'})
 
 
-# def test_scope_namespaced_get(namespaces):
-#     scopes = {}
+def test_scope_namespaced_get(namespaces):
+    scopes = {}
 
-#     class Test(namespaces.Namespaceable):
-#         with namespaces.Namespace() as ns:
-#             with namespaces.Namespace() as ns:
-#                 foo = 1
-#                 scopes[0] = get_ns(ns).scope
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
 
-#     assert scopes[0]['ns.ns.foo'] == 1
+    assert scopes[0]['ns.ns.foo'] == 1
 
 
 def test_redundant_resume(namespaces):
