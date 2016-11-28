@@ -105,7 +105,7 @@ def test_resume(namespaces):
 
 def get_ns(ns):
     from class_namespaces import scope_proxy
-    return scope_proxy._PROXY_INFOS[ns][ns]
+    return scope_proxy._ns(ns)
 
 
 def scope_dicts_length_equals(ns, length):

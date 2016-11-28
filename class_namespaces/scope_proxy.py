@@ -5,11 +5,16 @@ import weakref
 from . import ops
 from .proxy import _Proxy
 
-_PROXY_INFOS = weakref.WeakKeyDictionary()
+_NAMESPACES = weakref.WeakKeyDictionary()
+_OWNERS = weakref.WeakKeyDictionary()
 
 
 def _ns(self):
-    return _PROXY_INFOS[self][self]
+    return _NAMESPACES[self][self]
+
+
+def _owner(self):
+    return _OWNERS[self]
 
 
 class _ScopeProxy(_Proxy):
@@ -19,7 +24,8 @@ class _ScopeProxy(_Proxy):
     __slots__ = '__weakref__',
 
     def __init__(self, dct, container, owner):
-        _PROXY_INFOS[self] = container
+        _OWNERS[self] = owner
+        _NAMESPACES[self] = container
         container[self] = dct
 
     def __dir__(self):
