@@ -385,6 +385,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
         except KeyError:
             raise KeyError(key)
 
+    def wrap(self, value):
+        if isinstance(value, Namespace):
+            value = self.scope_proxy(value)
+        return value
+
     def __getitem__(self, key):
         if self.finalized:
             parent, is_namespace, name = key.rpartition('.')
@@ -398,9 +403,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
                 value = self.head[key]
         else:
             value = collections.ChainMap(*self._dicts)[key]
-        if isinstance(value, Namespace):
-            value = self.scope_proxy(value)
-        return value
+        return self.wrap(value)
 
     def _store(self, key, value, dct):
         # We just entered the context successfully.
