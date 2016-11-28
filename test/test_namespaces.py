@@ -126,7 +126,7 @@ def test_finalization(namespaces):
         with pytest.raises(ValueError):
             len(get_ns(ns).scope)
         with pytest.raises(ValueError):
-            iter(get_ns(ns).scope)
+            next(iter(get_ns(ns).scope))
     with pytest.raises(ValueError):
         scopes[0].push(None)
 
