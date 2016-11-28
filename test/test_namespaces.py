@@ -239,6 +239,7 @@ def test_scope_namespaced_set(namespaces):
                 scopes[0] = get_ns(ns).scope
 
     scopes[0]['ns.ns.foo'] = 1
+    assert scopes[0]['ns.ns.foo'] == 1
     assert Test.ns.ns.foo == 1
 
 

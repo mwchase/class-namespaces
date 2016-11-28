@@ -425,8 +425,9 @@ class _NamespaceScope(collections.abc.MutableMapping):
             raise ValueError('Cannot move scopes between classes.')
         parent, is_namespace, name = key.rpartition('.')
         if self.finalized and is_namespace:
-            namespace = self._raw_get(parent, key)
-            namespace[key] = value
+            # Look for parent, not key.
+            namespace = self._raw_get(parent, parent)
+            namespace[name] = value
         else:
             dct[key] = value
 
