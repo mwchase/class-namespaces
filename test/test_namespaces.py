@@ -230,6 +230,21 @@ def test_scope_namespaced_get(namespaces):
     assert scopes[0]['ns.ns.foo'] == 1
 
 
+def test_scope_namespaced_get_error(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+                scopes[0] = get_ns(ns).scope
+
+    scope = scopes[0]
+
+    with pytest.raises(KeyError):
+        scope['ns.ns.bar']
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1

@@ -372,8 +372,30 @@ class _NamespaceScope(collections.abc.MutableMapping):
             raise ValueError('Cannot pop from a basal scope!')
         self._dicts.pop(0)
 
+    def _raw_get(self, parent, key):
+        dct = self.head
+        try:
+            for element in parent.split('.'):
+                dct = dct[element]
+                if not isinstance(dct, Namespace):
+                    raise KeyError
+            return dct
+        except KeyError:
+            raise KeyError(key)
+
     def __getitem__(self, key):
-        value = collections.ChainMap(*self._dicts)[key]
+        if self.finalized:
+            parent, is_namespace, name = key.rpartition('.')
+            if is_namespace:
+                namespace = self._raw_get(parent, key)
+                try:
+                    value = namespace[name]
+                except KeyError:
+                    raise KeyError(key)
+            else:
+                value = self.head[key]
+        else:
+            value = collections.ChainMap(*self._dicts)[key]
         if isinstance(value, Namespace):
             value = self.scope_proxy(value)
         return value
@@ -444,6 +466,7 @@ class _NamespaceBase:
             self_ = self
             for element in parent.split('.'):
                 self_ = self.__is_proxy(getattr(self_, element))
+            # Wait, this line looks wrong.
             return getattr(getattr(self, parent), name_)
         return super(_NamespaceBase, type(self)).__getattribute__(self, name)
 
