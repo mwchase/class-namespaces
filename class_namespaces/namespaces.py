@@ -432,7 +432,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
             dct[key] = value
 
     def __delitem__(self, key):
-        del self.head[key]
+        parent, is_namespace, name = key.rpartition('.')
+        if self.finalized and is_namespace:
+            # Look for parent, not key.
+            namespace = self._raw_get(parent, parent)
+            del namespace[name]
+        else:
+            del self.head[key]
 
     # These functions are incorrect and need to be rewritten.
     def __iter__(self):
