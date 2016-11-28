@@ -215,7 +215,7 @@ def test_basic_scope_iter(namespaces):
 def test_scope_namespaced_get(namespaces):
     scopes = {}
 
-    class Test(namespaces.Namespace):
+    class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
                 foo = 1
