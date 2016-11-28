@@ -331,7 +331,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __init__(self, dct):
         self._dicts = [dct]
         self.namespaces = []
-        self.proxies = proxies = weakref.WeakKeyDictionary()
+        self.proxies = weakref.WeakKeyDictionary()
         self.finalized = False
 
         self_ = self
@@ -343,7 +343,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             __slots__ = ()
 
             def __init__(self, dct):
-                super().__init__(dct, proxies, self_)
+                super().__init__(dct, self_)
 
         self.scope_proxy = ScopeProxy
 

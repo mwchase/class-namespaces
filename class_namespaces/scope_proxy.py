@@ -23,7 +23,7 @@ class _ScopeProxy(_Proxy):
 
     __slots__ = '__weakref__',
 
-    def __init__(self, dct, container, owner):
+    def __init__(self, dct, owner):
         _OWNERS[self] = owner
         owner.proxies[self] = dct
 
