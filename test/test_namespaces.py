@@ -170,6 +170,48 @@ def test_basic_scope_len(namespaces):
     assert len(scope4) - len(scope3) == 1
 
 
+@pytest.mark.xfail(sys.version_info < (3, 4),
+                   reason="python3.4 api changes?", strict=True)
+def test_basic_scope_len(namespaces):
+    scopes = {}
+
+    class Test1(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            scopes[1] = get_ns(ns).scope
+
+    class Test2(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns1:
+            scopes[2] = get_ns(ns1).scope
+        with namespaces.Namespace() as ns2:
+            pass
+
+    class Test3(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns1:
+            foo = 1
+            scopes[3] = get_ns(ns1).scope
+        with namespaces.Namespace() as ns2:
+            pass
+
+    class Test4(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns1:
+            with namespaces.Namespace() as ns:
+                foo = 1
+            scopes[4] = get_ns(ns1).scope
+        with namespaces.Namespace() as ns2:
+            pass
+
+    set1 = frozenset(scopes[1])
+    set2 = frozenset(scopes[2])
+    set3 = frozenset(scopes[3])
+    set4 = frozenset(scopes[4])
+
+    baseline = set1.difference({'ns'})
+    assert set2.symmetric_difference(baseline) == frozenset({'ns1', 'ns2'})
+    assert set3.symmetric_difference(set2) == frozenset({'ns1.foo'})
+    assert set4.symmetric_difference(set2) == frozenset(
+        {'ns1.ns', 'ns1.ns.foo'})
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1
