@@ -407,10 +407,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     def _store(self, key, value, dct):
         # We just entered the context successfully.
-        if value is dct:
-            dct = self._dicts[1]
-        if isinstance(value, Namespace):
-            value.push(key, self, dct)
+        if not self.finalized:
+            if value is dct:
+                dct = self._dicts[1]
+            if isinstance(value, Namespace):
+                value.push(key, self, dct)
         if isinstance(value, self.scope_proxy):
             value = self.proxies[value]
             value.validate_parent(dct)
@@ -422,7 +423,12 @@ class _NamespaceScope(collections.abc.MutableMapping):
         value, dct = self._store(key, value, dct)
         if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
             raise ValueError('Cannot move scopes between classes.')
-        dct[key] = value
+        parent, is_namespace, name = key.rpartition('.')
+        if self.finalized and is_namespace:
+            namespace = self._raw_get(parent, key)
+            namespace[key] = value
+        else:
+            dct[key] = value
 
     def __delitem__(self, key):
         del self.head[key]
