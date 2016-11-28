@@ -594,6 +594,7 @@ def test_too_deep(namespaces):
 def test_block_reparent(namespaces):
     shadow_ns1 = None
     shadow_ns2 = None
+
     class Test1(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with pytest.raises(ValueError):
