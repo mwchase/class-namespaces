@@ -302,18 +302,9 @@ class Namespace(dict):
             self.scope.pop_()
 
     def total_length(self):
-        """Return the total number of elements in the Namespace tree."""
         return len(self) + sum(
             ns.total_length() for ns in self.values() if
             isinstance(ns, Namespace))
-
-    def iter_all(self, prefix):
-        """Iterate over all elements in the Namespace tree."""
-        for key, value in self.items():
-            qualified_name = prefix + key
-            yield qualified_name
-            if isinstance(value, Namespace):
-                yield from value.iter_all(qualified_name + '.')
 
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
@@ -404,17 +395,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __iter__(self):
         if not self.finalized:
             raise ValueError('Iteration not defined on unfinalized scope.')
-        for key, value in self.head.items():
-            yield key
-            if isinstance(value, Namespace):
-                yield from value.iter_all(prefix=key + '.')
 
     def __len__(self):
         if not self.finalized:
             raise ValueError('Length not defined on unfinalized scope.')
-        return len(self.head) + sum(
-            ns.total_length() for ns in self.head.values() if
-            isinstance(ns, Namespace))
+        return len(self._dicts) + sum(
+            self.proxies[ns].total_length() for ns in self.values() if
+            isinstance(ns, self.scope_proxy))
 
 
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
