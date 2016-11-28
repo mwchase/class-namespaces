@@ -23,13 +23,18 @@ class _ScopeProxy(_Proxy):
         return _PROXY_INFOS[self][self]
 
     def __getattribute__(self, name):
+        # Have to add some dependencies back...
+        from .namespaces import Namespace
         dct = _PROXY_INFOS[self][self]
         try:
-            return dct[name]
+            value = dct[name]
         # These lines will fire if a non-existent namespace attribute is gotten
         # during class creation.
         except KeyError:
             raise AttributeError(name)
+        if isinstance(value, Namespace):
+            value = type(self)(value)
+        return value
 
     def __setattr__(self, name, value):
         _PROXY_INFOS[self][self][name] = value
