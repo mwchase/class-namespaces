@@ -37,9 +37,9 @@ def test_delete(namespaces):
         del Test().ns.b
     del Test.ns.b
     with pytest.raises(AttributeError):
-        Test.ns.b
+        print(Test.ns.b)
     with pytest.raises(AttributeError):
-        Test().ns.b
+        print(Test().ns.b)
 
 
 def test_set(namespaces):
@@ -60,9 +60,9 @@ def test_set(namespaces):
     test2 = Test()
     test2.ns.c = 3
     with pytest.raises(AttributeError):
-        Test.ns.c
+        print(Test.ns.c)
     with pytest.raises(AttributeError):
-        test.ns.c
+        print(test.ns.c)
     assert test2.ns.c == 3
 
 
@@ -119,16 +119,16 @@ def test_finalization(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with pytest.raises(ValueError):
-                get_ns(ns).scope.finalize()
+                print(get_ns(ns).scope.finalize())
         with pytest.raises(ValueError):
-            get_ns(ns).scope.pop_()
+            print(get_ns(ns).scope.pop_())
         scopes.append(get_ns(ns).scope)
         with pytest.raises(ValueError):
-            len(get_ns(ns).scope)
+            print(len(get_ns(ns).scope))
         with pytest.raises(ValueError):
-            next(iter(get_ns(ns).scope))
+            print(next(iter(get_ns(ns).scope)))
     with pytest.raises(ValueError):
-        scopes[0].push(None)
+        print(scopes[0].push(None))
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
@@ -255,7 +255,7 @@ def test_scope_namespaced_del(namespaces):
     assert Test.ns.ns.foo == 1
     del scopes[0]['ns.ns.foo']
     with pytest.raises(AttributeError):
-        Test.ns.ns.foo
+        print(Test.ns.ns.foo)
 
 
 def test_scope_namespaced_get_error(namespaces):
@@ -270,7 +270,7 @@ def test_scope_namespaced_get_error(namespaces):
     scope = scopes[0]
 
     with pytest.raises(KeyError):
-        scope['ns.ns.bar']
+        print(scope['ns.ns.bar'])
 
 
 def test_scope_namespaced_get_non_ns(namespaces):
@@ -285,7 +285,7 @@ def test_scope_namespaced_get_non_ns(namespaces):
     scope = scopes[0]
 
     with pytest.raises(KeyError):
-        scope['ns.ns.foo.__str__']
+        print(scope['ns.ns.foo.__str__'])
 
 
 def test_scope_namespaced_get_non_existent(namespaces):
@@ -300,7 +300,7 @@ def test_scope_namespaced_get_non_existent(namespaces):
     scope = scopes[0]
 
     with pytest.raises(KeyError):
-        scope['ns.foo']
+        print(scope['ns.foo'])
 
 
 def test_scope_namespaced_get_non_recursive(namespaces):
@@ -539,7 +539,7 @@ def test_override_method(namespaces):
 
 def test_can_t_preload_with_namespace(namespaces):
     with pytest.raises(ValueError):
-        namespaces.Namespace(ns=namespaces.Namespace())
+        print(namespaces.Namespace(ns=namespaces.Namespace()))
 
 
 def test_add_later(namespaces):
@@ -591,7 +591,7 @@ def test_basic_meta(namespaces):
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
     with pytest.raises(AttributeError):
-        Test().ns.meta_var
+        print(Test().ns.meta_var)
 
 
 def test_somewhat_weirder_meta(namespaces):
@@ -608,11 +608,11 @@ def test_somewhat_weirder_meta(namespaces):
     assert Test.ns.cls_var == 2
     assert Test().ns.cls_var == 2
     with pytest.raises(AttributeError):
-        Test().ns.meta_var
+        print(Test().ns.meta_var)
     with pytest.raises(AttributeError):
-        Test.ns.var
+        print(Test.ns.var)
     with pytest.raises(AttributeError):
-        Meta.ns.cls_var
+        print(Meta.ns.cls_var)
     Test.var = 3
     assert Test.var == 3
     Meta.var = 4
@@ -691,6 +691,7 @@ def test_must_inherit(namespaces):
     with pytest.raises(ValueError):
         class Test(metaclass=type(namespaces.Namespaceable)):
             pass
+        print(Test)
 
 
 def test_regular_delete(namespaces):
@@ -705,7 +706,7 @@ def test_too_deep(namespaces):
     class Test(namespaces.Namespaceable):
         var = None
     with pytest.raises(ValueError):
-        getattr(Test, 'var.__str__')
+        print(getattr(Test, 'var.__str__'))
 
 
 def test_block_reparent(namespaces):
@@ -719,12 +720,15 @@ def test_block_reparent(namespaces):
                     pass
             with pytest.raises(ValueError):
                 ns.ns = ns
+                print(ns, ns.ns)
         with pytest.raises(ValueError):
             ns.ns = ns
+            print(ns, ns.ns)
         with namespaces.Namespace() as ns2:
             with pytest.raises(ValueError):
                 with ns:
                     pass
+                print(ns)
         nonlocal shadow_ns1
         nonlocal shadow_ns2
         with ns as shadow_ns1:
@@ -751,7 +755,7 @@ def test_block_reparent(namespaces):
 
 def test_can_t_get_path(namespaces):
     with pytest.raises(ValueError):
-        namespaces.Namespace().path
+        print(namespaces.Namespace().path)
 
 
 def test_non_existent_attribute_during_creation(namespaces):
@@ -759,7 +763,7 @@ def test_non_existent_attribute_during_creation(namespaces):
         with namespaces.Namespace() as ns:
             pass
         with pytest.raises(AttributeError):
-            ns.var
+            print(ns.var)
 
 
 def test_partial_descriptors(namespaces):
