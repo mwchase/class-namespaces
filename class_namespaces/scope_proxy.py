@@ -32,8 +32,6 @@ class _ScopeProxy(_Proxy):
         return _ns(self)
 
     def __getattribute__(self, name):
-        # Have to add some dependencies back...
-        from .namespaces import Namespace
         dct = _ns(self)
         try:
             value = dct[name]
@@ -41,9 +39,7 @@ class _ScopeProxy(_Proxy):
         # during class creation.
         except KeyError:
             raise AttributeError(name)
-        if isinstance(value, Namespace):
-            value = type(self)(value)
-        return value
+        return _owner(self).wrap(value)
 
     def __setattr__(self, name, value):
         _ns(self)[name] = value
