@@ -289,6 +289,18 @@ def test_scope_namespaced_get_non_recursive(namespaces):
     assert scope['ns'].ns.foo == 1
 
 
+def assert_equals(a, b):
+    assert a == b
+
+
+def test_recursive_get_in_definition(namespaces):
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                foo = 1
+        assert_equals(ns.ns.foo, 1)
+
+
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
         foo = 1
