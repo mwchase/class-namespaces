@@ -230,6 +230,18 @@ def test_scope_namespaced_get(namespaces):
     assert scopes[0]['ns.ns.foo'] == 1
 
 
+def test_scope_namespaced_set(namespaces):
+    scopes = {}
+
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with namespaces.Namespace() as ns:
+                scopes[0] = get_ns(ns).scope
+
+    scopes[0]['ns.ns.foo'] = 1
+    assert Test.ns.ns.foo == 1
+
+
 def test_scope_namespaced_get_error(namespaces):
     scopes = {}
 
