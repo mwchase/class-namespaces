@@ -33,12 +33,12 @@ def test_delete(namespaces):
     assert Test().ns
     assert Test.ns.b == 2
     assert Test().ns.b == 2
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='b'):
         del Test().ns.b
     del Test.ns.b
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='b'):
         print(Test.ns.b)
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='b'):
         print(Test().ns.b)
 
 
@@ -59,9 +59,9 @@ def test_set(namespaces):
     assert test.ns.b == 3
     test2 = Test()
     test2.ns.c = 3
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='c'):
         print(Test.ns.c)
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='c'):
         print(test.ns.c)
     assert test2.ns.c == 3
 
@@ -118,16 +118,22 @@ def test_finalization(namespaces):
 
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError,
+                               message='Cannot finalize a pushed scope!'):
                 print(get_ns(ns).scope.finalize())
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError,
+                           message='Cannot pop from a basal scope!'):
             print(get_ns(ns).scope.pop_())
         scopes.append(get_ns(ns).scope)
-        with pytest.raises(ValueError):
+        with pytest.raises(
+                ValueError,
+                metaclass='Length not defined on unfinalized scope.'):
             print(len(get_ns(ns).scope))
-        with pytest.raises(ValueError):
+        with pytest.raises(
+                ValueError,
+                message='Iteration not defined on unfinalized scope.'):
             print(next(iter(get_ns(ns).scope)))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, message='Cannot push a finalized scope!'):
         print(scopes[0].push(None))
 
 
@@ -254,7 +260,7 @@ def test_scope_namespaced_del(namespaces):
 
     assert Test.ns.ns.foo == 1
     del scopes[0]['ns.ns.foo']
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='foo'):
         print(Test.ns.ns.foo)
 
 
@@ -269,7 +275,7 @@ def test_scope_namespaced_get_error(namespaces):
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError, message='ns.ns.bar'):
         print(scope['ns.ns.bar'])
 
 
@@ -284,7 +290,7 @@ def test_scope_namespaced_get_non_ns(namespaces):
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError, message='ns.ns.foo.__str__'):
         print(scope['ns.ns.foo.__str__'])
 
 
@@ -299,7 +305,7 @@ def test_scope_namespaced_get_non_existent(namespaces):
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError, message='ns.foo'):
         print(scope['ns.foo'])
 
 
@@ -449,14 +455,14 @@ def test_advanced_overlap(namespaces):
 
 def test_empty_nameless(namespaces):
     class Test(namespaces.Namespaceable):
-        with pytest.raises(RuntimeError):
+        with pytest.raises(RuntimeError, message='Namespace must be named.'):
             with namespaces.Namespace():
                 pass
 
 
 def test_non_empty_nameless(namespaces):
     class Test(namespaces.Namespaceable):
-        with pytest.raises(RuntimeError):
+        with pytest.raises(RuntimeError, message='Namespace must be named.'):
             with namespaces.Namespace():
                 a = 1
 
@@ -465,7 +471,7 @@ def test_rename(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             pass
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, message='Cannot rename namespace'):
             with ns as ns2:
                 pass
 
@@ -479,6 +485,7 @@ def test_use_namespace(namespaces):
         ns.bar = 2
         assert ns.bar == 2
         del ns.qux
+        # I tried to add a message to this one. It broke. ¯\_(ツ)_/¯
         with pytest.raises(AttributeError):
             del ns.qux
     assert Test.ns.foo == 1
@@ -538,7 +545,7 @@ def test_override_method(namespaces):
 
 
 def test_can_t_preload_with_namespace(namespaces):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, message='Bad values: {}'):
         print(namespaces.Namespace(ns=namespaces.Namespace()))
 
 
@@ -590,7 +597,7 @@ def test_basic_meta(namespaces):
 
     assert Meta.ns.meta_var == 1
     assert Test.ns.meta_var == 1
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='meta_var'):
         print(Test().ns.meta_var)
 
 
@@ -607,11 +614,11 @@ def test_somewhat_weirder_meta(namespaces):
     assert Test.ns.meta_var == 1
     assert Test.ns.cls_var == 2
     assert Test().ns.cls_var == 2
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='meta_var'):
         print(Test().ns.meta_var)
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='var'):
         print(Test.ns.var)
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message='cls_var'):
         print(Meta.ns.cls_var)
     Test.var = 3
     assert Test.var == 3
@@ -688,7 +695,10 @@ def test_star_attr_functions(namespaces):
 
 
 def test_must_inherit(namespaces):
-    with pytest.raises(ValueError):
+    with pytest.raises(
+            ValueError, message=(
+                'Cannot create a _Namespaceable that does not inherit from '
+                'Namespaceable')):
         class Test(metaclass=type(namespaces.Namespaceable)):
             pass
         print(Test)
@@ -705,7 +715,8 @@ def test_regular_delete(namespaces):
 def test_too_deep(namespaces):
     class Test(namespaces.Namespaceable):
         var = None
-    with pytest.raises(ValueError):
+    with pytest.raises(
+            ValueError, message='Given a dot attribute that went too deep.'):
         print(getattr(Test, 'var.__str__'))
 
 
@@ -715,17 +726,19 @@ def test_block_reparent(namespaces):
 
     class Test1(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, message='Cannot double-activate.'):
                 with ns:
                     pass
-            with pytest.raises(ValueError):
+            with pytest.raises(
+                    ValueError, message='Cannot reparent namespace'):
                 ns.ns = ns
                 print(ns, ns.ns)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, message='Cannot reparent namespace'):
             ns.ns = ns
             print(ns, ns.ns)
         with namespaces.Namespace() as ns2:
-            with pytest.raises(ValueError):
+            with pytest.raises(
+                    ValueError, message='Cannot reparent namespace'):
                 with ns:
                     pass
                 print(ns)
@@ -738,22 +751,26 @@ def test_block_reparent(namespaces):
     assert isinstance(shadow_ns2, shadow_ns1.scope.scope_proxy)
 
     class Test2(namespaces.Namespaceable):
-        with pytest.raises(ValueError):
+        with pytest.raises(
+                ValueError, message='Cannot move scopes between classes.'):
             ns = Test1.ns
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, message='Cannot reuse namespace'):
             ns = shadow_ns1
-        with pytest.raises(ValueError):
+        with pytest.raises(
+                ValueError, message='Cannot move scopes between classes.'):
             ns = shadow_ns2
         with namespaces.Namespace() as ns:
             pass
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, message='Cannot reuse namespace'):
         Test2.ns.ns = shadow_ns1
-    with pytest.raises(ValueError):
+    with pytest.raises(
+            ValueError, message='Cannot move scopes between classes.'):
         Test2.ns.ns = shadow_ns2
 
 
 def test_can_t_get_path(namespaces):
+    # This error currently doesn't have a message.
     with pytest.raises(ValueError):
         print(namespaces.Namespace().path)
 
@@ -762,7 +779,7 @@ def test_non_existent_attribute_during_creation(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             pass
-        with pytest.raises(AttributeError):
+        with pytest.raises(AttributeError, message='var'):
             print(ns.var)
 
 
@@ -782,15 +799,17 @@ def test_partial_descriptors(namespaces):
             setter = Setter()
             deleter = Deleter()
 
+    deleter_msg = '__set__'
+    setter_msg = '__delete__'
     test = Test()
-    with pytest.raises(AttributeError):
-        test.ns.deleter = None
-    with pytest.raises(AttributeError):
-        del test.ns.setter
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message=deleter_msg):
         test.deleter = None
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, message=setter_msg):
         del test.setter
+    with pytest.raises(AttributeError, message=deleter_msg):
+        test.ns.deleter = None
+    with pytest.raises(AttributeError, message=setter_msg):
+        del test.ns.setter
 
 
 def test_namespace_is_truthy(namespaces):
