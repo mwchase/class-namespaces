@@ -68,6 +68,7 @@ Things that don't work:
 * Various ways of putting a Namespace in a Namespace that I didn't see an obvious way to handle. In particular...
 
   * There is no way to put an established namespace directly into another namespace.
+* Some pytest constructs behave weirdly inside the class definitions. Hopefully, this doesn't matter to anyone not writing tests for the package.
 
 Things that might work:
 
