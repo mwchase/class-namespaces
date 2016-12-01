@@ -814,3 +814,19 @@ def test_partial_descriptors(namespaces):
 
 def test_namespace_is_truthy(namespaces):
     assert namespaces.Namespace()
+
+
+def test_bad_del_in_definition(namespaces):
+    class Test(namespaces.Namespaceable):
+        with namespaces.Namespace() as ns:
+            with pytest.raises(NameError, message="name 'foo' is not defined"):
+                del foo
+
+
+# Not 100% sure this is desired behavior. See Issue 12.
+def test_subtle_bad_del_in_definition(namespaces):
+    class Test(namespaces.Namespaceable):
+        foo = 1
+        with namespaces.Namespace() as ns:
+            with pytest.raises(NameError, message="name 'foo' is not defined"):
+                del foo
