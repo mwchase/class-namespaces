@@ -27,7 +27,7 @@ def test_ABC_helper(abc):
         @abstractmethod
         def foo(cls):
             return cls.__name__
-    assert isinstance(C, type(abc.NamespaceableABC))
+    assert isinstance(C, abc.NamespaceableABCMeta)
     with pytest.raises(TypeError):
         print(C())
 
@@ -60,7 +60,7 @@ def test_abstractproperty_basics(abc):
         pass
     assert not getattr(bar, "__isabstractmethod__", False)
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         @property
         @abstractmethod
         def foo(self):
@@ -77,7 +77,7 @@ def test_abstractproperty_basics(abc):
 
 def test_abstractproperty_namespaced(abc, namespace):
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         with namespace() as ns:
             @property
             @abstractmethod
@@ -106,7 +106,7 @@ def test_abstractclassmethod_basics(abc):
         pass
     assert not getattr(bar, "__isabstractmethod__", False)
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         @classmethod
         @abstractmethod
         def foo(cls):
@@ -123,7 +123,7 @@ def test_abstractclassmethod_basics(abc):
 
 
 def test_abstractclassmethod_namespaced(abc, namespace):
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         with namespace() as ns:
             @classmethod
             @abstractmethod
@@ -153,7 +153,7 @@ def test_abstractstaticmethod_basics(abc):
         pass
     assert not (getattr(bar, "__isabstractmethod__", False))
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         @staticmethod
         @abstractmethod
         def foo():
@@ -170,7 +170,7 @@ def test_abstractstaticmethod_basics(abc):
 
 
 def test_abstractstaticmethod_namespaced(abc, namespace):
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         with namespace() as ns:
             @staticmethod
             @abstractmethod
@@ -192,7 +192,7 @@ def test_abstractmethod_integration(abc):
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
-        class C(metaclass=type(abc.NamespaceableABC)):
+        class C(metaclass=abc.NamespaceableABCMeta):
             @abstractthing
             def foo(self):
                 pass  # abstract
@@ -233,7 +233,7 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
-        class C(metaclass=type(abc.NamespaceableABC)):
+        class C(metaclass=abc.NamespaceableABCMeta):
             with namespace() as ns:
                 @abstractthing
                 def foo(self):
@@ -275,7 +275,7 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
 
 
 def test_descriptors_with_abstractmethod(abc):
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         @property
         @abstractmethod
         def foo(self):
@@ -316,7 +316,7 @@ def test_descriptors_with_abstractmethod(abc):
 
 
 def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         with namespace() as ns:
             @property
             @abstractmethod
@@ -377,7 +377,7 @@ def test_customdescriptors_with_abstractmethod(abc):
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         @Descriptor
         @abstractmethod
         def foo(self):
@@ -421,7 +421,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         with namespace() as ns:
             @Descriptor
             @abstractmethod
@@ -453,7 +453,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
 
 def test_metaclass_abc(abc):
     # Metaclasses can be ABCs, too.
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         @abstractmethod
         def x(self):
             pass
@@ -467,8 +467,26 @@ def test_metaclass_abc(abc):
         pass
 
 
+def test_metaclass_abc_namespaced(abc, namespace):
+    # Metaclasses can be ABCs, too.
+    class A(metaclass=abc.NamespaceableABCMeta):
+        with namespace() as ns:
+            @abstractmethod
+            def x(self):
+                pass
+    assert A.__abstractmethods__ == {"ns.x"}
+
+    class meta(type, A):
+        with namespace() as ns:
+            def x(self):
+                return 1
+
+    class C(metaclass=meta):
+        pass
+
+
 def test_registration_basics(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
 
     class B(object):
@@ -495,7 +513,7 @@ def test_registration_basics(abc):
 
 
 def test_register_as_class_deco(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
 
     @A.register
@@ -521,7 +539,7 @@ def test_register_as_class_deco(abc):
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
 def test_isinstance_invalidation(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
 
     class B:
@@ -538,7 +556,7 @@ def test_isinstance_invalidation(abc):
 
 
 def test_registration_builtins(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
     A.register(int)
     assert isinstance(42, A)
@@ -561,7 +579,7 @@ def test_registration_builtins(abc):
 
 
 def test_registration_edge_cases(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
     A.register(A)  # should pass silently
 
@@ -584,26 +602,26 @@ def test_registration_edge_cases(abc):
 
 
 def test_register_non_class(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
     with pytest.raises(TypeError, message="Can only register classes"):
         print(A.register(4))
 
 
 def test_registration_transitiveness(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
     assert issubclass(A, A)
     assert issubclass(A, (A,))
 
-    class B(metaclass=type(abc.NamespaceableABC)):
+    class B(metaclass=abc.NamespaceableABCMeta):
         pass
     assert not (issubclass(A, B))
     assert not (issubclass(A, (B,)))
     assert not (issubclass(B, A))
     assert not (issubclass(B, (A,)))
 
-    class C(metaclass=type(abc.NamespaceableABC)):
+    class C(metaclass=abc.NamespaceableABCMeta):
         pass
     A.register(B)
 
@@ -636,7 +654,7 @@ def test_registration_transitiveness(abc):
 
 
 def test_all_new_methods_are_called(abc):
-    class A(metaclass=type(abc.NamespaceableABC)):
+    class A(metaclass=abc.NamespaceableABCMeta):
         pass
 
     class B(object):
