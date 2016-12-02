@@ -264,7 +264,7 @@ def test_rename(namespaces, namespace):
                 pass
 
 
-def test_can_t_preload_with_namespace(namespaces, namespace):
+def test_can_t_preload_with_namespace(namespace):
     with pytest.raises(ValueError, message='Bad values: {}'):
         print(namespace(ns=namespace()))
 
@@ -351,7 +351,7 @@ def test_block_reparent(namespaces, namespace):
         Test2.ns.ns = shadow_ns2
 
 
-def test_can_t_get_path(namespaces, namespace):
+def test_can_t_get_path(namespace):
     # This error currently doesn't have a message.
     with pytest.raises(ValueError):
         print(namespace().path)
@@ -394,7 +394,7 @@ def test_partial_descriptors(namespaces, namespace):
         del test.ns.setter
 
 
-def test_namespace_is_truthy(namespaces, namespace):
+def test_namespace_is_truthy(namespace):
     assert namespace()
 
 
