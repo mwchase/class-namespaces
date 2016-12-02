@@ -169,6 +169,25 @@ def test_abstractstaticmethod_basics(abc):
     assert D().foo() == 4
 
 
+def test_abstractstaticmethod_namespaced(abc, namespace):
+    class C(metaclass=type(abc.NamespaceableABC)):
+        with namespace() as ns:
+            @staticmethod
+            @abstractmethod
+            def foo():
+                return 3
+    with pytest.raises(TypeError):
+        print(C())
+
+    class D(C):
+        with namespace() as ns:
+            @staticmethod
+            def foo():
+                return 4
+    assert D.ns.foo() == 4
+    assert D().ns.foo() == 4
+
+
 def test_abstractmethod_integration(abc):
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
