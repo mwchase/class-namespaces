@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import abc as abc_main
 from inspect import isabstract
 import sys
 
@@ -131,9 +132,9 @@ def test_abstractstaticmethod_basics(abc):
 
 
 def test_abstractmethod_integration(abc):
-    for abstractthing in [abstractmethod, abc.abstractproperty,
-                          abc.abstractclassmethod,
-                          abc.abstractstaticmethod]:
+    for abstractthing in [abstractmethod, abc_main.abstractproperty,
+                          abc_main.abstractclassmethod,
+                          abc_main.abstractstaticmethod]:
         class C(metaclass=type(abc.NamespaceableABC)):
             @abstractthing
             def foo(self):
@@ -334,9 +335,9 @@ def test_isinstance_invalidation(abc):
     b = B()
     assert not (isinstance(b, A))
     assert not (isinstance(b, (A,)))
-    token_old = abc.get_cache_token()
+    token_old = abc_main.get_cache_token()
     A.register(B)
-    token_new = abc.get_cache_token()
+    token_new = abc_main.get_cache_token()
     assert token_old != token_new
     assert isinstance(b, A)
     assert isinstance(b, (A,))
