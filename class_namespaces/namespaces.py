@@ -496,8 +496,7 @@ class _Namespaceable(type):
             cls_ = cls
             for element in parent.split('.'):
                 cls_ = cls.__is_proxy(getattr(cls_, element))
-            # Wait, this line looks wrong.
-            return getattr(getattr(cls, parent), name_)
+            return getattr(cls_, name_)
         return super(_Namespaceable, type(cls)).__getattribute__(cls, name)
 
     def __setattr__(cls, name, value):
