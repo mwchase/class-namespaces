@@ -229,6 +229,51 @@ def test_abstractmethod_integration(abc):
         assert isabstract(F)
 
 
+def test_abstractmethod_integration_namespaced(abc, namespace):
+    for abstractthing in [abstractmethod, abc_main.abstractproperty,
+                          abc_main.abstractclassmethod,
+                          abc_main.abstractstaticmethod]:
+        class C(metaclass=type(abc.NamespaceableABC)):
+            with namespace() as ns:
+                @abstractthing
+                def foo(self):
+                    pass  # abstract
+
+                def bar(self):
+                    pass  # concrete
+        assert C.__abstractmethods__ == {"ns.foo"}
+        with pytest.raises(TypeError):
+            print(C())  # because foo is abstract
+        assert isabstract(C)
+
+        class D(C):
+            with namespace() as ns:
+                def bar(self):
+                    pass  # concrete override of concrete
+        assert D.__abstractmethods__ == {"ns.foo"}
+        with pytest.raises(TypeError):
+            print(D())  # because foo is still abstract
+        assert isabstract(D)
+
+        class E(D):
+            with namespace() as ns:
+                def foo(self):
+                    pass
+        assert E.__abstractmethods__ == set()
+        E()  # now foo is concrete, too
+        assert not isabstract(E)
+
+        class F(E):
+            with namespace() as ns:
+                @abstractthing
+                def bar(self):
+                    pass  # abstract override of concrete
+        assert F.__abstractmethods__ == {"ns.bar"}
+        with pytest.raises(TypeError):
+            print(F())  # because bar is abstract now
+        assert isabstract(F)
+
+
 def test_descriptors_with_abstractmethod(abc):
     class C(metaclass=type(abc.NamespaceableABC)):
         @property
