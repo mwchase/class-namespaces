@@ -284,14 +284,9 @@ def test_star_attr_functions(namespaceable, namespace):
     assert not hasattr(Test, 'ns.ns.ns.var')
 
 
-def test_must_inherit(namespaceable):
-    with pytest.raises(
-            ValueError, message=(
-                'Cannot create a _Namespaceable that does not inherit from '
-                'Namespaceable')):
-        class Test(metaclass=type(namespaceable)):
-            pass
-        print(Test)
+def test_dont_need_to_inherit(namespaceable):
+    class Test(metaclass=type(namespaceable)):
+        pass
 
 
 def test_too_deep(namespaceable):
