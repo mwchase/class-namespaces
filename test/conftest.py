@@ -8,6 +8,11 @@ def namespaces():
 
 
 @pytest.fixture
+def namespace(namespaces):
+    return namespaces.Namespace
+
+
+@pytest.fixture
 def compat():
     import class_namespaces.compat
     return class_namespaces.compat
