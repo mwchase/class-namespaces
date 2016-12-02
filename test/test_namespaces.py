@@ -54,7 +54,7 @@ def test_basic_scope_len(namespaces):
 
     class Test3(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
-            foo = 1
+            footer = 1
             scopes[3] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
@@ -62,7 +62,7 @@ def test_basic_scope_len(namespaces):
     class Test4(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
             scopes[4] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
@@ -96,7 +96,7 @@ def test_basic_scope_iter(namespaces):
 
     class Test3(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
-            foo = 1
+            footer = 1
             scopes[3] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
@@ -104,7 +104,7 @@ def test_basic_scope_iter(namespaces):
     class Test4(namespaces.Namespaceable):
         with namespaces.Namespace() as ns1:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
             scopes[4] = get_ns(ns1).scope
         with namespaces.Namespace() as ns2:
             pass
@@ -119,9 +119,9 @@ def test_basic_scope_iter(namespaces):
 
     baseline = set1.difference({'ns'})
     assert set2.symmetric_difference(baseline) == frozenset({'ns1', 'ns2'})
-    assert set3.symmetric_difference(set2) == frozenset({'ns1.foo'})
+    assert set3.symmetric_difference(set2) == frozenset({'ns1.footer'})
     assert set4.symmetric_difference(set2) == frozenset(
-        {'ns1.ns', 'ns1.ns.foo'})
+        {'ns1.ns', 'ns1.ns.footer'})
 
 
 def test_scope_namespaced_get(namespaces):
@@ -130,10 +130,10 @@ def test_scope_namespaced_get(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
-    assert scopes[0]['ns.ns.foo'] == 1
+    assert scopes[0]['ns.ns.footer'] == 1
 
 
 def test_scope_namespaced_set(namespaces):
@@ -144,9 +144,9 @@ def test_scope_namespaced_set(namespaces):
             with namespaces.Namespace() as ns:
                 scopes[0] = get_ns(ns).scope
 
-    scopes[0]['ns.ns.foo'] = 1
-    assert scopes[0]['ns.ns.foo'] == 1
-    assert Test.ns.ns.foo == 1
+    scopes[0]['ns.ns.footer'] = 1
+    assert scopes[0]['ns.ns.footer'] == 1
+    assert Test.ns.ns.footer == 1
 
 
 def test_scope_namespaced_del(namespaces):
@@ -155,13 +155,13 @@ def test_scope_namespaced_del(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
-    assert Test.ns.ns.foo == 1
-    del scopes[0]['ns.ns.foo']
-    with pytest.raises(AttributeError, message='foo'):
-        print(Test.ns.ns.foo)
+    assert Test.ns.ns.footer == 1
+    del scopes[0]['ns.ns.footer']
+    with pytest.raises(AttributeError, message='footer'):
+        print(Test.ns.ns.footer)
 
 
 def test_scope_namespaced_get_error(namespaces):
@@ -170,13 +170,13 @@ def test_scope_namespaced_get_error(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.ns.bar'):
-        print(scope['ns.ns.bar'])
+    with pytest.raises(KeyError, message='ns.ns.barter'):
+        print(scope['ns.ns.barter'])
 
 
 def test_scope_namespaced_get_non_ns(namespaces):
@@ -185,13 +185,13 @@ def test_scope_namespaced_get_non_ns(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.ns.foo.__str__'):
-        print(scope['ns.ns.foo.__str__'])
+    with pytest.raises(KeyError, message='ns.ns.footer.__str__'):
+        print(scope['ns.ns.footer.__str__'])
 
 
 def test_scope_namespaced_get_non_existent(namespaces):
@@ -200,13 +200,13 @@ def test_scope_namespaced_get_non_existent(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.foo'):
-        print(scope['ns.foo'])
+    with pytest.raises(KeyError, message='ns.footer'):
+        print(scope['ns.footer'])
 
 
 def test_scope_namespaced_get_non_recursive(namespaces):
@@ -215,30 +215,30 @@ def test_scope_namespaced_get_non_recursive(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
+                footer = 1
                 scopes[0] = get_ns(ns).scope
 
     scope = scopes[0]
 
-    assert scope['ns'].ns.foo == 1
+    assert scope['ns'].ns.footer == 1
 
 
 # I wanted this to be an intro test, but it has some paranoid checks in it.
 def test_redundant_resume(namespaces):
     class Test(namespaces.Namespaceable):
-        foo = 1
+        footer = 1
         with namespaces.Namespace() as ns:
-            foo = 2
-            assert foo == 2
+            footer = 2
+            assert footer == 2
         scope_dicts_length_equals(ns, 1)
-        foo = 3
+        footer = 3
         ns = ns
         scope_dicts_length_equals(ns, 1)
         with ns as ns:
-            foo = 4
-        assert foo == 3
-    assert Test().foo == 3
-    assert Test().ns.foo == 4
+            footer = 4
+        assert footer == 3
+    assert Test().footer == 3
+    assert Test().ns.footer == 4
 
 
 def test_empty_nameless(namespaces):
@@ -401,14 +401,16 @@ def test_namespace_is_truthy(namespaces):
 def test_bad_del_in_definition(namespaces):
     class Test(namespaces.Namespaceable):
         with namespaces.Namespace() as ns:
-            with pytest.raises(NameError, message="name 'foo' is not defined"):
-                del foo
+            with pytest.raises(
+                    NameError, message="name 'footer' is not defined"):
+                del footer
 
 
 # Not 100% sure this is desired behavior. See Issue 12.
 def test_subtle_bad_del_in_definition(namespaces):
     class Test(namespaces.Namespaceable):
-        foo = 1
+        footer = 1
         with namespaces.Namespace() as ns:
-            with pytest.raises(NameError, message="name 'foo' is not defined"):
-                del foo
+            with pytest.raises(
+                    NameError, message="name 'footer' is not defined"):
+                del footer

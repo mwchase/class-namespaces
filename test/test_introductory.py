@@ -125,13 +125,13 @@ def test_shadow(namespaces):
     """
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
-        foo = 1
+        footer = 1
         with namespaces.Namespace() as ns:
-            foo = 2
-            assert foo == 2
-        assert foo == 1
-    assert Test().foo == 1
-    assert Test().ns.foo == 2
+            footer = 2
+            assert footer == 2
+        assert footer == 1
+    assert Test().footer == 1
+    assert Test().ns.footer == 2
 
 
 def test_resume(namespaces):
@@ -142,18 +142,18 @@ def test_resume(namespaces):
     """
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
-        foo = 1
+        footer = 1
         with namespaces.Namespace() as ns:
-            foo = 2
-            assert foo == 2
-        assert foo == 1
-        foo = 3
+            footer = 2
+            assert footer == 2
+        assert footer == 1
+        footer = 3
         with ns:
-            assert foo == 2
-            foo = 4
-        assert foo == 3
-    assert Test().foo == 3
-    assert Test().ns.foo == 4
+            assert footer == 2
+            footer = 4
+        assert footer == 3
+    assert Test().footer == 3
+    assert Test().ns.footer == 4
 
 
 def assert_equals(a, b):
@@ -174,8 +174,8 @@ def test_recursive_get_in_definition(namespaces):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
             with namespaces.Namespace() as ns:
-                foo = 1
-        assert_equals(ns.ns.foo, 1)
+                footer = 1
+        assert_equals(ns.ns.footer, 1)
 
 
 def test_basic_inherit(namespaces):
@@ -186,14 +186,14 @@ def test_basic_inherit(namespaces):
     """
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
-        foo = 1
+        footer = 1
         with namespaces.Namespace() as ns:
-            foo = 2
+            footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
-    assert Subclass().foo == 1
-    assert Subclass().ns.foo == 2
+    assert Subclass().footer == 1
+    assert Subclass().ns.footer == 2
 
 
 def test_basic_super(namespaces):
@@ -228,24 +228,24 @@ def test_private(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as __ns:
-            foo = 2
+            footer = 2
 
-        def foo(self):
+        def footer(self):
             """Access a private namespace."""
-            return self.__ns.foo
+            return self.__ns.footer
 
     class Subclass(Test):
         """A throwaway test class."""
 
-        def my_foo(self):
+        def my_footer(self):
             """Access a non-existent private namespace."""
-            return self.__ns.foo
+            return self.__ns.footer
 
-    assert Test().foo() == 2
-    assert Subclass().foo() == 2
+    assert Test().footer() == 2
+    assert Subclass().footer() == 2
     with pytest.raises(
             AttributeError, message="object has no attribute '_Subclass__ns'"):
-        print(Subclass().my_foo())
+        print(Subclass().my_footer())
 
 
 def test_nested_namespace(namespaces):
@@ -263,7 +263,7 @@ def test_basic_shadow(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            foo = 2
+            footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
@@ -280,7 +280,7 @@ def test_double_shadow(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            foo = 2
+            footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
@@ -289,8 +289,8 @@ def test_double_shadow(namespaces):
     class DoubleSubclass(Subclass):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            bar = 1
-    assert not hasattr(DoubleSubclass().ns, 'foo')
+            barter = 1
+    assert not hasattr(DoubleSubclass().ns, 'footer')
 
 
 def test_overlap(namespaces):
@@ -301,14 +301,14 @@ def test_overlap(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            foo = 2
+            footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            bar = 3
-    assert Subclass().ns.foo == 2
-    assert Subclass().ns.bar == 3
+            barter = 3
+    assert Subclass().ns.footer == 2
+    assert Subclass().ns.barter == 3
 
 
 def test_advanced_overlap(namespaces):
@@ -316,16 +316,16 @@ def test_advanced_overlap(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            foo = 2
+            footer = 2
             with namespaces.Namespace() as ns:
                 qux = 4
 
     class Subclass(Test):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            bar = 3
-    assert Subclass().ns.foo == 2
-    assert Subclass().ns.bar == 3
+            barter = 3
+    assert Subclass().ns.footer == 2
+    assert Subclass().ns.barter == 3
     assert Subclass().ns.ns.qux == 4
 
 
@@ -334,17 +334,17 @@ def test_use_namespace(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            foo = 1
+            footer = 1
             qux = 3
-        assert ns.foo == 1
-        ns.bar = 2
-        assert ns.bar == 2
+        assert ns.footer == 1
+        ns.barter = 2
+        assert ns.barter == 2
         del ns.qux
         # I tried to add a message to this one. It broke. ¯\_(ツ)_/¯
         with pytest.raises(AttributeError):
             del ns.qux
-    assert Test.ns.foo == 1
-    assert Test.ns.bar == 2
+    assert Test.ns.footer == 1
+    assert Test.ns.barter == 2
 
 
 def test_basic_prop(namespaces):
@@ -356,9 +356,9 @@ def test_basic_prop(namespaces):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
             @property
-            def foo(self):
+            def footer(self):
                 return 1
-    assert Test().ns.foo == 1
+    assert Test().ns.footer == 1
 
 
 def test_complicated_prop(namespaces):
@@ -400,18 +400,18 @@ def test_override_method(namespaces):
     class Test(namespaces.Namespaceable):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
-            def foo(self):
+            def footer(self):
                 return 1
     test = Test()
-    assert test.ns.foo() == 1
-    test.ns.foo = 2
+    assert test.ns.footer() == 1
+    test.ns.footer = 2
     print(vars(test))
-    assert test.ns.foo == 2
-    del test.ns.foo
-    assert test.ns.foo() == 1
-    Test.ns.foo = 3
-    assert Test.ns.foo == 3
-    assert test.ns.foo == 3
+    assert test.ns.footer == 2
+    del test.ns.footer
+    assert test.ns.footer() == 1
+    Test.ns.footer = 3
+    assert Test.ns.footer == 3
+    assert test.ns.footer == 3
 
 
 def test_add_later(namespaces):
