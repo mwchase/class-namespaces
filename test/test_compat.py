@@ -315,6 +315,51 @@ def test_descriptors_with_abstractmethod(abc):
             foo = property(bar)
 
 
+def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
+    class C(metaclass=type(abc.NamespaceableABC)):
+        with namespace() as ns:
+            @property
+            @abstractmethod
+            def foo(self):
+                return 3
+
+            @foo.setter
+            @abstractmethod
+            def foo(self, val):
+                pass
+    with pytest.raises(TypeError):
+        print(C())
+
+    class D(C):
+        with namespace() as ns:
+            @C.ns.foo.getter
+            def foo(self):
+                return super().ns.foo
+    with pytest.raises(TypeError):
+        print(D())
+
+    class E(D):
+        with namespace() as ns:
+            @D.ns.foo.setter
+            def foo(self, val):
+                pass
+    assert E().ns.foo == 3
+    # check that the property's __isabstractmethod__ descriptor does the
+    # right thing when presented with a value that fails truth testing:
+
+    class NotBool(object):
+        def __bool__(self):
+            raise ValueError()
+        __len__ = __bool__
+    with pytest.raises(ValueError):
+        class F(C):
+            with namespace() as ns:
+                def bar(self):
+                    pass
+                bar.__isabstractmethod__ = NotBool()
+                foo = property(bar)
+
+
 def test_customdescriptors_with_abstractmethod(abc):
     class Descriptor:
         def __init__(self, fget, fset=None):
@@ -357,6 +402,53 @@ def test_customdescriptors_with_abstractmethod(abc):
         def foo(self, val):
             pass
     assert not (E.foo.__isabstractmethod__)
+
+
+def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
+    class Descriptor:
+        def __init__(self, fget, fset=None):
+            self._fget = fget
+            self._fset = fset
+
+        def getter(self, callable):
+            return Descriptor(callable, self._fget)
+
+        def setter(self, callable):
+            return Descriptor(self._fget, callable)
+
+        @property
+        def __isabstractmethod__(self):
+            return (getattr(self._fget, '__isabstractmethod__', False) or
+                    getattr(self._fset, '__isabstractmethod__', False))
+
+    class C(metaclass=type(abc.NamespaceableABC)):
+        with namespace() as ns:
+            @Descriptor
+            @abstractmethod
+            def foo(self):
+                return 3
+
+            @foo.setter
+            @abstractmethod
+            def foo(self, val):
+                pass
+    with pytest.raises(TypeError):
+        print(C())
+
+    class D(C):
+        with namespace() as ns:
+            @C.ns.foo.getter
+            def foo(self):
+                return super().ns.foo
+    with pytest.raises(TypeError):
+        print(D())
+
+    class E(D):
+        with namespace() as ns:
+            @D.ns.foo.setter
+            def foo(self, val):
+                pass
+    assert not (E.ns.foo.__isabstractmethod__)
 
 
 def test_metaclass_abc(abc):
