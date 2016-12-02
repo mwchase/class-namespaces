@@ -75,6 +75,25 @@ def test_abstractproperty_basics(abc):
     assert D().foo == 3
 
 
+def test_abstractproperty_namespaced(abc, namespace):
+
+    class C(metaclass=type(abc.NamespaceableABC)):
+        with namespace() as ns:
+            @property
+            @abstractmethod
+            def foo(self):
+                return 3
+    with pytest.raises(TypeError):
+        print(C())
+
+    class D(C):
+        with namespace() as ns:
+            @C.foo.getter
+            def foo(self):
+                return super().foo
+    assert D().ns.foo == 3
+
+
 def test_abstractclassmethod_basics(abc):
     @classmethod
     @abstractmethod
