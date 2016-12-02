@@ -88,9 +88,9 @@ def test_abstractproperty_namespaced(abc, namespace):
 
     class D(C):
         with namespace() as ns:
-            @C.foo.getter
+            @C.ns.foo.getter
             def foo(self):
-                return super().foo
+                return super().ns.foo
     assert D().ns.foo == 3
 
 
