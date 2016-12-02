@@ -12,9 +12,12 @@ def namespace(namespaces):
     return namespaces.Namespace
 
 
-@pytest.fixture
-def namespaceable(namespaces):
-    return namespaces.Namespaceable
+@pytest.fixture(params=['main', 'abc'])
+def namespaceable(request, namespaces, abc):
+    if request.param == 'main':
+        return namespaces.Namespaceable
+    else:
+        return abc.NamespaceableABC
 
 
 @pytest.fixture
