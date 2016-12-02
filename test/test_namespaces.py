@@ -13,11 +13,11 @@ def scope_dicts_length_equals(ns, length):
     assert len(scope._dicts) == length
 
 
-def test_finalization(namespaces):
+def test_finalization(namespaces, namespace):
     scopes = []
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             with pytest.raises(ValueError,
                                message='Cannot finalize a pushed scope!'):
                 print(get_ns(ns).scope.finalize())
@@ -39,32 +39,32 @@ def test_finalization(namespaces):
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
-def test_basic_scope_len(namespaces):
+def test_basic_scope_len(namespaces, namespace):
     scopes = {}
 
     class Test1(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             scopes[1] = get_ns(ns).scope
 
     class Test2(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
+        with namespace() as ns1:
             scopes[2] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     class Test3(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
+        with namespace() as ns1:
             footer = 1
             scopes[3] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     class Test4(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns1:
+            with namespace() as ns:
                 footer = 1
             scopes[4] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     for scope in scopes.values():
@@ -81,32 +81,32 @@ def test_basic_scope_len(namespaces):
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
-def test_basic_scope_iter(namespaces):
+def test_basic_scope_iter(namespaces, namespace):
     scopes = {}
 
     class Test1(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             scopes[1] = get_ns(ns).scope
 
     class Test2(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
+        with namespace() as ns1:
             scopes[2] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     class Test3(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
+        with namespace() as ns1:
             footer = 1
             scopes[3] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     class Test4(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns1:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns1:
+            with namespace() as ns:
                 footer = 1
             scopes[4] = get_ns(ns1).scope
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             pass
 
     for scope in scopes.values():
@@ -124,24 +124,24 @@ def test_basic_scope_iter(namespaces):
         {'ns1.ns', 'ns1.ns.footer'})
 
 
-def test_scope_namespaced_get(namespaces):
+def test_scope_namespaced_get(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
     assert scopes[0]['ns.ns.footer'] == 1
 
 
-def test_scope_namespaced_set(namespaces):
+def test_scope_namespaced_set(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 scopes[0] = get_ns(ns).scope
 
     scopes[0]['ns.ns.footer'] = 1
@@ -149,12 +149,12 @@ def test_scope_namespaced_set(namespaces):
     assert Test.ns.ns.footer == 1
 
 
-def test_scope_namespaced_del(namespaces):
+def test_scope_namespaced_del(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
@@ -164,12 +164,12 @@ def test_scope_namespaced_del(namespaces):
         print(Test.ns.ns.footer)
 
 
-def test_scope_namespaced_get_error(namespaces):
+def test_scope_namespaced_get_error(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
@@ -179,12 +179,12 @@ def test_scope_namespaced_get_error(namespaces):
         print(scope['ns.ns.barter'])
 
 
-def test_scope_namespaced_get_non_ns(namespaces):
+def test_scope_namespaced_get_non_ns(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
@@ -194,12 +194,12 @@ def test_scope_namespaced_get_non_ns(namespaces):
         print(scope['ns.ns.footer.__str__'])
 
 
-def test_scope_namespaced_get_non_existent(namespaces):
+def test_scope_namespaced_get_non_existent(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
@@ -209,12 +209,12 @@ def test_scope_namespaced_get_non_existent(namespaces):
         print(scope['ns.footer'])
 
 
-def test_scope_namespaced_get_non_recursive(namespaces):
+def test_scope_namespaced_get_non_recursive(namespaces, namespace):
     scopes = {}
 
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
                 footer = 1
                 scopes[0] = get_ns(ns).scope
 
@@ -224,10 +224,10 @@ def test_scope_namespaced_get_non_recursive(namespaces):
 
 
 # I wanted this to be an intro test, but it has some paranoid checks in it.
-def test_redundant_resume(namespaces):
+def test_redundant_resume(namespaces, namespace):
     class Test(namespaces.Namespaceable):
         footer = 1
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             footer = 2
             assert footer == 2
         scope_dicts_length_equals(ns, 1)
@@ -241,39 +241,39 @@ def test_redundant_resume(namespaces):
     assert Test().ns.footer == 4
 
 
-def test_empty_nameless(namespaces):
+def test_empty_nameless(namespaces, namespace):
     class Test(namespaces.Namespaceable):
         with pytest.raises(RuntimeError, message='Namespace must be named.'):
-            with namespaces.Namespace():
+            with namespace():
                 pass
 
 
-def test_non_empty_nameless(namespaces):
+def test_non_empty_nameless(namespaces, namespace):
     class Test(namespaces.Namespaceable):
         with pytest.raises(RuntimeError, message='Namespace must be named.'):
-            with namespaces.Namespace():
+            with namespace():
                 a = 1
 
 
-def test_rename(namespaces):
+def test_rename(namespaces, namespace):
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             pass
         with pytest.raises(ValueError, message='Cannot rename namespace'):
             with ns as ns2:
                 pass
 
 
-def test_can_t_preload_with_namespace(namespaces):
+def test_can_t_preload_with_namespace(namespaces, namespace):
     with pytest.raises(ValueError, message='Bad values: {}'):
-        print(namespaces.Namespace(ns=namespaces.Namespace()))
+        print(namespace(ns=namespace()))
 
 
-def test_star_attr_functions(namespaces):
+def test_star_attr_functions(namespaces, namespace):
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
-            with namespaces.Namespace() as ns:
-                with namespaces.Namespace() as ns:
+        with namespace() as ns:
+            with namespace() as ns:
+                with namespace() as ns:
                     pass
 
     setattr(Test, 'ns.ns.ns.var', 1)
@@ -302,12 +302,12 @@ def test_too_deep(namespaces):
         print(getattr(Test, 'var.__str__'))
 
 
-def test_block_reparent(namespaces):
+def test_block_reparent(namespaces, namespace):
     shadow_ns1 = None
     shadow_ns2 = None
 
     class Test1(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             with pytest.raises(ValueError, message='Cannot double-activate.'):
                 with ns:
                     pass
@@ -318,7 +318,7 @@ def test_block_reparent(namespaces):
         with pytest.raises(ValueError, message='Cannot reparent namespace'):
             ns.ns = ns
             print(ns, ns.ns)
-        with namespaces.Namespace() as ns2:
+        with namespace() as ns2:
             with pytest.raises(
                     ValueError, message='Cannot reparent namespace'):
                 with ns:
@@ -329,7 +329,7 @@ def test_block_reparent(namespaces):
         with ns as shadow_ns1:
             shadow_ns2 = ns
 
-    assert isinstance(shadow_ns1, namespaces.Namespace)
+    assert isinstance(shadow_ns1, namespace)
     assert isinstance(shadow_ns2, shadow_ns1.scope.scope_proxy)
 
     class Test2(namespaces.Namespaceable):
@@ -341,7 +341,7 @@ def test_block_reparent(namespaces):
         with pytest.raises(
                 ValueError, message='Cannot move scopes between classes.'):
             ns = shadow_ns2
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             pass
 
     with pytest.raises(ValueError, message='Cannot reuse namespace'):
@@ -351,21 +351,21 @@ def test_block_reparent(namespaces):
         Test2.ns.ns = shadow_ns2
 
 
-def test_can_t_get_path(namespaces):
+def test_can_t_get_path(namespaces, namespace):
     # This error currently doesn't have a message.
     with pytest.raises(ValueError):
-        print(namespaces.Namespace().path)
+        print(namespace().path)
 
 
-def test_non_existent_attribute_during_creation(namespaces):
+def test_non_existent_attribute_during_creation(namespaces, namespace):
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             pass
         with pytest.raises(AttributeError, message='var'):
             print(ns.var)
 
 
-def test_partial_descriptors(namespaces):
+def test_partial_descriptors(namespaces, namespace):
     class Setter:
         def __set__(self, instance, value):
             pass
@@ -377,7 +377,7 @@ def test_partial_descriptors(namespaces):
     class Test(namespaces.Namespaceable):
         setter = Setter()
         deleter = Deleter()
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             setter = Setter()
             deleter = Deleter()
 
@@ -394,23 +394,23 @@ def test_partial_descriptors(namespaces):
         del test.ns.setter
 
 
-def test_namespace_is_truthy(namespaces):
-    assert namespaces.Namespace()
+def test_namespace_is_truthy(namespaces, namespace):
+    assert namespace()
 
 
-def test_bad_del_in_definition(namespaces):
+def test_bad_del_in_definition(namespaces, namespace):
     class Test(namespaces.Namespaceable):
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             with pytest.raises(
                     NameError, message="name 'footer' is not defined"):
                 del footer
 
 
 # Not 100% sure this is desired behavior. See Issue 12.
-def test_subtle_bad_del_in_definition(namespaces):
+def test_subtle_bad_del_in_definition(namespaces, namespace):
     class Test(namespaces.Namespaceable):
         footer = 1
-        with namespaces.Namespace() as ns:
+        with namespace() as ns:
             with pytest.raises(
                     NameError, message="name 'footer' is not defined"):
                 del footer
