@@ -122,6 +122,25 @@ def test_abstractclassmethod_basics(abc):
     assert D().foo() == 'D'
 
 
+def test_abstractclassmethod_namespaced(abc, namespace):
+    class C(metaclass=type(abc.NamespaceableABC)):
+        with namespace() as ns:
+            @classmethod
+            @abstractmethod
+            def foo(cls):
+                return cls.__name__
+    with pytest.raises(TypeError):
+        print(C())
+
+    class D(C):
+        with namespace() as ns:
+            @classmethod
+            def foo(cls):
+                return super().ns.foo()
+    assert D.ns.foo() == 'D'
+    assert D().ns.foo() == 'D'
+
+
 def test_abstractstaticmethod_basics(abc):
     @staticmethod
     @abstractmethod
