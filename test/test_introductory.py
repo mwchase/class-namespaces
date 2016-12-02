@@ -440,7 +440,7 @@ def test_add_later(namespaceable, namespace):
 
 @pytest.mark.xfail(sys.version_info < (3, 6),
                    reason="python3.6 api changes", strict=True)
-def test_3_6_descriptor(namespaceable, namespace):
+def test_3_6_descriptor(namespaces, namespaceable, namespace):
     """Create a descriptor that implements __set_name__, confirm it works.
 
     This test is invalid before 3.6.
