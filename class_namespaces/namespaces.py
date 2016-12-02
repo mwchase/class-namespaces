@@ -460,51 +460,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
-class _NamespaceBase:
-
-    """Common base class for Namespaceable and its metaclass."""
-
-    __slots__ = ()
-
-    # Note: the dot format of invocation can "escape" self into other objects.
-    # This is not intended behavior, and the result of using dots "too deeply"
-    # should be considered undefined.
-    # I would like it to be an error, if I can figure out how.
-
-    @staticmethod
-    def __is_proxy(value):
-        if not isinstance(value, _NamespaceProxy):
-            # This line can be hit by doing what the error message says.
-            raise ValueError('Given a dot attribute that went too deep.')
-        return value
-
-    def __getattribute__(self, name):
-        parent, is_namespace, name_ = name.rpartition('.')
-        if is_namespace:
-            self_ = self
-            for element in parent.split('.'):
-                self_ = self.__is_proxy(getattr(self_, element))
-            # Wait, this line looks wrong.
-            return getattr(getattr(self, parent), name_)
-        return super(_NamespaceBase, type(self)).__getattribute__(self, name)
-
-    def __setattr__(self, name, value):
-        parent, is_namespace, name_ = name.rpartition('.')
-        if is_namespace:
-            setattr(self.__is_proxy(getattr(self, parent)), name_, value)
-            return
-        super(_NamespaceBase, type(self)).__setattr__(self, name, value)
-
-    def __delattr__(self, name):
-        parent, is_namespace, name_ = name.rpartition('.')
-        if is_namespace:
-            delattr(self.__is_proxy(getattr(self, parent)), name_)
-            return
-        # This line can be hit by deleting an attribute that isn't a namespace.
-        super(_NamespaceBase, type(self)).__delattr__(self, name)
-
-
-class _Namespaceable(_NamespaceBase, type):
+class _Namespaceable(type):
 
     """Metaclass for classes that can contain namespaces.
 
@@ -517,11 +473,6 @@ class _Namespaceable(_NamespaceBase, type):
 
     def __new__(mcs, name, bases, dct, **kwargs):
         cls = super().__new__(mcs, name, bases, dct.finalize(), **kwargs)
-        if _DEFINED and not issubclass(cls, Namespaceable):
-            # This line can be hit with class(metaclass=type(Namespaceable)):
-            raise ValueError(
-                'Cannot create a _Namespaceable that does not inherit from '
-                'Namespaceable')
         _NAMESPACE_SCOPES[cls] = dct
         for namespace in dct.namespaces:
             namespace.add(cls)
@@ -532,6 +483,23 @@ class _Namespaceable(_NamespaceBase, type):
                         wrapped.set_name(cls, name)
         return cls
 
+    @staticmethod
+    def __is_proxy(value):
+        if not isinstance(value, _NamespaceProxy):
+            # This line can be hit by doing what the error message says.
+            raise ValueError('Given a dot attribute that went too deep.')
+        return value
+
+    def __getattribute__(cls, name):
+        parent, is_namespace, name_ = name.rpartition('.')
+        if is_namespace:
+            cls_ = cls
+            for element in parent.split('.'):
+                cls_ = cls.__is_proxy(getattr(cls_, element))
+            # Wait, this line looks wrong.
+            return getattr(getattr(cls, parent), name_)
+        return super(_Namespaceable, type(cls)).__getattribute__(cls, name)
+
     def __setattr__(cls, name, value):
         if (
                 '.' not in name and isinstance(value, Namespace) and
@@ -539,13 +507,22 @@ class _Namespaceable(_NamespaceBase, type):
             scope = _NAMESPACE_SCOPES[cls]
             value.push(name, scope, scope.head)
             value.add(cls)
+        parent, is_namespace, name_ = name.rpartition('.')
+        if is_namespace:
+            setattr(cls.__is_proxy(getattr(cls, parent)), name_, value)
+            return
         super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
 
+    def __delattr__(cls, name):
+        parent, is_namespace, name_ = name.rpartition('.')
+        if is_namespace:
+            delattr(cls.__is_proxy(getattr(cls, parent)), name_)
+            return
+        # This line can be hit by deleting an attribute that isn't a namespace.
+        super(_Namespaceable, type(cls)).__delattr__(cls, name)
 
-_DEFINED = False
 
-
-class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
+class Namespaceable(metaclass=_Namespaceable):
 
     """Base class for classes that can contain namespaces.
 
@@ -565,6 +542,3 @@ class Namespaceable(_NamespaceBase, metaclass=_Namespaceable):
     standard invocation, unless you bring about the above situation on your own
     types.
     """
-
-
-_DEFINED = True

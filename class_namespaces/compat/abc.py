@@ -3,6 +3,12 @@ import abc
 from .. import namespaces
 
 
+get_cache_token = abc.get_cache_token
+abstractproperty = abc.abstractproperty
+abstractclassmethod = abc.abstractclassmethod
+abstractstaticmethod = abc.abstractstaticmethod
+
+
 class _NamespaceableABC(abc.ABCMeta, namespaces._Namespaceable):
 
     pass
