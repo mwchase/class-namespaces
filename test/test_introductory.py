@@ -206,12 +206,14 @@ def test_basic_super(namespaces):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
             def hello(self):
+                """Return a predictable constant."""
                 return 1
 
     class Subclass(Test):
         """A throwaway test class."""
         with namespaces.Namespace() as ns:
             def hello(self):
+                """Return the superclass's hello."""
                 return super().ns.hello()
 
     assert Test().ns.hello() == 1
@@ -511,6 +513,7 @@ def test_classmethod_basic(namespaces):
         with namespaces.Namespace() as ns:
             @classmethod
             def cls_mthd(cls):
+                """Return that a call occurred."""
                 return 'called'
 
     assert Test.ns.cls_mthd() == 'called'
@@ -532,6 +535,7 @@ def test_meta_plus_classmethod(namespaces):
         with namespaces.Namespace() as ns:
             @classmethod
             def cls_mthd(cls):
+                """Return that a call occurred."""
                 return 'called'
 
     assert Test().ns.cls_mthd() == 'called'
