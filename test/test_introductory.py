@@ -8,20 +8,20 @@ def test_import(namespaces):
     assert namespaces
 
 
-def test_meta_basic(namespaces):
+def test_meta_basic(namespaceable):
     """Make a namespaceable class by subclassing from Namespaceable."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
     assert Test
 
 
-def test_basic_namespace(namespaces, namespace):
+def test_basic_namespace(namespaceable, namespace):
     """Define an attribute within a namespace.
 
     Attributes in a Namespace live in that Namespace, and are accessible from
     both the class, and any instance of the class.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             a = 1
@@ -32,7 +32,7 @@ def test_basic_namespace(namespaces, namespace):
     assert Test().ns.a == 1
 
 
-def test_delete(namespaces, namespace):
+def test_delete(namespaceable, namespace):
     """Delete attributes from a namespace, at various points.
 
     Inside a Namespace context, you can delete a variable from the current
@@ -43,7 +43,7 @@ def test_delete(namespaces, namespace):
 
     Missing attributes have proper exception behavior.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             a = 1
@@ -63,7 +63,7 @@ def test_delete(namespaces, namespace):
         print(Test().ns.b)
 
 
-def test_set(namespaces, namespace):
+def test_set(namespaceable, namespace):
     """Set attributes on a namespace, at various points.
 
     You can set attributes on a Namespace after the class definition. The
@@ -72,7 +72,7 @@ def test_set(namespaces, namespace):
     You can set attributes on an instance Namespace. This will not propagate up
     to the class Namespace.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             a = 1
@@ -98,7 +98,7 @@ def test_set(namespaces, namespace):
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
-def test_dir(namespaces, namespace):
+def test_dir(namespaceable, namespace):
     """Confirm the shape of dir.
 
     Dir provides a view of what's accessible from a single Namespace.
@@ -107,7 +107,7 @@ def test_dir(namespaces, namespace):
     Namespace code that reliably occurs on 3.3. I believe it's not really a
     problem.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             a = 1
@@ -117,13 +117,13 @@ def test_dir(namespaces, namespace):
     assert dir(Test().ns) == ['a']
 
 
-def test_shadow(namespaces, namespace):
+def test_shadow(namespaceable, namespace):
     """Define several attributes with the same name, in different scopes.
 
     Namespaces divide a class up into distinct pieces. A name defined in one
     place doesn't interfere with using the same name elsewhere.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
         with namespace() as ns:
@@ -134,13 +134,13 @@ def test_shadow(namespaces, namespace):
     assert Test().ns.footer == 2
 
 
-def test_resume(namespaces, namespace):
+def test_resume(namespaceable, namespace):
     """Enter the same namespace multiple times.
 
     Namespaces are not only context managers, but reusable context managers.
     A resumed Namespace is truly the same scope.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
         with namespace() as ns:
@@ -164,13 +164,13 @@ def assert_equals(a, b):
     assert a == b
 
 
-def test_recursive_get_in_definition(namespaces, namespace):
+def test_recursive_get_in_definition(namespaceable, namespace):
     """Look at namespace attributes during class definition.
 
     Clearly, this should just work, yet it did not always, so now there is a
     test.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             with namespace() as ns:
@@ -178,13 +178,13 @@ def test_recursive_get_in_definition(namespaces, namespace):
         assert_equals(ns.ns.footer, 1)
 
 
-def test_basic_inherit(namespaces, namespace):
+def test_basic_inherit(namespaceable, namespace):
     """Make a subclass of a Namespaceable class.
 
     The Namespace resolution hooks into Python's existing systems, so any kind
     of inheritance structure should work (equally well as without namespacing).
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
         with namespace() as ns:
@@ -196,13 +196,13 @@ def test_basic_inherit(namespaces, namespace):
     assert Subclass().ns.footer == 2
 
 
-def test_basic_super(namespaces, namespace):
+def test_basic_super(namespaceable, namespace):
     """Use super() inside a method defined in a Namespace.
 
     Everything Python gives you to deal with inheritance should work equally
     well. That includes super().
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             def hello(self):
@@ -220,14 +220,14 @@ def test_basic_super(namespaces, namespace):
     assert Subclass().ns.hello() == 1
 
 
-def test_private(namespaces, namespace):
+def test_private(namespaceable, namespace):
     """Use name mangling and subclassing together.
 
     Name mangling is meant to protect an implementation from being overridden
     by subclasses. Because it occurs before the Namespace code sees it, this
     happens for free, and is automatically correct.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as __ns:
             footer = 2
@@ -250,9 +250,9 @@ def test_private(namespaces, namespace):
         print(Subclass().my_footer())
 
 
-def test_nested_namespace(namespaces, namespace):
+def test_nested_namespace(namespaceable, namespace):
     """Define a Namespace in a Namespace."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             with namespace() as ns:
@@ -260,9 +260,9 @@ def test_nested_namespace(namespaces, namespace):
     assert Test().ns.ns.a == 1
 
 
-def test_basic_shadow(namespaces, namespace):
+def test_basic_shadow(namespaceable, namespace):
     """Define an attribute over a Namespace."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             footer = 2
@@ -273,13 +273,13 @@ def test_basic_shadow(namespaces, namespace):
     assert Subclass().ns == 1
 
 
-def test_double_shadow(namespaces, namespace):
+def test_double_shadow(namespaceable, namespace):
     """Define an attribute over a Namespace, then a Namespace over that.
 
     Non-namespace attributes block the visibility of Namespaces in parent
     classes.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             footer = 2
@@ -295,12 +295,12 @@ def test_double_shadow(namespaces, namespace):
     assert not hasattr(DoubleSubclass().ns, 'footer')
 
 
-def test_overlap(namespaces, namespace):
+def test_overlap(namespaceable, namespace):
     """Define different attributes in the same Namespace in a subclass.
 
     Namespaces delegate to parent classes, if not blocked.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             footer = 2
@@ -313,9 +313,9 @@ def test_overlap(namespaces, namespace):
     assert Subclass().ns.barter == 3
 
 
-def test_advanced_overlap(namespaces, namespace):
+def test_advanced_overlap(namespaceable, namespace):
     """Do the same things as in test_overlap, but with a little nesting."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             footer = 2
@@ -331,9 +331,9 @@ def test_advanced_overlap(namespaces, namespace):
     assert Subclass().ns.ns.qux == 4
 
 
-def test_use_namespace(namespaces, namespace):
+def test_use_namespace(namespaceable, namespace):
     """Interact with a namespace's attributes."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             footer = 1
@@ -349,12 +349,12 @@ def test_use_namespace(namespaces, namespace):
     assert Test.ns.barter == 2
 
 
-def test_basic_prop(namespaces, namespace):
+def test_basic_prop(namespaceable, namespace):
     """Define a property in a Namespace.
 
     Data descriptors work.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             @property
@@ -363,12 +363,12 @@ def test_basic_prop(namespaces, namespace):
     assert Test().ns.footer == 1
 
 
-def test_complicated_prop(namespaces, namespace):
+def test_complicated_prop(namespaceable, namespace):
     """Define a property with all methods.
 
     @property.method works.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             @property
@@ -394,12 +394,12 @@ def test_complicated_prop(namespaces, namespace):
     assert test.ns.var is None
 
 
-def test_override_method(namespaces, namespace):
+def test_override_method(namespaceable, namespace):
     """Define a function, then overwrite it.
 
     Non-data descriptors work.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             def footer(self):
@@ -416,9 +416,9 @@ def test_override_method(namespaces, namespace):
     assert test.ns.footer == 3
 
 
-def test_add_later(namespaces, namespace):
+def test_add_later(namespaceable, namespace):
     """Add a Namespace to a class, post-creation."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
 
     ns = namespace()
@@ -440,7 +440,7 @@ def test_add_later(namespaces, namespace):
 
 @pytest.mark.xfail(sys.version_info < (3, 6),
                    reason="python3.6 api changes", strict=True)
-def test_3_6_descriptor(namespaces, namespace):
+def test_3_6_descriptor(namespaceable, namespace):
     """Create a descriptor that implements __set_name__, confirm it works.
 
     This test is invalid before 3.6.
@@ -454,7 +454,7 @@ def test_3_6_descriptor(namespaces, namespace):
     assert namespaces.namespaces._DescriptorInspector(
         Descriptor()).is_descriptor
 
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             d = Descriptor()
@@ -462,14 +462,14 @@ def test_3_6_descriptor(namespaces, namespace):
     assert Test.ns.d.name == 'd'
 
 
-def test_basic_meta(namespaces, namespace):
+def test_basic_meta(namespaceable, namespace):
     """Test the basic interactions between Namespaceable and metaclasses."""
-    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
+    class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
         with namespace() as ns:
             meta_var = 1
 
-    class Test(namespaces.Namespaceable, metaclass=Meta):
+    class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
 
     assert Meta.ns.meta_var == 1
@@ -478,14 +478,14 @@ def test_basic_meta(namespaces, namespace):
         print(Test().ns.meta_var)
 
 
-def test_somewhat_weirder_meta(namespaces, namespace):
+def test_somewhat_weirder_meta(namespaceable, namespace):
     """Test that attribute visibility works with Namespaceable, metaclasses."""
-    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
+    class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
         with namespace() as ns:
             meta_var = 1
 
-    class Test(namespaces.Namespaceable, metaclass=Meta):
+    class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
         with namespace() as ns:
             cls_var = 2
@@ -506,9 +506,9 @@ def test_somewhat_weirder_meta(namespaces, namespace):
     assert Meta.var == 4
 
 
-def test_classmethod_basic(namespaces, namespace):
+def test_classmethod_basic(namespaceable, namespace):
     """Test using a classmethod in a Namespace."""
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             @classmethod
@@ -520,17 +520,17 @@ def test_classmethod_basic(namespaces, namespace):
     assert Test().ns.cls_mthd() == 'called'
 
 
-def test_meta_plus_classmethod(namespaces, namespace):
+def test_meta_plus_classmethod(namespaceable, namespace):
     """Test using a classmethod in a Namespace, while messing with metaclasses.
 
     This might have been purely for coverage of some kind? I forget.
     """
-    class Meta(namespaces.Namespaceable, type(namespaces.Namespaceable)):
+    class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
         with namespace() as ns:
             pass
 
-    class Test(namespaces.Namespaceable, metaclass=Meta):
+    class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
         with namespace() as ns:
             @classmethod
@@ -542,13 +542,13 @@ def test_meta_plus_classmethod(namespaces, namespace):
     assert Test.ns.cls_mthd() == 'called'
 
 
-def test_get_through_namespace(namespaces, namespace):
+def test_get_through_namespace(namespaceable, namespace):
     """Define a variable in a Namespace in terms of a variable in parent scope.
 
     Like other scopes in Python, Namespaces allow you to get variables from
     outer scopes.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
         var = 1
         with namespace() as ns:
@@ -558,19 +558,19 @@ def test_get_through_namespace(namespaces, namespace):
     assert Test.ns.var2 == 1
 
 
-def test_multiple_inheritance(namespaces, namespace):
+def test_multiple_inheritance(namespaceable, namespace):
     """Define some base classes with Namespaces, inherit, confirm they merged.
 
     Everything Python gives you to deal with inheritance should work equally
     well. That includes multiple inheritance.
     """
-    class Test1(namespaces.Namespaceable):
+    class Test1(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             with namespace() as ns:
                 var = 1
 
-    class Test2(namespaces.Namespaceable):
+    class Test2(namespaceable):
         """A throwaway test class."""
         with namespace() as ns:
             var = 2
@@ -582,13 +582,13 @@ def test_multiple_inheritance(namespaces, namespace):
     assert Test3.ns.var == 2
 
 
-def test_regular_delete(namespaces):
+def test_regular_delete(namespaceable):
     """Define and delete a variable in a Namespaceable class.
 
     This isn't too exciting, but if we don't prove this works, there's a
     coverage gap.
     """
-    class Test(namespaces.Namespaceable):
+    class Test(namespaceable):
         """A throwaway test class."""
     Test.var = 1
     assert Test.var == 1
