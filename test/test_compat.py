@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from inspect import isabstract
+import sys
 
 import pytest
 
@@ -322,6 +323,8 @@ def test_register_as_class_deco(abc):
     assert C is A.register(C)
 
 
+@pytest.mark.xfail(sys.version_info < (3, 4),
+                   reason="python3.4 api changes?", strict=True)
 def test_isinstance_invalidation(abc):
     class A(metaclass=type(abc.NamespaceableABC)):
         pass
