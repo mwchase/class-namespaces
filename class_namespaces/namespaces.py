@@ -28,7 +28,7 @@ def _mro_to_chained(mro, path):
         Namespace.get_namespace(cls, path) for cls in
         itertools.takewhile(
             functools.partial(Namespace.no_blocker, path),
-            (cls for cls in mro if isinstance(cls, _Namespaceable))) if
+            (cls for cls in mro if isinstance(cls, NamespaceableMeta))) if
         Namespace.namespace_exists(path, cls)])
 
 
@@ -36,7 +36,7 @@ def _instance_map(ns_proxy):
     """Return a map, possibly chained, of lookups for the given instance."""
     dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
-        if isinstance(instance, _Namespaceable):
+        if isinstance(instance, NamespaceableMeta):
             return _mro_to_chained(instance.__mro__, dct.path)
         else:
             return Namespace.get_namespace(instance, dct.path)
@@ -57,7 +57,7 @@ def _mro_map(ns_proxy):
 def _retarget(ns_proxy):
     """Convert a class lookup to an instance lookup, if needed."""
     dct, instance, owner = _PROXY_INFOS[ns_proxy]
-    if instance is None and isinstance(type(owner), _Namespaceable):
+    if instance is None and isinstance(type(owner), NamespaceableMeta):
         instance, owner = owner, type(owner)
         dct = Namespace.get_namespace(owner, dct.path)
         ns_proxy = _NamespaceProxy(dct, instance, owner)
@@ -201,7 +201,7 @@ class Namespace(dict):
     @classmethod
     def __get_helper(cls, target, path):
         """Return the namespace for `target` at `path`, create if needed."""
-        if isinstance(target, _Namespaceable):
+        if isinstance(target, NamespaceableMeta):
             path_ = target, path
             namespaces = cls.__namespaces
         else:
@@ -324,7 +324,7 @@ class Namespace(dict):
 
 class _NamespaceScope(collections.abc.MutableMapping):
 
-    """The class creation namespace for _Namespaceables."""
+    """The class creation namespace for NamespaceableMetas."""
 
     __slots__ = '_dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
 
@@ -460,7 +460,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
 _NAMESPACE_SCOPES = weakref.WeakKeyDictionary()
 
 
-class _Namespaceable(type):
+class NamespaceableMeta(type):
 
     """Metaclass for classes that can contain namespaces.
 
@@ -497,7 +497,7 @@ class _Namespaceable(type):
             for element in parent.split('.'):
                 cls_ = cls.__is_proxy(getattr(cls_, element))
             return getattr(cls_, name_)
-        return super(_Namespaceable, type(cls)).__getattribute__(cls, name)
+        return super(NamespaceableMeta, type(cls)).__getattribute__(cls, name)
 
     def __setattr__(cls, name, value):
         if (
@@ -510,7 +510,7 @@ class _Namespaceable(type):
         if is_namespace:
             setattr(cls.__is_proxy(getattr(cls, parent)), name_, value)
             return
-        super(_Namespaceable, type(cls)).__setattr__(cls, name, value)
+        super(NamespaceableMeta, type(cls)).__setattr__(cls, name, value)
 
     def __delattr__(cls, name):
         parent, is_namespace, name_ = name.rpartition('.')
@@ -518,10 +518,10 @@ class _Namespaceable(type):
             delattr(cls.__is_proxy(getattr(cls, parent)), name_)
             return
         # This line can be hit by deleting an attribute that isn't a namespace.
-        super(_Namespaceable, type(cls)).__delattr__(cls, name)
+        super(NamespaceableMeta, type(cls)).__delattr__(cls, name)
 
 
-class Namespaceable(metaclass=_Namespaceable):
+class Namespaceable(metaclass=NamespaceableMeta):
 
     """Base class for classes that can contain namespaces.
 

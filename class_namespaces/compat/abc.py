@@ -10,11 +10,11 @@ abstractclassmethod = abc.abstractclassmethod
 abstractstaticmethod = abc.abstractstaticmethod
 
 
-class _NamespaceableABC(abc.ABCMeta, namespaces._Namespaceable):
+class NamespaceableABCMeta(abc.ABCMeta, namespaces.NamespaceableMeta):
 
     pass
 
 
-class NamespaceableABC(metaclass=_NamespaceableABC):
+class NamespaceableABC(metaclass=NamespaceableABCMeta):
 
     pass
