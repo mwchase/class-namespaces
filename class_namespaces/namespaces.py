@@ -420,7 +420,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
     def __setitem__(self, key, value):
         dct = self.head
         value, dct = self._store(key, value, dct)
-        if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
+        if isinstance(value, _Proxy):
             raise ValueError('Cannot move scopes between classes.')
         parent, is_namespace, name = key.rpartition('.')
         if self.finalized and is_namespace:
