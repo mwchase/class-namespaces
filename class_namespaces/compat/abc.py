@@ -2,10 +2,10 @@
 
 import abc
 
-from .. import namespaces
+from .. import NamespaceableMeta
 
 
-class NamespaceableABCMeta(abc.ABCMeta, namespaces.NamespaceableMeta):
+class NamespaceableABCMeta(abc.ABCMeta, NamespaceableMeta):
     """Metaclass for Namespaceable classes that are also ABCs."""
 
 
