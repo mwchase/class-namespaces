@@ -140,7 +140,26 @@ _NAMESPACE_INFOS = weakref.WeakKeyDictionary()
 
 class Namespace(dict):
 
-    """Namespace."""
+    """Namespace.
+
+    Namespace() -> new empty namespace
+    Namespace(mapping) -> new namespace initialized from a mapping object's
+        (key, value) pairs
+    Namespace(iterable) -> new namespace initialized as if via:
+        d = {}
+        for k, v in iterable:
+            d[k] = v
+        ns = Namespace(d)
+    Namespace(**kwargs) -> new namespace initialized with the name=value pairs
+        in the keyword argument list.  For example:  Namespace(one=1, two=2)
+
+    Namespaces implement the context manager protocol. When the context is
+    entered in an appropriate class creation scope, the Namespace shadows the
+    currently visible scope.
+
+    Namespaces can be re-entered after they are exited, provided they're in the
+    same parent scope.
+    """
 
     __slots__ = (
         'name', 'scope', 'parent', 'active', 'parent_object', 'needs_setup')
