@@ -48,6 +48,7 @@ def _instance_map(ns_proxy):
 
 
 def _instance_namespace(instance, path, name):
+    """Return a Namespace associated with the instance, if possible."""
     try:
         return Namespace.get_namespace(instance, path)
     except TypeError:
