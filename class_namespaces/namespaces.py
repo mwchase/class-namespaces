@@ -111,7 +111,7 @@ class _NamespaceProxy(_Proxy):
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
         if instance is None:
-            real_map = Namespace.get_namespace(owner, dct.path)
+            real_map = dct.get_namespace(owner, dct.path)
             real_map[name] = value
             return
         mro_map = _mro_map(self)
@@ -124,7 +124,7 @@ class _NamespaceProxy(_Proxy):
     def __delattr__(self, name):
         self = _retarget(self)
         dct, instance, owner = _PROXY_INFOS[self]
-        real_map = Namespace.get_namespace(owner, dct.path)
+        real_map = dct.get_namespace(owner, dct.path)
         if instance is None:
             ops.delete(real_map, name)
             return
