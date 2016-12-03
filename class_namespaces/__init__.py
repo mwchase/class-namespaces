@@ -9,5 +9,6 @@ manipulated after they're defined.
 
 from . import namespaces
 
+NamespaceableMeta = namespaces.NamespaceableMeta
 Namespaceable = namespaces.Namespaceable
 Namespace = namespaces.Namespace
