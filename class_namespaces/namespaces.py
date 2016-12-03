@@ -404,6 +404,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             raise KeyError(key)
 
     def wrap(self, value):
+        """If `value` is a Namespace, wrap it in a proxy."""
         if isinstance(value, Namespace):
             value = self.scope_proxy(value)
         return value
