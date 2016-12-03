@@ -59,15 +59,17 @@ Other things that work:
 * Descriptors (methods, classmethods, staticmethods, properties, custom descriptors)
 * super()
 * Prepopulating Namespaces. The constructor takes the same arguments as a dict.
+* abstractmethods. See the compat module.
 
 Things that don't work:
 
-* Combining with nearly any other metaclass.
 * Various ways of putting a Namespace in a Namespace that I didn't see an obvious way to handle. In particular...
 
   * There is no way to put an established namespace directly into another namespace.
 * Some pytest constructs behave weirdly inside the class definitions. Hopefully, this doesn't matter to anyone not writing tests for the package.
+* No way to have instance Namespaces on non-hashable types, or subclasses of some built-in types, particularly tuple. Try using data descriptors instead.
 
 Things that might work:
 
 * New namespace features in Python 3.6. Current testing is spotty.
+* Combining with other metaclasses. Unfortunately, the current setup is somewhat brittle. It may be necessary to experiment with the ordering of bases.
