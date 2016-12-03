@@ -116,7 +116,6 @@ class _NamespaceProxy(_Proxy):
         mro_map = _mro_map(self)
         target_value = ops.get_data(mro_map, name)
         if target_value is not None:
-            # These lines will be called on a data descriptor.
             target_value.set(instance, value)
             return
         _instance_namespace(instance, dct.path, name)[name] = value
@@ -130,7 +129,6 @@ class _NamespaceProxy(_Proxy):
             return
         value = ops.get_data(real_map, name)
         if value is not None:
-            # These lines will be called on a data descriptor.
             value.delete(instance)
             return
         ops.delete(_instance_namespace(instance, dct.path, name), name)
@@ -198,7 +196,6 @@ class Namespace(dict):
     def path(self):
         """Return the full path of the namespace."""
         if self.name is None or self.parent is None:
-            # This line can be hit by Namespace().path.
             raise ValueError
         if isinstance(self.parent, Namespace):
             parent_path = self.parent.path
@@ -271,15 +268,11 @@ class Namespace(dict):
         if name != self.name:
             raise ValueError('Cannot rename namespace')
         if scope is not self.scope:
-            # It should be possible to hit this line by assigning a namespace
-            # into another class. It may not be, however.
             raise ValueError('Cannot reuse namespace')
 
     def validate_parent(self, parent):
         """Confirm that the instance has the correct parent dict."""
         if parent is not self.parent:
-            # This line can be hit by assigning a namespace into another
-            # namespace.
             raise ValueError('Cannot reparent namespace')
 
     def push(self, name, scope, parent):
@@ -354,9 +347,6 @@ class _NamespaceScope(collections.abc.MutableMapping):
                 super().__init__(dct, self_)
 
         self.scope_proxy = ScopeProxy
-
-    # Mapping methods need to know about the dot syntax.
-    # Possibly namespaces themselves should know. Would simplify some things.
 
     @property
     def head(self):
@@ -448,7 +438,6 @@ class _NamespaceScope(collections.abc.MutableMapping):
         else:
             del self.head[key]
 
-    # These functions are incorrect and need to be rewritten.
     def __iter__(self):
         if not self.finalized:
             raise ValueError('Iteration not defined on unfinalized scope.')
@@ -494,7 +483,6 @@ class NamespaceableMeta(type):
     @staticmethod
     def __is_proxy(value):
         if not isinstance(value, _NamespaceProxy):
-            # This line can be hit by doing what the error message says.
             raise ValueError('Given a dot attribute that went too deep.')
         return value
 
@@ -525,7 +513,6 @@ class NamespaceableMeta(type):
         if is_namespace:
             delattr(cls.__is_proxy(getattr(cls, parent)), name_)
             return
-        # This line can be hit by deleting an attribute that isn't a namespace.
         super(NamespaceableMeta, type(cls)).__delattr__(cls, name)
 
 

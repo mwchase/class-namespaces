@@ -36,5 +36,4 @@ def get_data(dct, name):
     """Return the data descriptor associated with `name` in `dct`, if any."""
     value = get(dct, name)
     if is_data(value):
-        # This line will be called if a data inspector is used.
         return value

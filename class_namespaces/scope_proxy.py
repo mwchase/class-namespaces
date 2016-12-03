@@ -28,15 +28,12 @@ class _ScopeProxy(_Proxy):
         owner.proxies[self] = dct
 
     def __dir__(self):
-        # This line will fire if dir(ns) is done during class creation.
         return _ns(self)
 
     def __getattribute__(self, name):
         dct = _ns(self)
         try:
             value = dct[name]
-        # These lines will fire if a non-existent namespace attribute is gotten
-        # during class creation.
         except KeyError:
             raise AttributeError(name)
         return _owner(self).wrap(value)
