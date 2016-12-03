@@ -22,14 +22,14 @@ from .scope_proxy import _ScopeProxy
 _PROXY_INFOS = weakref.WeakKeyDictionary()
 
 
-def _mro_to_chained(mro, path):
+def _mro_to_chained(mro, dct):
     """Return a chained map of lookups for the given namespace and mro."""
     return collections.ChainMap(*[
-        Namespace.get_namespace(cls, path) for cls in
+        dct.get_namespace(cls, dct.path) for cls in
         itertools.takewhile(
-            functools.partial(Namespace.no_blocker, path),
+            functools.partial(dct.no_blocker, dct.path),
             (cls for cls in mro if isinstance(cls, NamespaceableMeta))) if
-        Namespace.namespace_exists(path, cls)])
+        dct.namespace_exists(dct.path, cls)])
 
 
 def _instance_map(ns_proxy):
@@ -38,9 +38,9 @@ def _instance_map(ns_proxy):
     if instance is not None:
         try:
             if isinstance(instance, NamespaceableMeta):
-                return _mro_to_chained(instance.__mro__, dct.path)
+                return _mro_to_chained(instance.__mro__, dct)
             else:
-                return Namespace.get_namespace(instance, dct.path)
+                return dct.get_namespace(instance, dct.path)
         except TypeError:
             return {}
     else:
@@ -62,7 +62,7 @@ def _mro_map(ns_proxy):
     parent_object = dct.parent_object
     index = mro.index(parent_object)
     mro = mro[index:]
-    return _mro_to_chained(mro, dct.path)
+    return _mro_to_chained(mro, dct)
 
 
 def _retarget(ns_proxy):
@@ -70,7 +70,7 @@ def _retarget(ns_proxy):
     dct, instance, owner = _PROXY_INFOS[ns_proxy]
     if instance is None and isinstance(type(owner), NamespaceableMeta):
         instance, owner = owner, type(owner)
-        dct = Namespace.get_namespace(owner, dct.path)
+        dct = dct.get_namespace(owner, dct.path)
         ns_proxy = _NamespaceProxy(dct, instance, owner)
     return ns_proxy
 
