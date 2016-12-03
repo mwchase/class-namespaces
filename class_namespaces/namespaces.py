@@ -47,10 +47,10 @@ def _instance_map(ns_proxy):
         return {}
 
 
-def _instance_namespace(instance, path, name):
+def _instance_namespace(instance, dct, name):
     """Return a Namespace associated with the instance, if possible."""
     try:
-        return Namespace.get_namespace(instance, path)
+        return dct.get_namespace(instance, dct.path)
     except TypeError:
         raise AttributeError(name)
 
@@ -119,7 +119,7 @@ class _NamespaceProxy(_Proxy):
         if target_value is not None:
             target_value.set(instance, value)
             return
-        _instance_namespace(instance, dct.path, name)[name] = value
+        _instance_namespace(instance, dct, name)[name] = value
 
     def __delattr__(self, name):
         self = _retarget(self)
@@ -132,7 +132,7 @@ class _NamespaceProxy(_Proxy):
         if value is not None:
             value.delete(instance)
             return
-        ops.delete(_instance_namespace(instance, dct.path, name), name)
+        ops.delete(_instance_namespace(instance, dct, name), name)
 
 
 _NAMESPACE_INFOS = weakref.WeakKeyDictionary()
