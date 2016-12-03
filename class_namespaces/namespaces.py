@@ -176,7 +176,7 @@ class Namespace(dict):
                 self.scope is not None and
                 isinstance(value, self.scope.scope_proxy)):
             value = self.scope.proxies[value]
-        if isinstance(value, (_ScopeProxy, _NamespaceProxy)):
+        if isinstance(value, _Proxy):
             raise ValueError('Cannot move scopes between classes.')
         if isinstance(value, Namespace):
             value.push(key, self.scope, self)
