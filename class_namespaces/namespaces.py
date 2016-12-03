@@ -463,14 +463,13 @@ class NamespaceableMeta(type):
     """Metaclass for classes that can contain namespaces.
 
     A note for people extending the functionality:
-    The base class for Namespaceable and its metaclass uses a non-standard
-    super() invocation in its definitions of several methods. This was the only
-    way I could find to mitigate some bugs I encountered with a standard
-    invocation. If you override any of methods defined on built-in types, I
-    recommend this form for maximal reusability:
+    The base class for NamespaceableMeta uses a non-standard super() invocation
+    in its definitions of several methods. This was the only way I could find
+    to mitigate some bugs I encountered with a standard invocation. If you
+    override any of methods defined on built-in types, I recommend this form
+    for maximal reusability:
 
     super(class, type(self)).__method__(self, ...)
-
     """
 
     @classmethod
