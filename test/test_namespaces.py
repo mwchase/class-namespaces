@@ -409,3 +409,14 @@ def test_subtle_bad_del_in_definition(namespaceable, namespace):
             with pytest.raises(
                     NameError, message="name 'footer' is not defined"):
                 del footer
+
+
+def test_tuple_subclass(namespaceable, namespace):
+    meta = type(namespaceable)
+
+    class Test(tuple, metaclass=meta):
+        __slots__ = ()
+        with namespace() as ns:
+            var = 1
+
+    assert Test().ns.var == 1

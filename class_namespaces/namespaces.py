@@ -36,10 +36,13 @@ def _instance_map(ns_proxy):
     """Return a map, possibly chained, of lookups for the given instance."""
     dct, instance, _ = _PROXY_INFOS[ns_proxy]
     if instance is not None:
-        if isinstance(instance, NamespaceableMeta):
-            return _mro_to_chained(instance.__mro__, dct.path)
-        else:
-            return Namespace.get_namespace(instance, dct.path)
+        try:
+            if isinstance(instance, NamespaceableMeta):
+                return _mro_to_chained(instance.__mro__, dct.path)
+            else:
+                return Namespace.get_namespace(instance, dct.path)
+        except TypeError:
+            return {}
     else:
         return {}
 
