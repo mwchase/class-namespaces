@@ -420,3 +420,8 @@ def test_tuple_subclass(namespaceable, namespace):
             var = 1
 
     assert Test().ns.var == 1
+    with pytest.raises(AttributeError):
+        Test().ns.var = 2
+    assert Test().ns.var == 1
+    with pytest.raises(AttributeError):
+        del Test().ns.var

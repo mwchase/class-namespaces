@@ -112,8 +112,12 @@ class _NamespaceProxy(_Proxy):
             # These lines will be called on a data descriptor.
             target_value.set(instance, value)
             return
-        instance_map = Namespace.get_namespace(instance, dct.path)
-        instance_map[name] = value
+        try:
+            instance_map = Namespace.get_namespace(instance, dct.path)
+        except TypeError:
+            raise AttributeError(name)
+        else:
+            instance_map[name] = value
 
     def __delattr__(self, name):
         self = _retarget(self)
@@ -127,8 +131,12 @@ class _NamespaceProxy(_Proxy):
             # These lines will be called on a data descriptor.
             value.delete(instance)
             return
-        instance_map = Namespace.get_namespace(instance, dct.path)
-        ops.delete(instance_map, name)
+        try:
+            instance_map = Namespace.get_namespace(instance, dct.path)
+        except TypeError:
+            raise AttributeError(name)
+        else:
+            ops.delete(instance_map, name)
 
 
 _NAMESPACE_INFOS = weakref.WeakKeyDictionary()
