@@ -47,6 +47,13 @@ def _instance_map(ns_proxy):
         return {}
 
 
+def _instance_namespace(instance, path, name):
+    try:
+        return Namespace.get_namespace(instance, path)
+    except TypeError:
+        raise AttributeError(name)
+
+
 def _mro_map(ns_proxy):
     """Return a chained map of lookups for the given owner class."""
     dct, _, owner = _PROXY_INFOS[ns_proxy]
@@ -112,12 +119,7 @@ class _NamespaceProxy(_Proxy):
             # These lines will be called on a data descriptor.
             target_value.set(instance, value)
             return
-        try:
-            instance_map = Namespace.get_namespace(instance, dct.path)
-        except TypeError:
-            raise AttributeError(name)
-        else:
-            instance_map[name] = value
+        _instance_namespace(instance, dct.path, name)[name] = value
 
     def __delattr__(self, name):
         self = _retarget(self)
@@ -131,12 +133,7 @@ class _NamespaceProxy(_Proxy):
             # These lines will be called on a data descriptor.
             value.delete(instance)
             return
-        try:
-            instance_map = Namespace.get_namespace(instance, dct.path)
-        except TypeError:
-            raise AttributeError(name)
-        else:
-            ops.delete(instance_map, name)
+        ops.delete(_instance_namespace(instance, dct.path, name), name)
 
 
 _NAMESPACE_INFOS = weakref.WeakKeyDictionary()
