@@ -393,6 +393,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         self._dicts.pop(0)
 
     def _raw_get(self, parent, key):
+        """Return the item under the given path, without wrapping."""
         dct = self.head
         try:
             for element in parent.split('.'):
@@ -425,6 +426,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         return self.wrap(value)
 
     def _store(self, key, value, dct):
+        """Return the rebased value and target dict."""
         # We just entered the context successfully.
         if not self.finalized:
             if value is dct:
@@ -510,6 +512,7 @@ class NamespaceableMeta(type):
 
     @staticmethod
     def __is_proxy(value):
+        """Return whether the value is a _NamespaceProxy."""
         if not isinstance(value, _NamespaceProxy):
             raise ValueError('Given a dot attribute that went too deep.')
         return value
