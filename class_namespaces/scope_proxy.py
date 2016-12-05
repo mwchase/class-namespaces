@@ -10,10 +10,12 @@ _OWNERS = weakref.WeakKeyDictionary()
 
 
 def _ns(self):
+    """Return the associated Namespace."""
     return _owner(self).proxies[self]
 
 
 def _owner(self):
+    """Return the associated scope."""
     return _OWNERS[self]
 
 
