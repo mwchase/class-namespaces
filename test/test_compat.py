@@ -25,7 +25,7 @@ def test_ABC_helper(abc):
     class C(abc.NamespaceableABC):
         @classmethod
         @abstractmethod
-        def foo(cls):
+        def footer(cls):
             return cls.__name__
     assert isinstance(C, abc.NamespaceableABCMeta)
     with pytest.raises(TypeError):
@@ -33,46 +33,46 @@ def test_ABC_helper(abc):
 
     class D(C):
         @classmethod
-        def foo(cls):
-            return super().foo()
-    assert D.foo() == 'D'
+        def footer(cls):
+            return super().footer()
+    assert D.footer() == 'D'
 
 
 def test_abstractmethod_basics(abc):
     @abstractmethod
-    def foo(self):
+    def footer(self):
         pass
-    assert foo.__isabstractmethod__
+    assert footer.__isabstractmethod__
 
-    def bar(self):
+    def barter(self):
         pass
-    assert not hasattr(bar, "__isabstractmethod__")
+    assert not hasattr(barter, "__isabstractmethod__")
 
 
 def test_abstractproperty_basics(abc):
     @property
     @abstractmethod
-    def foo(self):
+    def footer(self):
         pass
-    assert foo.__isabstractmethod__
+    assert footer.__isabstractmethod__
 
-    def bar(self):
+    def barter(self):
         pass
-    assert not getattr(bar, "__isabstractmethod__", False)
+    assert not getattr(barter, "__isabstractmethod__", False)
 
     class C(metaclass=abc.NamespaceableABCMeta):
         @property
         @abstractmethod
-        def foo(self):
+        def footer(self):
             return 3
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
-        @C.foo.getter
-        def foo(self):
-            return super().foo
-    assert D().foo == 3
+        @C.footer.getter
+        def footer(self):
+            return super().footer
+    assert D().footer == 3
 
 
 def test_abstractproperty_namespaced(abc, namespace):
@@ -81,45 +81,45 @@ def test_abstractproperty_namespaced(abc, namespace):
         with namespace() as ns:
             @property
             @abstractmethod
-            def foo(self):
+            def footer(self):
                 return 3
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
         with namespace() as ns:
-            @C.ns.foo.getter
-            def foo(self):
-                return super().ns.foo
-    assert D().ns.foo == 3
+            @C.ns.footer.getter
+            def footer(self):
+                return super().ns.footer
+    assert D().ns.footer == 3
 
 
 def test_abstractclassmethod_basics(abc):
     @classmethod
     @abstractmethod
-    def foo(cls):
+    def footer(cls):
         pass
-    assert foo.__isabstractmethod__
+    assert footer.__isabstractmethod__
 
     @classmethod
-    def bar(cls):
+    def barter(cls):
         pass
-    assert not getattr(bar, "__isabstractmethod__", False)
+    assert not getattr(barter, "__isabstractmethod__", False)
 
     class C(metaclass=abc.NamespaceableABCMeta):
         @classmethod
         @abstractmethod
-        def foo(cls):
+        def footer(cls):
             return cls.__name__
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
         @classmethod
-        def foo(cls):
-            return super().foo()
-    assert D.foo() == 'D'
-    assert D().foo() == 'D'
+        def footer(cls):
+            return super().footer()
+    assert D.footer() == 'D'
+    assert D().footer() == 'D'
 
 
 def test_abstractclassmethod_namespaced(abc, namespace):
@@ -127,7 +127,7 @@ def test_abstractclassmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @classmethod
             @abstractmethod
-            def foo(cls):
+            def footer(cls):
                 return cls.__name__
     with pytest.raises(TypeError):
         print(C())
@@ -135,38 +135,38 @@ def test_abstractclassmethod_namespaced(abc, namespace):
     class D(C):
         with namespace() as ns:
             @classmethod
-            def foo(cls):
-                return super().ns.foo()
-    assert D.ns.foo() == 'D'
-    assert D().ns.foo() == 'D'
+            def footer(cls):
+                return super().ns.footer()
+    assert D.ns.footer() == 'D'
+    assert D().ns.footer() == 'D'
 
 
 def test_abstractstaticmethod_basics(abc):
     @staticmethod
     @abstractmethod
-    def foo():
+    def footer():
         pass
-    assert foo.__isabstractmethod__
+    assert footer.__isabstractmethod__
 
     @staticmethod
-    def bar():
+    def barter():
         pass
-    assert not (getattr(bar, "__isabstractmethod__", False))
+    assert not (getattr(barter, "__isabstractmethod__", False))
 
     class C(metaclass=abc.NamespaceableABCMeta):
         @staticmethod
         @abstractmethod
-        def foo():
+        def footer():
             return 3
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
         @staticmethod
-        def foo():
+        def footer():
             return 4
-    assert D.foo() == 4
-    assert D().foo() == 4
+    assert D.footer() == 4
+    assert D().footer() == 4
 
 
 def test_abstractstaticmethod_namespaced(abc, namespace):
@@ -174,7 +174,7 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @staticmethod
             @abstractmethod
-            def foo():
+            def footer():
                 return 3
     with pytest.raises(TypeError):
         print(C())
@@ -182,10 +182,10 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
     class D(C):
         with namespace() as ns:
             @staticmethod
-            def foo():
+            def footer():
                 return 4
-    assert D.ns.foo() == 4
-    assert D().ns.foo() == 4
+    assert D.ns.footer() == 4
+    assert D().ns.footer() == 4
 
 
 def test_abstractmethod_integration(abc):
@@ -194,38 +194,38 @@ def test_abstractmethod_integration(abc):
                           abc_main.abstractstaticmethod]:
         class C(metaclass=abc.NamespaceableABCMeta):
             @abstractthing
-            def foo(self):
+            def footer(self):
                 pass  # abstract
 
-            def bar(self):
+            def barter(self):
                 pass  # concrete
-        assert C.__abstractmethods__ == {"foo"}
+        assert C.__abstractmethods__ == {"footer"}
         with pytest.raises(TypeError):
-            print(C())  # because foo is abstract
+            print(C())  # because footer is abstract
         assert isabstract(C)
 
         class D(C):
-            def bar(self):
+            def barter(self):
                 pass  # concrete override of concrete
-        assert D.__abstractmethods__ == {"foo"}
+        assert D.__abstractmethods__ == {"footer"}
         with pytest.raises(TypeError):
-            print(D())  # because foo is still abstract
+            print(D())  # because footer is still abstract
         assert isabstract(D)
 
         class E(D):
-            def foo(self):
+            def footer(self):
                 pass
         assert E.__abstractmethods__ == set()
-        E()  # now foo is concrete, too
+        E()  # now footer is concrete, too
         assert not isabstract(E)
 
         class F(E):
             @abstractthing
-            def bar(self):
+            def barter(self):
                 pass  # abstract override of concrete
-        assert F.__abstractmethods__ == {"bar"}
+        assert F.__abstractmethods__ == {"barter"}
         with pytest.raises(TypeError):
-            print(F())  # because bar is abstract now
+            print(F())  # because barter is abstract now
         assert isabstract(F)
 
 
@@ -236,41 +236,41 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
         class C(metaclass=abc.NamespaceableABCMeta):
             with namespace() as ns:
                 @abstractthing
-                def foo(self):
+                def footer(self):
                     pass  # abstract
 
-                def bar(self):
+                def barter(self):
                     pass  # concrete
-        assert C.__abstractmethods__ == {"ns.foo"}
+        assert C.__abstractmethods__ == {"ns.footer"}
         with pytest.raises(TypeError):
-            print(C())  # because foo is abstract
+            print(C())  # because footer is abstract
         assert isabstract(C)
 
         class D(C):
             with namespace() as ns:
-                def bar(self):
+                def barter(self):
                     pass  # concrete override of concrete
-        assert D.__abstractmethods__ == {"ns.foo"}
+        assert D.__abstractmethods__ == {"ns.footer"}
         with pytest.raises(TypeError):
-            print(D())  # because foo is still abstract
+            print(D())  # because footer is still abstract
         assert isabstract(D)
 
         class E(D):
             with namespace() as ns:
-                def foo(self):
+                def footer(self):
                     pass
         assert E.__abstractmethods__ == set()
-        E()  # now foo is concrete, too
+        E()  # now footer is concrete, too
         assert not isabstract(E)
 
         class F(E):
             with namespace() as ns:
                 @abstractthing
-                def bar(self):
+                def barter(self):
                     pass  # abstract override of concrete
-        assert F.__abstractmethods__ == {"ns.bar"}
+        assert F.__abstractmethods__ == {"ns.barter"}
         with pytest.raises(TypeError):
-            print(F())  # because bar is abstract now
+            print(F())  # because barter is abstract now
         assert isabstract(F)
 
 
@@ -278,28 +278,28 @@ def test_descriptors_with_abstractmethod(abc):
     class C(metaclass=abc.NamespaceableABCMeta):
         @property
         @abstractmethod
-        def foo(self):
+        def footer(self):
             return 3
 
-        @foo.setter
+        @footer.setter
         @abstractmethod
-        def foo(self, val):
+        def footer(self, val):
             pass
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
-        @C.foo.getter
-        def foo(self):
-            return super().foo
+        @C.footer.getter
+        def footer(self):
+            return super().footer
     with pytest.raises(TypeError):
         print(D())
 
     class E(D):
-        @D.foo.setter
-        def foo(self, val):
+        @D.footer.setter
+        def footer(self, val):
             pass
-    assert E().foo == 3
+    assert E().footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
 
@@ -309,10 +309,10 @@ def test_descriptors_with_abstractmethod(abc):
         __len__ = __bool__
     with pytest.raises(ValueError):
         class F(C):
-            def bar(self):
+            def barter(self):
                 pass
-            bar.__isabstractmethod__ = NotBool()
-            foo = property(bar)
+            barter.__isabstractmethod__ = NotBool()
+            footer = property(barter)
 
 
 def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
@@ -320,30 +320,30 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @property
             @abstractmethod
-            def foo(self):
+            def footer(self):
                 return 3
 
-            @foo.setter
+            @footer.setter
             @abstractmethod
-            def foo(self, val):
+            def footer(self, val):
                 pass
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
         with namespace() as ns:
-            @C.ns.foo.getter
-            def foo(self):
-                return super().ns.foo
+            @C.ns.footer.getter
+            def footer(self):
+                return super().ns.footer
     with pytest.raises(TypeError):
         print(D())
 
     class E(D):
         with namespace() as ns:
-            @D.ns.foo.setter
-            def foo(self, val):
+            @D.ns.footer.setter
+            def footer(self, val):
                 pass
-    assert E().ns.foo == 3
+    assert E().ns.footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
 
@@ -354,10 +354,10 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
     with pytest.raises(ValueError):
         class F(C):
             with namespace() as ns:
-                def bar(self):
+                def barter(self):
                     pass
-                bar.__isabstractmethod__ = NotBool()
-                foo = property(bar)
+                barter.__isabstractmethod__ = NotBool()
+                footer = property(barter)
 
 
 def test_customdescriptors_with_abstractmethod(abc):
@@ -380,28 +380,28 @@ def test_customdescriptors_with_abstractmethod(abc):
     class C(metaclass=abc.NamespaceableABCMeta):
         @Descriptor
         @abstractmethod
-        def foo(self):
+        def footer(self):
             return 3
 
-        @foo.setter
+        @footer.setter
         @abstractmethod
-        def foo(self, val):
+        def footer(self, val):
             pass
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
-        @C.foo.getter
-        def foo(self):
-            return super().foo
+        @C.footer.getter
+        def footer(self):
+            return super().footer
     with pytest.raises(TypeError):
         print(D())
 
     class E(D):
-        @D.foo.setter
-        def foo(self, val):
+        @D.footer.setter
+        def footer(self, val):
             pass
-    assert not (E.foo.__isabstractmethod__)
+    assert not (E.footer.__isabstractmethod__)
 
 
 def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
@@ -425,30 +425,30 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @Descriptor
             @abstractmethod
-            def foo(self):
+            def footer(self):
                 return 3
 
-            @foo.setter
+            @footer.setter
             @abstractmethod
-            def foo(self, val):
+            def footer(self, val):
                 pass
     with pytest.raises(TypeError):
         print(C())
 
     class D(C):
         with namespace() as ns:
-            @C.ns.foo.getter
-            def foo(self):
-                return super().ns.foo
+            @C.ns.footer.getter
+            def footer(self):
+                return super().ns.footer
     with pytest.raises(TypeError):
         print(D())
 
     class E(D):
         with namespace() as ns:
-            @D.ns.foo.setter
-            def foo(self, val):
+            @D.ns.footer.setter
+            def footer(self, val):
                 pass
-    assert not (E.ns.foo.__isabstractmethod__)
+    assert not (E.ns.footer.__isabstractmethod__)
 
 
 def test_metaclass_abc(abc):
