@@ -381,6 +381,10 @@ def test_partial_descriptors(namespaceable, namespace):
     test = Test()
     assert isinstance(test.setter, Setter)
     assert isinstance(test.deleter, Deleter)
+    vars(test)['setter'] = None
+    vars(test)['deleter'] = None
+    assert test.setter is None
+    assert test.deleter is None
     assert isinstance(test.ns.setter, Setter)
     assert isinstance(test.ns.deleter, Deleter)
     with pytest.raises(AttributeError, message=deleter_msg):

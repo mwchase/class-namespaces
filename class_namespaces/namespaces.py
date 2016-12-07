@@ -94,7 +94,7 @@ class _NamespaceProxy(_Proxy):
         mro_map = _mro_map(self)
         instance_value = ops.get(instance_map, name)
         mro_value = ops.get(mro_map, name)
-        if ops.is_data(mro_value):
+        if ops.is_data(mro_value) and ops.has_get(mro_value):
             return mro_value.get(instance, owner)
         elif issubclass(owner, type) and ops.has_get(instance_value):
             return instance_value.get(None, instance)
