@@ -44,8 +44,4 @@ setup(
     keywords='class namespaces',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-
-    extras_require={
-        'test': ['coverage', 'pytest'],
-    },
 )
