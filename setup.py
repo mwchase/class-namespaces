@@ -15,7 +15,7 @@ with c_open(path.join(HERE, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='class_namespaces',
 
-    version='0.6.3',
+    version='0.6.5',
 
     description='Class Namespaces',
     long_description=LONG_DESCRIPTION,
@@ -43,5 +43,7 @@ setup(
 
     keywords='class namespaces',
 
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    package_dir={'': 'src'},
+
+    packages=find_packages('src', exclude=['contrib', 'docs', 'tests']),
 )
