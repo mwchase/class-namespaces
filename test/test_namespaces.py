@@ -38,7 +38,7 @@ def test_finalization(namespaceable, namespace):
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
-                   reason="python3.4 api changes?", strict=True)
+                   reason="python3.4 api changes?")
 def test_basic_scope_len(namespaceable, namespace):
     scopes = {}
 
@@ -80,7 +80,7 @@ def test_basic_scope_len(namespaceable, namespace):
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
-                   reason="python3.4 api changes?", strict=True)
+                   reason="python3.4 api changes?")
 def test_basic_scope_iter(namespaceable, namespace):
     scopes = {}
 

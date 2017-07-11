@@ -97,7 +97,7 @@ def test_set(namespaceable, namespace):
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
-                   reason="python3.4 api changes?", strict=True)
+                   reason="python3.4 api changes?")
 def test_dir(namespaceable, namespace):
     """Confirm the shape of dir.
 
