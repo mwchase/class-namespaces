@@ -368,7 +368,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     @property
     def head(self):
-        """The innermost Namespace scope."""
+        """Return the innermost Namespace scope."""
         return self._dicts[0]
 
     def finalize(self):
