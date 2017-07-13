@@ -9,3 +9,6 @@ ignore-patterns:
   - (^|/)docs(/|$)
 python-targets:
   - 3
+pylint:
+  disable:
+    - too-few-public-methods
