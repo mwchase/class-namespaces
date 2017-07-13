@@ -23,7 +23,7 @@ class _ScopeProxy(_Proxy):
 
     """Proxy object for manipulating namespaces during class creation."""
 
-    __slots__ = '__weakref__',
+    __slots__ = ('__weakref__',)
 
     def __init__(self, dct, owner):
         _OWNERS[self] = owner

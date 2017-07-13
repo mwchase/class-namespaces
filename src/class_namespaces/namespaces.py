@@ -39,12 +39,10 @@ def _instance_map(ns_proxy):
         try:
             if isinstance(instance, NamespaceableMeta):
                 return _mro_to_chained(instance.__mro__, dct)
-            else:
-                return dct.get_namespace(instance, dct.path)
+            return dct.get_namespace(instance, dct.path)
         except TypeError:
             return {}
-    else:
-        return {}
+    return {}
 
 
 def _instance_namespace(instance, dct, name):
@@ -79,7 +77,7 @@ class _NamespaceProxy(_Proxy):
 
     """Proxy object for manipulating and querying namespaces."""
 
-    __slots__ = '__weakref__',
+    __slots__ = ('__weakref__',)
 
     def __init__(self, dct, instance, owner):
         _PROXY_INFOS[self] = dct, instance, owner
@@ -504,10 +502,10 @@ class NamespaceableMeta(type):
         for namespace in dct.namespaces:
             namespace.add(cls)
             if ENABLE_SET_NAME:
-                for name, value in namespace.items():
+                for name_, value in namespace.items():
                     wrapped = _DescriptorInspector(value)
                     if wrapped.has_set_name:
-                        wrapped.set_name(cls, name)
+                        wrapped.set_name(cls, name_)
         return cls
 
     @staticmethod
