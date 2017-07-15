@@ -668,20 +668,20 @@ def test_register_as_class_deco(abc):
     @AClass.register
     class BClass(object):
         """A throwaway test class."""
-    b = BClass()
+    b_instance = BClass()
     assert issubclass(BClass, AClass)
     assert issubclass(BClass, (AClass,))
-    assert isinstance(b, AClass)
-    assert isinstance(b, (AClass,))
+    assert isinstance(b_instance, AClass)
+    assert isinstance(b_instance, (AClass,))
 
     @AClass.register
     class CClass(BClass):
         """A throwaway test class."""
-    c = CClass()
+    c_instance = CClass()
     assert issubclass(CClass, AClass)
     assert issubclass(CClass, (AClass,))
-    assert isinstance(c, AClass)
-    assert isinstance(c, (AClass,))
+    assert isinstance(c_instance, AClass)
+    assert isinstance(c_instance, (AClass,))
     assert CClass is AClass.register(CClass)
 
 
@@ -697,15 +697,15 @@ def test_isinstance_invalidation(abc):
 
     class BClass:
         """A throwaway test class."""
-    b = BClass()
-    assert not (isinstance(b, AClass))
-    assert not (isinstance(b, (AClass,)))
+    b_instance = BClass()
+    assert not (isinstance(b_instance, AClass))
+    assert not (isinstance(b_instance, (AClass,)))
     token_old = abc_main.get_cache_token()
     AClass.register(BClass)
     token_new = abc_main.get_cache_token()
     assert token_old != token_new
-    assert isinstance(b, AClass)
-    assert isinstance(b, (AClass,))
+    assert isinstance(b_instance, AClass)
+    assert isinstance(b_instance, (AClass,))
 
 
 def test_registration_builtins(abc):
