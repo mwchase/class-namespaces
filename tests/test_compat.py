@@ -463,13 +463,16 @@ def test_customdescriptors_with_abstractmethod(abc):
             self._fset = fset
 
         def getter(self, callable):
+            """Replace self._fget with callable."""
             return Descriptor(callable, self._fset)
 
         def setter(self, callable):
+            """Replace self._fset with callable."""
             return Descriptor(self._fget, callable)
 
         @property
         def __isabstractmethod__(self):
+            """Return whether the descriptor is abstract."""
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
