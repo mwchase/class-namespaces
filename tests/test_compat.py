@@ -129,12 +129,14 @@ def test_abstractclassmethod_basics(abc):
     @classmethod
     @abstractmethod
     def footer(cls):
-        pass
+        """Return cls. Abstract."""
+        return cls
     assert footer.__isabstractmethod__
 
     @classmethod
     def barter(cls):
-        pass
+        """Return cls. Concrete."""
+        return cls
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
@@ -185,12 +187,12 @@ def test_abstractstaticmethod_basics(abc):
     @staticmethod
     @abstractmethod
     def footer():
-        pass
+        """Do nothing. Abstract."""
     assert footer.__isabstractmethod__
 
     @staticmethod
     def barter():
-        pass
+        """Do nothing. Concrete."""
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
@@ -198,6 +200,7 @@ def test_abstractstaticmethod_basics(abc):
         @staticmethod
         @abstractmethod
         def footer():
+            """Return 3. Abstract."""
             return 3
     with pytest.raises(TypeError):
         print(CClass())
@@ -206,6 +209,7 @@ def test_abstractstaticmethod_basics(abc):
         """A throwaway test class."""
         @staticmethod
         def footer():
+            """Return 4. Concrete."""
             return 4
     assert DClass.footer() == 4
     assert DClass().footer() == 4
@@ -245,10 +249,10 @@ def test_abstractmethod_integration(abc):
             """A throwaway test class."""
             @abstractthing
             def footer(self):
-                pass  # abstract
+                """Do nothing. Abstract."""
 
             def barter(self):
-                pass  # concrete
+                """Do nothing. Concrete."""
         assert CClass.__abstractmethods__ == {"footer"}
         with pytest.raises(TypeError):
             print(CClass())  # because footer is abstract
@@ -400,12 +404,13 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
             @property
             @abstractmethod
             def footer(self):
+                """Return 3. Abstract."""
                 return 3
 
             @footer.setter
             @abstractmethod
             def footer(self, val):
-                pass
+                """Discard input value. Abstract."""
     with pytest.raises(TypeError):
         print(CClass())
 
@@ -414,6 +419,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @CClass.ns.footer.getter
             def footer(self):
+                """Return 3. Concrete."""
                 return super().ns.footer
     with pytest.raises(TypeError):
         print(DClass())
@@ -423,7 +429,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @DClass.ns.footer.setter
             def footer(self, val):
-                pass
+                """Discard input value. Concrete"""
     assert EClass().ns.footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
@@ -439,7 +445,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
             """A throwaway test class."""
             with namespace() as ns:
                 def barter(self):
-                    pass
+                    """Do nothing."""
                 barter.__isabstractmethod__ = NotBool()
                 footer = property(barter)
 
