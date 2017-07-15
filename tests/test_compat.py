@@ -144,6 +144,7 @@ def test_abstractclassmethod_basics(abc):
         @classmethod
         @abstractmethod
         def footer(cls):
+            """Return class name. Abstract."""
             return cls.__name__
     with pytest.raises(TypeError):
         print(CClass())
@@ -152,6 +153,7 @@ def test_abstractclassmethod_basics(abc):
         """A throwaway test class."""
         @classmethod
         def footer(cls):
+            """Return class name. Concrete."""
             return super().footer()
     assert DClass.footer() == 'DClass'
     assert DClass().footer() == 'DClass'
@@ -223,6 +225,7 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
             @staticmethod
             @abstractmethod
             def footer():
+                """Return 3. Abstract."""
                 return 3
     with pytest.raises(TypeError):
         print(CClass())
@@ -232,6 +235,7 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @staticmethod
             def footer():
+                """Return 4. Concrete."""
                 return 4
     assert DClass.ns.footer() == 4
     assert DClass().ns.footer() == 4
@@ -301,10 +305,10 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
             with namespace() as ns:
                 @abstractthing
                 def footer(self):
-                    pass  # abstract
+                    """Do nothing. Abstract."""
 
                 def barter(self):
-                    pass  # concrete
+                    """Do nothing. Concrete."""
         assert CClass.__abstractmethods__ == {"ns.footer"}
         with pytest.raises(TypeError):
             print(CClass())  # because footer is abstract
