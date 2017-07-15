@@ -337,7 +337,8 @@ class Namespace(dict):
     def __get__(self, instance, owner):
         return _NamespaceProxy(self, instance, owner)
 
-    def __bool__(self):
+    @staticmethod
+    def __bool__():
         return True
 
 
