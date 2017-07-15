@@ -463,7 +463,7 @@ def test_customdescriptors_with_abstractmethod(abc):
             self._fset = fset
 
         def getter(self, callable):
-            return Descriptor(callable, self._fget)
+            return Descriptor(callable, self._fset)
 
         def setter(self, callable):
             return Descriptor(self._fget, callable)
