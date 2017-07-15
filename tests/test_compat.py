@@ -568,14 +568,15 @@ def test_metaclass_abc(abc):
     class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @abstractmethod
-        def x(self):
-            pass
-    assert AClass.__abstractmethods__ == {"x"}
+        def x_m(self):
+            """Do nothing. Abstract."""
+    assert AClass.__abstractmethods__ == {"x_m"}
 
     class Meta(type, AClass):
         """A throwaway test metaclass."""
 
-        def x(self):
+        def x_m(self):
+            """Return 1. Concrete."""
             return 1
 
     class CClass(metaclass=Meta):
