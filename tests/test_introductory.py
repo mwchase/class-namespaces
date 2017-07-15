@@ -361,6 +361,7 @@ def test_basic_prop(namespaceable, namespace):
         with namespace() as ns:
             @property
             def footer(self):
+                """Return 1."""
                 return 1
     assert Test().ns.footer == 1
 
@@ -375,6 +376,7 @@ def test_complicated_prop(namespaceable, namespace):
         with namespace() as ns:
             @property
             def var(self):
+                """Return a value from the private namespace."""
                 return self.__private.var
 
             @var.setter
