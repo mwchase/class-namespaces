@@ -407,6 +407,7 @@ def test_override_method(namespaceable, namespace):
         """A throwaway test class."""
         with namespace() as ns:
             def footer(self):
+                """Return 1."""
                 return 1
     test = Test()
     assert test.ns.footer() == 1
