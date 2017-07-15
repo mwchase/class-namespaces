@@ -234,7 +234,7 @@ def test_private(namespaceable, namespace):
         with namespace() as __namespace_:
             footer = 2
 
-        def footer(self):
+        def footer(self):  # pylint: disable=function-redefined
             """Access a private namespace."""
             return self.__namespace_.footer
 
@@ -247,9 +247,9 @@ def test_private(namespaceable, namespace):
 
     assert Test().footer() == 2
     assert Subclass().footer() == 2
-    with pytest.raises(
-            AttributeError,
-            message="object has no attribute '_Subclass__namespace_'"):
+    with pytest.raises(AttributeError,
+                       message="object has no attribute "
+                               "'_Subclass__namespace_'"):
         print(Subclass().my_footer())
 
 
@@ -453,6 +453,9 @@ def test_3_6_descriptor(namespaces, namespaceable, namespace):
     """
     class Descriptor:
         """A descriptor that only sets its name."""
+
+        owner = None
+        name = None
 
         def __set_name__(self, owner, name):
             self.owner = owner
