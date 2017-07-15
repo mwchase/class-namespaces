@@ -489,12 +489,13 @@ def test_customdescriptors_with_abstractmethod(abc):
         @Descriptor
         @abstractmethod
         def footer(self):
+            """Return 3. Abstract."""
             return 3
 
         @footer.setter
         @abstractmethod
         def footer(self, val):
-            pass
+            """Discard input value. Abstract."""
     with pytest.raises(TypeError):
         print(CClass())
 
@@ -502,6 +503,7 @@ def test_customdescriptors_with_abstractmethod(abc):
         """A throwaway test class."""
         @CClass.footer.getter
         def footer(self):
+            """Return 3. Concrete."""
             return super().footer
     with pytest.raises(TypeError):
         print(DClass())
@@ -510,7 +512,7 @@ def test_customdescriptors_with_abstractmethod(abc):
         """A throwaway test class."""
         @DClass.footer.setter
         def footer(self, val):
-            pass
+            """Discard input value. Concrete."""
     assert not EClass.footer.__isabstractmethod__
 
 
