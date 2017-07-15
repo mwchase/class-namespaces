@@ -17,10 +17,12 @@ def test_import_abc(abc):
 
 
 def test_has_class(abc):
+    """Test the convenience class exists."""
     assert abc.NamespaceableABC
 
 
 def test_ABC_helper(abc):
+    """Test the convenience class works as expected."""
     # create an ABC using the helper class and perform basic checks
     class C(abc.NamespaceableABC):
         """A throwaway test class."""
@@ -41,25 +43,33 @@ def test_ABC_helper(abc):
 
 
 def test_abstractmethod_basics(abc):
+    """Test abstractmethod works as expected.
+
+    Adapted from Python's test suite.
+    """
     @abstractmethod
     def footer(self):
-        pass
+        """Return nothing. Abstract."""
     assert footer.__isabstractmethod__
 
     def barter(self):
-        pass
+        """Return nothing. Concrete."""
     assert not hasattr(barter, "__isabstractmethod__")
 
 
 def test_abstractproperty_basics(abc):
+    """Test abstract property works as expected.
+
+    Adapted from Python's test suite.
+    """
     @property
     @abstractmethod
     def footer(self):
-        pass
+        """Return nothing. Abstract."""
     assert footer.__isabstractmethod__
 
     def barter(self):
-        pass
+        """Return nothing. Concrete."""
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class C(metaclass=abc.NamespaceableABCMeta):
@@ -67,6 +77,7 @@ def test_abstractproperty_basics(abc):
         @property
         @abstractmethod
         def footer(self):
+            """Return 3. Abstract."""
             return 3
     with pytest.raises(TypeError):
         print(C())
@@ -75,18 +86,20 @@ def test_abstractproperty_basics(abc):
         """A throwaway test class."""
         @C.footer.getter
         def footer(self):
+            """Return 3. Concrete."""
             return super().footer
     assert D().footer == 3
 
 
 def test_abstractproperty_namespaced(abc, namespace):
-
+    """Test interaction between namespaces and abstract properties."""
     class C(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @property
             @abstractmethod
             def footer(self):
+                """Return 3. Abstract."""
                 return 3
     with pytest.raises(TypeError):
         print(C())
@@ -96,11 +109,16 @@ def test_abstractproperty_namespaced(abc, namespace):
         with namespace() as ns:
             @C.ns.footer.getter
             def footer(self):
+                """Return 3. Concrete."""
                 return super().ns.footer
     assert D().ns.footer == 3
 
 
 def test_abstractclassmethod_basics(abc):
+    """Test abstract classmethod works as expected.
+
+    Adapted from Python's test suite.
+    """
     @classmethod
     @abstractmethod
     def footer(cls):
@@ -131,6 +149,7 @@ def test_abstractclassmethod_basics(abc):
 
 
 def test_abstractclassmethod_namespaced(abc, namespace):
+    """Test interaction between namespaces and abstract classmethods."""
     class C(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
@@ -152,6 +171,10 @@ def test_abstractclassmethod_namespaced(abc, namespace):
 
 
 def test_abstractstaticmethod_basics(abc):
+    """Test abstract staticmethod works as expected.
+
+    Adapted from Python's test suite.
+    """
     @staticmethod
     @abstractmethod
     def footer():
@@ -182,6 +205,7 @@ def test_abstractstaticmethod_basics(abc):
 
 
 def test_abstractstaticmethod_namespaced(abc, namespace):
+    """Test interaction between namespaces and abstract staticmethods."""
     class C(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
@@ -203,6 +227,10 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
 
 
 def test_abstractmethod_integration(abc):
+    """Test abstract shortcut decorators work as expected.
+
+    Adapted from Python's test suite.
+    """
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
@@ -250,6 +278,10 @@ def test_abstractmethod_integration(abc):
 
 
 def test_abstractmethod_integration_namespaced(abc, namespace):
+    """Test abstract shortcut decorators work as expected, under a namespace.
+
+    Adapted from Python's test suite.
+    """
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
@@ -299,6 +331,10 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
 
 
 def test_descriptors_with_abstractmethod(abc):
+    """Test abstract property methods work as expected.
+
+    Adapted from Python's test suite.
+    """
     class C(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @property
@@ -347,6 +383,10 @@ def test_descriptors_with_abstractmethod(abc):
 
 
 def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
+    """Test abstract property methods work as expected under a namespace.
+
+    Adapted from Python's test suite.
+    """
     class C(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
@@ -398,6 +438,10 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
 
 
 def test_customdescriptors_with_abstractmethod(abc):
+    """Test abstract custom descriptors work as expected.
+
+    Adapted from Python's test suite.
+    """
     class Descriptor:
         """A descriptor class integrated some with the ABC protocol."""
 
@@ -447,6 +491,10 @@ def test_customdescriptors_with_abstractmethod(abc):
 
 
 def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
+    """Test abstract custom descriptors work as expected under a namespace.
+
+    Adapted from Python's test suite.
+    """
     class Descriptor:
         """A descriptor class integrated some with the ABC protocol."""
 
@@ -499,6 +547,10 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
 
 
 def test_metaclass_abc(abc):
+    """Test abstract metaclasses work as expected.
+
+    Adapted from Python's test suite.
+    """
     # Metaclasses can be ABCs, too.
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -518,6 +570,10 @@ def test_metaclass_abc(abc):
 
 
 def test_metaclass_abc_namespaced(abc, namespace):
+    """Test abstract metaclasses work as expected, with namespaces.
+
+    Adapted from Python's test suite.
+    """
     # Metaclasses can be ABCs, too.
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -538,6 +594,10 @@ def test_metaclass_abc_namespaced(abc, namespace):
 
 
 def test_registration_basics(abc):
+    """Test ABC registration.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
@@ -565,6 +625,10 @@ def test_registration_basics(abc):
 
 
 def test_register_as_class_deco(abc):
+    """Test ABC registration decorator.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
@@ -591,6 +655,10 @@ def test_register_as_class_deco(abc):
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
 def test_isinstance_invalidation(abc):
+    """Test after-the-fact registration behavior.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
@@ -608,6 +676,10 @@ def test_isinstance_invalidation(abc):
 
 
 def test_registration_builtins(abc):
+    """Test making builtin classes into registered subclasses.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
     A.register(int)
@@ -631,6 +703,10 @@ def test_registration_builtins(abc):
 
 
 def test_registration_edge_cases(abc):
+    """Test edge cases in registration: reflexive, cyclic, repeated...
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
     A.register(A)  # should pass silently
@@ -654,6 +730,10 @@ def test_registration_edge_cases(abc):
 
 
 def test_register_non_class(abc):
+    """Test that non-classes cannot be registered.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
     with pytest.raises(TypeError, message="Can only register classes"):
@@ -661,6 +741,10 @@ def test_register_non_class(abc):
 
 
 def test_registration_transitiveness(abc):
+    """Test that chains of registration hold.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
     assert issubclass(A, A)
@@ -706,6 +790,10 @@ def test_registration_transitiveness(abc):
 
 
 def test_all_new_methods_are_called(abc):
+    """Test that super delegation still works using abstract classes.
+
+    Adapted from Python's test suite.
+    """
     class A(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
