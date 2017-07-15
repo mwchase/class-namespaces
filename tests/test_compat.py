@@ -548,12 +548,13 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             @Descriptor
             @abstractmethod
             def footer(self):
+                """Return 3. Abstract."""
                 return 3
 
             @footer.setter
             @abstractmethod
             def footer(self, val):
-                pass
+                """Discard the input value. Abstract."""
     with pytest.raises(TypeError):
         print(CClass())
 
@@ -562,6 +563,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @CClass.ns.footer.getter
             def footer(self):
+                """Return 3. Concrete."""
                 return super().ns.footer
     with pytest.raises(TypeError):
         print(DClass())
@@ -571,7 +573,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @DClass.ns.footer.setter
             def footer(self, val):
-                pass
+                """Discard the input value. Concrete."""
     assert not EClass.ns.footer.__isabstractmethod__
 
 
