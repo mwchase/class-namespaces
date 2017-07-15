@@ -102,7 +102,7 @@ def test_abstractproperty_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract properties."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @property
             @abstractmethod
             def footer(self):
@@ -113,12 +113,12 @@ def test_abstractproperty_namespaced(abc, namespace):
 
     class DClass(CClass):
         """A throwaway test class."""
-        with namespace() as ns:
-            @CClass.ns.footer.getter
+        with namespace() as namespace_:
+            @CClass.namespace_.footer.getter
             def footer(self):
                 """Return 3. Concrete."""
-                return super().ns.footer
-    assert DClass().ns.footer == 3
+                return super().namespace_.footer
+    assert DClass().namespace_.footer == 3
 
 
 def test_abstractclassmethod_basics(abc):
@@ -163,7 +163,7 @@ def test_abstractclassmethod_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract classmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @classmethod
             @abstractmethod
             def footer(cls):
@@ -174,13 +174,13 @@ def test_abstractclassmethod_namespaced(abc, namespace):
 
     class DClass(CClass):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @classmethod
             def footer(cls):
                 """Return class name. Concrete."""
-                return super().ns.footer()
-    assert DClass.ns.footer() == 'DClass'
-    assert DClass().ns.footer() == 'DClass'
+                return super().namespace_.footer()
+    assert DClass.namespace_.footer() == 'DClass'
+    assert DClass().namespace_.footer() == 'DClass'
 
 
 def test_abstractstaticmethod_basics(abc):
@@ -223,7 +223,7 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract staticmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @staticmethod
             @abstractmethod
             def footer():
@@ -234,13 +234,13 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
 
     class DClass(CClass):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @staticmethod
             def footer():
                 """Return 4. Concrete."""
                 return 4
-    assert DClass.ns.footer() == 4
-    assert DClass().ns.footer() == 4
+    assert DClass.namespace_.footer() == 4
+    assert DClass().namespace_.footer() == 4
 
 
 def test_abstractmethod_integration(abc):
@@ -304,31 +304,31 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
                           abc_main.abstractstaticmethod]:
         class CClass(metaclass=abc.NamespaceableABCMeta):
             """A throwaway test class."""
-            with namespace() as ns:
+            with namespace() as namespace_:
                 @abstractthing
                 def footer(self):
                     """Do nothing. Abstract."""
 
                 def barter(self):
                     """Do nothing. Concrete."""
-        assert CClass.__abstractmethods__ == {"ns.footer"}
+        assert CClass.__abstractmethods__ == {"namespace_.footer"}
         with pytest.raises(TypeError):
             print(CClass())  # because footer is abstract
         assert isabstract(CClass)
 
         class DClass(CClass):
             """A throwaway test class."""
-            with namespace() as ns:
+            with namespace() as namespace_:
                 def barter(self):
                     pass  # concrete override of concrete
-        assert DClass.__abstractmethods__ == {"ns.footer"}
+        assert DClass.__abstractmethods__ == {"namespace_.footer"}
         with pytest.raises(TypeError):
             print(DClass())  # because footer is still abstract
         assert isabstract(DClass)
 
         class EClass(DClass):
             """A throwaway test class."""
-            with namespace() as ns:
+            with namespace() as namespace_:
                 def footer(self):
                     pass
         assert EClass.__abstractmethods__ == set()
@@ -337,11 +337,11 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
 
         class FClass(EClass):
             """A throwaway test class."""
-            with namespace() as ns:
+            with namespace() as namespace_:
                 @abstractthing
                 def barter(self):
                     pass  # abstract override of concrete
-        assert FClass.__abstractmethods__ == {"ns.barter"}
+        assert FClass.__abstractmethods__ == {"namespace_.barter"}
         with pytest.raises(TypeError):
             print(FClass())  # because barter is abstract now
         assert isabstract(FClass)
@@ -408,7 +408,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
     """
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @property
             @abstractmethod
             def footer(self):
@@ -424,21 +424,21 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
 
     class DClass(CClass):
         """A throwaway test class."""
-        with namespace() as ns:
-            @CClass.ns.footer.getter
+        with namespace() as namespace_:
+            @CClass.namespace_.footer.getter
             def footer(self):
                 """Return 3. Concrete."""
-                return super().ns.footer
+                return super().namespace_.footer
     with pytest.raises(TypeError):
         print(DClass())
 
     class EClass(DClass):
         """A throwaway test class."""
-        with namespace() as ns:
-            @DClass.ns.footer.setter
+        with namespace() as namespace_:
+            @DClass.namespace_.footer.setter
             def footer(self, val):
                 """Discard input value. Concrete"""
-    assert EClass().ns.footer == 3
+    assert EClass().namespace_.footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
 
@@ -451,7 +451,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
     with pytest.raises(ValueError):
         class FClass(CClass):
             """A throwaway test class."""
-            with namespace() as ns:
+            with namespace() as namespace_:
                 def barter(self):
                     """Do nothing."""
                 barter.__isabstractmethod__ = NotBool()
@@ -544,7 +544,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @Descriptor
             @abstractmethod
             def footer(self):
@@ -560,21 +560,21 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
 
     class DClass(CClass):
         """A throwaway test class."""
-        with namespace() as ns:
-            @CClass.ns.footer.getter
+        with namespace() as namespace_:
+            @CClass.namespace_.footer.getter
             def footer(self):
                 """Return 3. Concrete."""
-                return super().ns.footer
+                return super().namespace_.footer
     with pytest.raises(TypeError):
         print(DClass())
 
     class EClass(DClass):
         """A throwaway test class."""
-        with namespace() as ns:
-            @DClass.ns.footer.setter
+        with namespace() as namespace_:
+            @DClass.namespace_.footer.setter
             def footer(self, val):
                 """Discard the input value. Concrete."""
-    assert not EClass.ns.footer.__isabstractmethod__
+    assert not EClass.namespace_.footer.__isabstractmethod__
 
 
 def test_metaclass_abc(abc):
@@ -609,15 +609,15 @@ def test_metaclass_abc_namespaced(abc, namespace):
     # Metaclasses can be ABCs, too.
     class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @abstractmethod
             def x_m(self):
                 """Do nothing. Abstract."""
-    assert AClass.__abstractmethods__ == {"ns.x_m"}
+    assert AClass.__abstractmethods__ == {"namespace_.x_m"}
 
     class Meta(type, AClass):
         """A throwaway test metaclass."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             def x_m(self):
                 """Return 1. Concrete."""
                 return 1

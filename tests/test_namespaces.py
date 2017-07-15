@@ -5,15 +5,15 @@ import sys
 import pytest
 
 
-def get_ns(ns):
+def get_ns(namespace_):
     """Return the namespace associated with a scope proxy."""
     from class_namespaces import scope_proxy
-    return scope_proxy._ns(ns)
+    return scope_proxy._ns(namespace_)
 
 
-def scope_dicts_length_equals(ns, length):
+def scope_dicts_length_equals(namespace_, length):
     """Check the length of the associated namespace's scope."""
-    scope = get_ns(ns).scope
+    scope = get_ns(namespace_).scope
     assert len(scope._dicts) == length
 
 
@@ -23,22 +23,22 @@ def test_finalization(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             with pytest.raises(ValueError,
                                message='Cannot finalize a pushed scope!'):
-                print(get_ns(ns).scope.finalize())
+                print(get_ns(namespace_).scope.finalize())
         with pytest.raises(ValueError,
                            message='Cannot pop from a basal scope!'):
-            print(get_ns(ns).scope.pop_())
-        scopes.append(get_ns(ns).scope)
+            print(get_ns(namespace_).scope.pop_())
+        scopes.append(get_ns(namespace_).scope)
         with pytest.raises(
                 ValueError,
                 metaclass='Length not defined on unfinalized scope.'):
-            print(len(get_ns(ns).scope))
+            print(len(get_ns(namespace_).scope))
         with pytest.raises(
                 ValueError,
                 message='Iteration not defined on unfinalized scope.'):
-            print(next(iter(get_ns(ns).scope)))
+            print(next(iter(get_ns(namespace_).scope)))
     with pytest.raises(ValueError, message='Cannot push a finalized scope!'):
         print(scopes[0].push(None))
 
@@ -51,31 +51,31 @@ def test_basic_scope_len(namespaceable, namespace):
 
     class Test1(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            scopes[1] = get_ns(ns).scope
+        with namespace() as namespace_:
+            scopes[1] = get_ns(namespace_).scope
 
     class Test2(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
-            scopes[2] = get_ns(ns1).scope
-        with namespace() as ns2:
+        with namespace() as namespace_1:
+            scopes[2] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     class Test3(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
+        with namespace() as namespace_1:
             footer = 1
-            scopes[3] = get_ns(ns1).scope
-        with namespace() as ns2:
+            scopes[3] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     class Test4(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
+        with namespace() as namespace_1:
             with namespace() as ns:
                 footer = 1
-            scopes[4] = get_ns(ns1).scope
-        with namespace() as ns2:
+            scopes[4] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     for scope in scopes.values():
@@ -98,31 +98,31 @@ def test_basic_scope_iter(namespaceable, namespace):
 
     class Test1(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            scopes[1] = get_ns(ns).scope
+        with namespace() as namespace_:
+            scopes[1] = get_ns(namespace_).scope
 
     class Test2(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
-            scopes[2] = get_ns(ns1).scope
-        with namespace() as ns2:
+        with namespace() as namespace_1:
+            scopes[2] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     class Test3(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
+        with namespace() as namespace_1:
             footer = 1
-            scopes[3] = get_ns(ns1).scope
-        with namespace() as ns2:
+            scopes[3] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     class Test4(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns1:
-            with namespace() as ns:
+        with namespace() as namespace_1:
+            with namespace() as namespace_:
                 footer = 1
-            scopes[4] = get_ns(ns1).scope
-        with namespace() as ns2:
+            scopes[4] = get_ns(namespace_1).scope
+        with namespace() as namespace_2:
             pass
 
     for scope in scopes.values():
@@ -133,11 +133,12 @@ def test_basic_scope_iter(namespaceable, namespace):
     set3 = frozenset(scopes[3])
     set4 = frozenset(scopes[4])
 
-    baseline = set1.difference({'ns'})
-    assert set2.symmetric_difference(baseline) == frozenset({'ns1', 'ns2'})
-    assert set3.symmetric_difference(set2) == frozenset({'ns1.footer'})
+    baseline = set1.difference({'namespace_'})
+    assert set2.symmetric_difference(baseline) == frozenset({'namespace_1',
+                                                             'namespace_2'})
+    assert set3.symmetric_difference(set2) == frozenset({'namespace_1.footer'})
     assert set4.symmetric_difference(set2) == frozenset(
-        {'ns1.ns', 'ns1.ns.footer'})
+        {'namespace_1.namespace_', 'namespace_1.namespace_.footer'})
 
 
 def test_scope_namespaced_get(namespaceable, namespace):
@@ -146,12 +147,12 @@ def test_scope_namespaced_get(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
-    assert scopes[0]['ns.ns.footer'] == 1
+    assert scopes[0]['namespace_.namespace_.footer'] == 1
 
 
 def test_scope_namespaced_set(namespaceable, namespace):
@@ -160,13 +161,13 @@ def test_scope_namespaced_set(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
-                scopes[0] = get_ns(ns).scope
+        with namespace() as namespace_:
+            with namespace() as namespace_:
+                scopes[0] = get_ns(namespace_).scope
 
-    scopes[0]['ns.ns.footer'] = 1
-    assert scopes[0]['ns.ns.footer'] == 1
-    assert Test.ns.ns.footer == 1
+    scopes[0]['namespace_.namespace_.footer'] = 1
+    assert scopes[0]['namespace_.namespace_.footer'] == 1
+    assert Test.namespace_.namespace_.footer == 1
 
 
 def test_scope_namespaced_del(namespaceable, namespace):
@@ -175,15 +176,15 @@ def test_scope_namespaced_del(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
-    assert Test.ns.ns.footer == 1
-    del scopes[0]['ns.ns.footer']
+    assert Test.namespace_.namespace_.footer == 1
+    del scopes[0]['namespace_.namespace_.footer']
     with pytest.raises(AttributeError, message='footer'):
-        print(Test.ns.ns.footer)
+        print(Test.namespace_.namespace_.footer)
 
 
 def test_scope_namespaced_get_error(namespaceable, namespace):
@@ -192,15 +193,15 @@ def test_scope_namespaced_get_error(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.ns.barter'):
-        print(scope['ns.ns.barter'])
+    with pytest.raises(KeyError, message='namespace_.namespace_.barter'):
+        print(scope['namespace_.namespace_.barter'])
 
 
 def test_scope_namespaced_get_non_ns(namespaceable, namespace):
@@ -209,15 +210,16 @@ def test_scope_namespaced_get_non_ns(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.ns.footer.__str__'):
-        print(scope['ns.ns.footer.__str__'])
+    with pytest.raises(KeyError,
+                       message='namespace_.namespace_.footer.__str__'):
+        print(scope['namespace_.namespace_.footer.__str__'])
 
 
 def test_scope_namespaced_get_non_existent(namespaceable, namespace):
@@ -226,15 +228,15 @@ def test_scope_namespaced_get_non_existent(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
     scope = scopes[0]
 
-    with pytest.raises(KeyError, message='ns.footer'):
-        print(scope['ns.footer'])
+    with pytest.raises(KeyError, message='namespace_.footer'):
+        print(scope['namespace_.footer'])
 
 
 def test_scope_namespaced_get_non_recursive(namespaceable, namespace):
@@ -243,14 +245,14 @@ def test_scope_namespaced_get_non_recursive(namespaceable, namespace):
 
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-                scopes[0] = get_ns(ns).scope
+                scopes[0] = get_ns(namespace_).scope
 
     scope = scopes[0]
 
-    assert scope['ns'].ns.footer == 1
+    assert scope['namespace_'].namespace_.footer == 1
 
 
 # I wanted this to be an intro test, but it has some paranoid checks in it.
@@ -259,18 +261,18 @@ def test_redundant_resume(namespaceable, namespace):
     class Test(namespaceable):
         """Throwaway test class."""
         footer = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
             assert footer == 2
-        scope_dicts_length_equals(ns, 1)
+        scope_dicts_length_equals(namespace_, 1)
         footer = 3
-        ns = ns
-        scope_dicts_length_equals(ns, 1)
-        with ns as ns:
+        namespace_ = namespace_
+        scope_dicts_length_equals(namespace_, 1)
+        with namespace_ as namespace_:
             footer = 4
         assert footer == 3
     assert Test().footer == 3
-    assert Test().ns.footer == 4
+    assert Test().namespace_.footer == 4
 
 
 def test_empty_nameless(namespaceable, namespace):
@@ -295,34 +297,34 @@ def test_rename(namespaceable, namespace):
     """Test renaming a namespace."""
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             pass
         with pytest.raises(ValueError, message='Cannot rename namespace'):
-            with ns as ns2:
+            with namespace_ as namespace_2:
                 pass
 
 
 def test_can_t_preload_with_namespace(namespace):
     """Test using a namespace as an initial value."""
     with pytest.raises(ValueError, message='Bad values: {}'):
-        print(namespace(ns=namespace()))
+        print(namespace(namespace_=namespace()))
 
 
 def test_star_attr_functions(namespaceable, namespace):
     """Test the *attr functions on a nested namespace."""
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
-                with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
+                with namespace() as namespace_:
                     pass
 
-    setattr(Test, 'ns.ns.ns.var', 1)
-    assert hasattr(Test, 'ns.ns.ns.var')
-    assert getattr(Test, 'ns.ns.ns.var') == 1
-    assert Test.ns.ns.ns.var == 1
-    delattr(Test, 'ns.ns.ns.var')
-    assert not hasattr(Test, 'ns.ns.ns.var')
+    setattr(Test, 'namespace_.namespace_.namespace_.var', 1)
+    assert hasattr(Test, 'namespace_.namespace_.namespace_.var')
+    assert getattr(Test, 'namespace_.namespace_.namespace_.var') == 1
+    assert Test.namespace_.namespace_.namespace_.var == 1
+    delattr(Test, 'namespace_.namespace_.namespace_.var')
+    assert not hasattr(Test, 'namespace_.namespace_.namespace_.var')
 
 
 def test_dont_need_to_inherit(namespaceable):
@@ -348,27 +350,27 @@ def test_block_reparent(namespaceable, namespace):
 
     class Test1(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             with pytest.raises(ValueError, message='Cannot double-activate.'):
-                with ns:
+                with namespace_:
                     pass
             with pytest.raises(
                     ValueError, message='Cannot reparent namespace'):
-                ns.ns = ns
-                print(ns, ns.ns)
+                namespace_.namespace_ = namespace_
+                print(namespace_, namespace_.namespace_)
         with pytest.raises(ValueError, message='Cannot reparent namespace'):
-            ns.ns = ns
-            print(ns, ns.ns)
-        with namespace() as ns2:
+            namespace_.namespace_ = namespace_
+            print(namespace_, namespace_.namespace_)
+        with namespace() as namespace_2:
             with pytest.raises(
                     ValueError, message='Cannot reparent namespace'):
-                with ns:
+                with namespace_:
                     pass
-                print(ns)
+                print(namespace_)
         nonlocal shadow_ns1
         nonlocal shadow_ns2
-        with ns as shadow_ns1:
-            shadow_ns2 = ns
+        with namespace_ as shadow_ns1:
+            shadow_ns2 = namespace_
 
     assert isinstance(shadow_ns1, namespace)
     assert isinstance(shadow_ns2, shadow_ns1.scope.scope_proxy)
@@ -377,20 +379,20 @@ def test_block_reparent(namespaceable, namespace):
         """Throwaway test class."""
         with pytest.raises(
                 ValueError, message='Cannot move scopes between classes.'):
-            ns = Test1.ns
+            namespace_ = Test1.namespace_
         with pytest.raises(ValueError, message='Cannot reuse namespace'):
-            ns = shadow_ns1
+            namespace_ = shadow_ns1
         with pytest.raises(
                 ValueError, message='Cannot move scopes between classes.'):
-            ns = shadow_ns2
-        with namespace() as ns:
+            namespace_ = shadow_ns2
+        with namespace() as namespace_:
             pass
 
     with pytest.raises(ValueError, message='Cannot reuse namespace'):
-        Test2.ns.ns = shadow_ns1
+        Test2.namespace_.namespace_ = shadow_ns1
     with pytest.raises(
             ValueError, message='Cannot move scopes between classes.'):
-        Test2.ns.ns = shadow_ns2
+        Test2.namespace_.namespace_ = shadow_ns2
 
 
 def test_can_t_get_path(namespace):
@@ -404,10 +406,10 @@ def test_non_existent_attribute_during_creation(namespaceable, namespace):
     """Test that looking for a non-existent attribute raises AttributeError."""
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             pass
         with pytest.raises(AttributeError, message='var'):
-            print(ns.var)
+            print(namespace_.var)
 
 
 def test_partial_descriptors(namespaceable, namespace):
@@ -431,7 +433,7 @@ def test_partial_descriptors(namespaceable, namespace):
         """Throwaway test class."""
         setter = Setter()
         deleter = Deleter()
-        with namespace() as ns:
+        with namespace() as namespace_:
             setter = Setter()
             deleter = Deleter()
 
@@ -444,16 +446,16 @@ def test_partial_descriptors(namespaceable, namespace):
     vars(test)['deleter'] = None
     assert test.setter is None
     assert test.deleter is None
-    assert isinstance(test.ns.setter, Setter)
-    assert isinstance(test.ns.deleter, Deleter)
+    assert isinstance(test.namespace_.setter, Setter)
+    assert isinstance(test.namespace_.deleter, Deleter)
     with pytest.raises(AttributeError, message=deleter_msg):
         test.deleter = None
     with pytest.raises(AttributeError, message=setter_msg):
         del test.setter
     with pytest.raises(AttributeError, message=deleter_msg):
-        test.ns.deleter = None
+        test.namespace_.deleter = None
     with pytest.raises(AttributeError, message=setter_msg):
-        del test.ns.setter
+        del test.namespace_.setter
 
 
 def test_namespace_is_truthy(namespace):
@@ -465,7 +467,7 @@ def test_bad_del_in_definition(namespaceable, namespace):
     """Test that deletes of nonexistent attributes still raise NameError."""
     class Test(namespaceable):
         """Throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             with pytest.raises(
                     NameError, message="name 'footer' is not defined"):
                 del footer
@@ -477,7 +479,7 @@ def test_subtle_bad_del_in_definition(namespaceable, namespace):
     class Test(namespaceable):
         """Throwaway test class."""
         footer = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             with pytest.raises(
                     NameError, message="name 'footer' is not defined"):
                 del footer
@@ -490,12 +492,12 @@ def test_tuple_subclass(namespaceable, namespace):
     class Test(tuple, metaclass=meta):
         """Throwaway test class."""
         __slots__ = ()
-        with namespace() as ns:
+        with namespace() as namespace_:
             var = 1
 
-    assert Test().ns.var == 1
+    assert Test().namespace_.var == 1
     with pytest.raises(AttributeError):
-        Test().ns.var = 2
-    assert Test().ns.var == 1
+        Test().namespace_.var = 2
+    assert Test().namespace_.var == 1
     with pytest.raises(AttributeError):
-        del Test().ns.var
+        del Test().namespace_.var

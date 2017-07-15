@@ -25,13 +25,13 @@ def test_basic_namespace(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             a = 1
-        assert ns
+        assert namespace_
     assert Test
-    assert Test().ns
-    assert Test.ns.a == 1
-    assert Test().ns.a == 1
+    assert Test().namespace_
+    assert Test.namespace_.a == 1
+    assert Test().namespace_.a == 1
 
 
 def test_delete(namespaceable, namespace):
@@ -47,22 +47,22 @@ def test_delete(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             a = 1
             del a
             b = 2
-        assert ns
+        assert namespace_
     assert Test
-    assert Test().ns
-    assert Test.ns.b == 2
-    assert Test().ns.b == 2
+    assert Test().namespace_
+    assert Test.namespace_.b == 2
+    assert Test().namespace_.b == 2
     with pytest.raises(AttributeError, message='b'):
-        del Test().ns.b
-    del Test.ns.b
+        del Test().namespace_.b
+    del Test.namespace_.b
     with pytest.raises(AttributeError, message='b'):
-        print(Test.ns.b)
+        print(Test.namespace_.b)
     with pytest.raises(AttributeError, message='b'):
-        print(Test().ns.b)
+        print(Test().namespace_.b)
 
 
 def test_set(namespaceable, namespace):
@@ -76,26 +76,26 @@ def test_set(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             a = 1
             del a
-        assert ns
+        assert namespace_
     assert Test
-    assert Test().ns
-    Test.ns.b = 2
-    assert Test.ns.b == 2
-    assert Test().ns.b == 2
+    assert Test().namespace_
+    Test.namespace_.b = 2
+    assert Test.namespace_.b == 2
+    assert Test().namespace_.b == 2
     test = Test()
-    test.ns.b = 3
-    assert Test.ns.b == 2
-    assert test.ns.b == 3
+    test.namespace_.b = 3
+    assert Test.namespace_.b == 2
+    assert test.namespace_.b == 3
     test2 = Test()
-    test2.ns.c = 3
+    test2.namespace_.c = 3
     with pytest.raises(AttributeError, message='c'):
-        print(Test.ns.c)
+        print(Test.namespace_.c)
     with pytest.raises(AttributeError, message='c'):
-        print(test.ns.c)
-    assert test2.ns.c == 3
+        print(test.namespace_.c)
+    assert test2.namespace_.c == 3
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
@@ -111,12 +111,12 @@ def test_dir(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             a = 1
-        assert ns
-        assert dir(ns) == ['a']
-    assert dir(Test.ns) == ['a']
-    assert dir(Test().ns) == ['a']
+        assert namespace_
+        assert dir(namespace_) == ['a']
+    assert dir(Test.namespace_) == ['a']
+    assert dir(Test().namespace_) == ['a']
 
 
 def test_shadow(namespaceable, namespace):
@@ -128,12 +128,12 @@ def test_shadow(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
             assert footer == 2
         assert footer == 1
     assert Test().footer == 1
-    assert Test().ns.footer == 2
+    assert Test().namespace_.footer == 2
 
 
 def test_resume(namespaceable, namespace):
@@ -145,17 +145,17 @@ def test_resume(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
             assert footer == 2
         assert footer == 1
         footer = 3
-        with ns:
+        with namespace_:
             assert footer == 2
             footer = 4
         assert footer == 3
     assert Test().footer == 3
-    assert Test().ns.footer == 4
+    assert Test().namespace_.footer == 4
 
 
 def assert_equals(a, b):
@@ -174,10 +174,10 @@ def test_recursive_get_in_definition(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 footer = 1
-        assert_equals(ns.ns.footer, 1)
+        assert_equals(namespace_.namespace_.footer, 1)
 
 
 def test_basic_inherit(namespaceable, namespace):
@@ -189,13 +189,13 @@ def test_basic_inherit(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         footer = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
     assert Subclass().footer == 1
-    assert Subclass().ns.footer == 2
+    assert Subclass().namespace_.footer == 2
 
 
 def test_basic_super(namespaceable, namespace):
@@ -206,20 +206,20 @@ def test_basic_super(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             def hello(self):
                 """Return a predictable constant."""
                 return 1
 
     class Subclass(Test):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             def hello(self):
                 """Return the superclass's hello."""
-                return super().ns.hello()
+                return super().namespace_.hello()
 
-    assert Test().ns.hello() == 1
-    assert Subclass().ns.hello() == 1
+    assert Test().namespace_.hello() == 1
+    assert Subclass().namespace_.hello() == 1
 
 
 def test_private(namespaceable, namespace):
@@ -231,24 +231,25 @@ def test_private(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as __ns:
+        with namespace() as __namespace_:
             footer = 2
 
         def footer(self):
             """Access a private namespace."""
-            return self.__ns.footer
+            return self.__namespace_.footer
 
     class Subclass(Test):
         """A throwaway test class."""
 
         def my_footer(self):
             """Access a non-existent private namespace."""
-            return self.__ns.footer
+            return self.__namespace_.footer
 
     assert Test().footer() == 2
     assert Subclass().footer() == 2
     with pytest.raises(
-            AttributeError, message="object has no attribute '_Subclass__ns'"):
+            AttributeError,
+            message="object has no attribute '_Subclass__namespace_'"):
         print(Subclass().my_footer())
 
 
@@ -256,23 +257,23 @@ def test_nested_namespace(namespaceable, namespace):
     """Define a Namespace in a Namespace."""
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 a = 1
-    assert Test().ns.ns.a == 1
+    assert Test().namespace_.namespace_.a == 1
 
 
 def test_basic_shadow(namespaceable, namespace):
     """Define an attribute over a Namespace."""
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
-        ns = 1
-    assert Subclass().ns == 1
+        namespace_ = 1
+    assert Subclass().namespace_ == 1
 
 
 def test_double_shadow(namespaceable, namespace):
@@ -283,18 +284,18 @@ def test_double_shadow(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
-        ns = 1
+        namespace_ = 1
 
     class DoubleSubclass(Subclass):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             barter = 1
-    assert not hasattr(DoubleSubclass().ns, 'footer')
+    assert not hasattr(DoubleSubclass().namespace_, 'footer')
 
 
 def test_overlap(namespaceable, namespace):
@@ -304,51 +305,51 @@ def test_overlap(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             barter = 3
-    assert Subclass().ns.footer == 2
-    assert Subclass().ns.barter == 3
+    assert Subclass().namespace_.footer == 2
+    assert Subclass().namespace_.barter == 3
 
 
 def test_advanced_overlap(namespaceable, namespace):
     """Do the same things as in test_overlap, but with a little nesting."""
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 2
-            with namespace() as ns:
+            with namespace() as namespace_:
                 qux = 4
 
     class Subclass(Test):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             barter = 3
-    assert Subclass().ns.footer == 2
-    assert Subclass().ns.barter == 3
-    assert Subclass().ns.ns.qux == 4
+    assert Subclass().namespace_.footer == 2
+    assert Subclass().namespace_.barter == 3
+    assert Subclass().namespace_.namespace_.qux == 4
 
 
 def test_use_namespace(namespaceable, namespace):
     """Interact with a namespace's attributes."""
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             footer = 1
             qux = 3
-        assert ns.footer == 1
-        ns.barter = 2
-        assert ns.barter == 2
-        del ns.qux
+        assert namespace_.footer == 1
+        namespace_.barter = 2
+        assert namespace_.barter == 2
+        del namespace_.qux
         # I tried to add a message to this one. It broke. ¯\_(ツ)_/¯
         with pytest.raises(AttributeError):
-            del ns.qux
-    assert Test.ns.footer == 1
-    assert Test.ns.barter == 2
+            del namespace_.qux
+    assert Test.namespace_.footer == 1
+    assert Test.namespace_.barter == 2
 
 
 def test_basic_prop(namespaceable, namespace):
@@ -358,12 +359,12 @@ def test_basic_prop(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @property
             def footer(self):
                 """Return 1."""
                 return 1
-    assert Test().ns.footer == 1
+    assert Test().namespace_.footer == 1
 
 
 def test_complicated_prop(namespaceable, namespace):
@@ -373,7 +374,7 @@ def test_complicated_prop(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @property
             def var(self):
                 """Return a value from the private namespace."""
@@ -391,11 +392,11 @@ def test_complicated_prop(namespaceable, namespace):
             var = None
 
     test = Test()
-    assert test.ns.var is None
-    test.ns.var = 1
-    assert test.ns.var == 2
-    del test.ns.var
-    assert test.ns.var is None
+    assert test.namespace_.var is None
+    test.namespace_.var = 1
+    assert test.namespace_.var == 2
+    del test.namespace_.var
+    assert test.namespace_.var is None
 
 
 def test_override_method(namespaceable, namespace):
@@ -405,20 +406,20 @@ def test_override_method(namespaceable, namespace):
     """
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             def footer(self):
                 """Return 1."""
                 return 1
     test = Test()
-    assert test.ns.footer() == 1
-    test.ns.footer = 2
+    assert test.namespace_.footer() == 1
+    test.namespace_.footer = 2
     print(vars(test))
-    assert test.ns.footer == 2
-    del test.ns.footer
-    assert test.ns.footer() == 1
-    Test.ns.footer = 3
-    assert Test.ns.footer == 3
-    assert test.ns.footer == 3
+    assert test.namespace_.footer == 2
+    del test.namespace_.footer
+    assert test.namespace_.footer() == 1
+    Test.namespace_.footer = 3
+    assert Test.namespace_.footer == 3
+    assert test.namespace_.footer == 3
 
 
 def test_add_later(namespaceable, namespace):
@@ -426,21 +427,21 @@ def test_add_later(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
 
-    ns = namespace()
-    Test.ns = ns
-    print('ns props')
+    namespace_ = namespace()
+    Test.namespace_ = namespace_
+    print('namespace_ props')
     for slot in namespace.__slots__:
-        print(slot, getattr(ns, slot))
-    ns2 = namespace()
-    Test.ns.ns = ns2
-    print('ns2 props')
+        print(slot, getattr(namespace_, slot))
+    namespace_2 = namespace()
+    Test.namespace_.namespace_ = namespace_2
+    print('namespace_2 props')
     for slot in namespace.__slots__:
-        print(slot, getattr(ns2, slot))
-    Test.ns.value = 1
-    assert Test.ns.value == 1
-    Test.ns.ns.value = 2
-    assert Test.ns.ns.value == 2
-    assert Test.ns.value == 1
+        print(slot, getattr(namespace_2, slot))
+    Test.namespace_.value = 1
+    assert Test.namespace_.value == 1
+    Test.namespace_.namespace_.value = 2
+    assert Test.namespace_.namespace_.value == 2
+    assert Test.namespace_.value == 1
 
 
 @pytest.mark.xfail(sys.version_info < (3, 6),
@@ -461,50 +462,50 @@ def test_3_6_descriptor(namespaces, namespaceable, namespace):
 
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             d = Descriptor()
 
-    assert Test.ns.d.name == 'd'
+    assert Test.namespace_.d.name == 'd'
 
 
 def test_basic_meta(namespaceable, namespace):
     """Test the basic interactions between Namespaceable and metaclasses."""
     class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             meta_var = 1
 
     class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
 
-    assert Meta.ns.meta_var == 1
-    assert Test.ns.meta_var == 1
+    assert Meta.namespace_.meta_var == 1
+    assert Test.namespace_.meta_var == 1
     with pytest.raises(AttributeError, message='meta_var'):
-        print(Test().ns.meta_var)
+        print(Test().namespace_.meta_var)
 
 
 def test_somewhat_weirder_meta(namespaceable, namespace):
     """Test that attribute visibility works with Namespaceable, metaclasses."""
     class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             meta_var = 1
 
     class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             cls_var = 2
 
-    assert Meta.ns.meta_var == 1
-    assert Test.ns.meta_var == 1
-    assert Test.ns.cls_var == 2
-    assert Test().ns.cls_var == 2
+    assert Meta.namespace_.meta_var == 1
+    assert Test.namespace_.meta_var == 1
+    assert Test.namespace_.cls_var == 2
+    assert Test().namespace_.cls_var == 2
     with pytest.raises(AttributeError, message='meta_var'):
-        print(Test().ns.meta_var)
+        print(Test().namespace_.meta_var)
     with pytest.raises(AttributeError, message='var'):
-        print(Test.ns.var)
+        print(Test.namespace_.var)
     with pytest.raises(AttributeError, message='cls_var'):
-        print(Meta.ns.cls_var)
+        print(Meta.namespace_.cls_var)
     Test.var = 3
     assert Test.var == 3
     Meta.var = 4
@@ -515,14 +516,14 @@ def test_classmethod_basic(namespaceable, namespace):
     """Test using a classmethod in a Namespace."""
     class Test(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @classmethod
             def cls_mthd(cls):
                 """Return that a call occurred."""
                 return 'called'
 
-    assert Test.ns.cls_mthd() == 'called'
-    assert Test().ns.cls_mthd() == 'called'
+    assert Test.namespace_.cls_mthd() == 'called'
+    assert Test().namespace_.cls_mthd() == 'called'
 
 
 def test_meta_plus_classmethod(namespaceable, namespace):
@@ -532,19 +533,19 @@ def test_meta_plus_classmethod(namespaceable, namespace):
     """
     class Meta(namespaceable, type(namespaceable)):
         """A throwaway test metaclass."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             pass
 
     class Test(namespaceable, metaclass=Meta):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             @classmethod
             def cls_mthd(cls):
                 """Return that a call occurred."""
                 return 'called'
 
-    assert Test().ns.cls_mthd() == 'called'
-    assert Test.ns.cls_mthd() == 'called'
+    assert Test().namespace_.cls_mthd() == 'called'
+    assert Test.namespace_.cls_mthd() == 'called'
 
 
 def test_get_through_namespace(namespaceable, namespace):
@@ -556,11 +557,11 @@ def test_get_through_namespace(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         var = 1
-        with namespace() as ns:
+        with namespace() as namespace_:
             var2 = var
 
     assert Test.var == 1
-    assert Test.ns.var2 == 1
+    assert Test.namespace_.var2 == 1
 
 
 def test_multiple_inheritance(namespaceable, namespace):
@@ -571,20 +572,20 @@ def test_multiple_inheritance(namespaceable, namespace):
     """
     class Test1(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
-            with namespace() as ns:
+        with namespace() as namespace_:
+            with namespace() as namespace_:
                 var = 1
 
     class Test2(namespaceable):
         """A throwaway test class."""
-        with namespace() as ns:
+        with namespace() as namespace_:
             var = 2
 
     class Test3(Test2, Test1):
         """A throwaway test class."""
 
-    assert Test3.ns.ns.var == 1
-    assert Test3.ns.var == 2
+    assert Test3.namespace_.namespace_.var == 1
+    assert Test3.namespace_.var == 2
 
 
 def test_regular_delete(namespaceable):
