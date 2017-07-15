@@ -167,6 +167,7 @@ def test_abstractclassmethod_namespaced(abc, namespace):
             @classmethod
             @abstractmethod
             def footer(cls):
+                """Return class name. Abstract."""
                 return cls.__name__
     with pytest.raises(TypeError):
         print(CClass())
@@ -176,6 +177,7 @@ def test_abstractclassmethod_namespaced(abc, namespace):
         with namespace() as ns:
             @classmethod
             def footer(cls):
+                """Return class name. Concrete."""
                 return super().ns.footer()
     assert DClass.ns.footer() == 'DClass'
     assert DClass().ns.footer() == 'DClass'
@@ -355,12 +357,13 @@ def test_descriptors_with_abstractmethod(abc):
         @property
         @abstractmethod
         def footer(self):
+            """Return 3. Abstract."""
             return 3
 
         @footer.setter
         @abstractmethod
         def footer(self, val):
-            pass
+            """Discard input value. Abstract."""
     with pytest.raises(TypeError):
         print(CClass())
 
@@ -368,6 +371,7 @@ def test_descriptors_with_abstractmethod(abc):
         """A throwaway test class."""
         @CClass.footer.getter
         def footer(self):
+            """Return 3. Concrete."""
             return super().footer
     with pytest.raises(TypeError):
         print(DClass())
@@ -376,7 +380,7 @@ def test_descriptors_with_abstractmethod(abc):
         """A throwaway test class."""
         @DClass.footer.setter
         def footer(self, val):
-            pass
+            """Discard input value. Concrete."""
     assert EClass().footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
@@ -392,7 +396,7 @@ def test_descriptors_with_abstractmethod(abc):
             """A throwaway test class."""
 
             def barter(self):
-                pass
+                """Do nothing."""
             barter.__isabstractmethod__ = NotBool()
             footer = property(barter)
 
@@ -523,13 +527,16 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             self._fset = fset
 
         def getter(self, callable):
-            return Descriptor(callable, self._fget)
+            """Replace self._fget with callable."""
+            return Descriptor(callable, self._fset)
 
         def setter(self, callable):
+            """Replace self._fset with callable."""
             return Descriptor(self._fget, callable)
 
         @property
         def __isabstractmethod__(self):
+            """Return whether the descriptor is abstract."""
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
@@ -600,14 +607,15 @@ def test_metaclass_abc_namespaced(abc, namespace):
         """A throwaway test class."""
         with namespace() as ns:
             @abstractmethod
-            def x(self):
-                pass
-    assert AClass.__abstractmethods__ == {"ns.x"}
+            def x_m(self):
+                """Do nothing. Abstract."""
+    assert AClass.__abstractmethods__ == {"ns.x_m"}
 
     class Meta(type, AClass):
         """A throwaway test metaclass."""
         with namespace() as ns:
-            def x(self):
+            def x_m(self):
+                """Return 1. Concrete."""
                 return 1
 
     class CClass(metaclass=Meta):
