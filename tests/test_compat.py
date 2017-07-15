@@ -21,42 +21,45 @@ def test_has_class(abc):
     assert abc.NamespaceableABC
 
 
-def test_ABC_helper(abc):
+def test_abc_helper(abc):
     """Test the convenience class works as expected."""
     # create an ABC using the helper class and perform basic checks
-    class C(abc.NamespaceableABC):
+    class CClass(abc.NamespaceableABC):
         """A throwaway test class."""
         @classmethod
         @abstractmethod
         def footer(cls):
             return cls.__name__
-    assert isinstance(C, abc.NamespaceableABCMeta)
+    assert isinstance(CClass, abc.NamespaceableABCMeta)
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         @classmethod
         def footer(cls):
             return super().footer()
-    assert D.footer() == 'D'
+    assert DClass.footer() == 'DClass'
 
 
-def test_abstractmethod_basics(abc):
+def test_abstractmethod_basics():
     """Test abstractmethod works as expected.
 
     Adapted from Python's test suite.
     """
     @abstractmethod
     def footer(self):
-        """Return nothing. Abstract."""
+        """Return self. Abstract."""
+        return self
     assert footer.__isabstractmethod__
 
     def barter(self):
-        """Return nothing. Concrete."""
+        """Return self. Concrete."""
+        return self
     assert not hasattr(barter, "__isabstractmethod__")
 
 
+# IT IS TOO USED.
 def test_abstractproperty_basics(abc):
     """Test abstract property works as expected.
 
@@ -72,7 +75,7 @@ def test_abstractproperty_basics(abc):
         """Return nothing. Concrete."""
     assert not getattr(barter, "__isabstractmethod__", False)
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @property
         @abstractmethod
@@ -80,20 +83,20 @@ def test_abstractproperty_basics(abc):
             """Return 3. Abstract."""
             return 3
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
-        @C.footer.getter
+        @CClass.footer.getter
         def footer(self):
             """Return 3. Concrete."""
             return super().footer
-    assert D().footer == 3
+    assert DClass().footer == 3
 
 
 def test_abstractproperty_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract properties."""
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @property
@@ -102,16 +105,16 @@ def test_abstractproperty_namespaced(abc, namespace):
                 """Return 3. Abstract."""
                 return 3
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         with namespace() as ns:
-            @C.ns.footer.getter
+            @CClass.ns.footer.getter
             def footer(self):
                 """Return 3. Concrete."""
                 return super().ns.footer
-    assert D().ns.footer == 3
+    assert DClass().ns.footer == 3
 
 
 def test_abstractclassmethod_basics(abc):
@@ -130,27 +133,27 @@ def test_abstractclassmethod_basics(abc):
         pass
     assert not getattr(barter, "__isabstractmethod__", False)
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @classmethod
         @abstractmethod
         def footer(cls):
             return cls.__name__
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         @classmethod
         def footer(cls):
             return super().footer()
-    assert D.footer() == 'D'
-    assert D().footer() == 'D'
+    assert DClass.footer() == 'DClass'
+    assert DClass().footer() == 'DClass'
 
 
 def test_abstractclassmethod_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract classmethods."""
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @classmethod
@@ -158,16 +161,16 @@ def test_abstractclassmethod_namespaced(abc, namespace):
             def footer(cls):
                 return cls.__name__
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         with namespace() as ns:
             @classmethod
             def footer(cls):
                 return super().ns.footer()
-    assert D.ns.footer() == 'D'
-    assert D().ns.footer() == 'D'
+    assert DClass.ns.footer() == 'DClass'
+    assert DClass().ns.footer() == 'DClass'
 
 
 def test_abstractstaticmethod_basics(abc):
@@ -186,27 +189,27 @@ def test_abstractstaticmethod_basics(abc):
         pass
     assert not (getattr(barter, "__isabstractmethod__", False))
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @staticmethod
         @abstractmethod
         def footer():
             return 3
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         @staticmethod
         def footer():
             return 4
-    assert D.footer() == 4
-    assert D().footer() == 4
+    assert DClass.footer() == 4
+    assert DClass().footer() == 4
 
 
 def test_abstractstaticmethod_namespaced(abc, namespace):
     """Test interaction between namespaces and abstract staticmethods."""
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @staticmethod
@@ -214,16 +217,16 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
             def footer():
                 return 3
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         with namespace() as ns:
             @staticmethod
             def footer():
                 return 4
-    assert D.ns.footer() == 4
-    assert D().ns.footer() == 4
+    assert DClass.ns.footer() == 4
+    assert DClass().ns.footer() == 4
 
 
 def test_abstractmethod_integration(abc):
@@ -234,7 +237,7 @@ def test_abstractmethod_integration(abc):
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
-        class C(metaclass=abc.NamespaceableABCMeta):
+        class CClass(metaclass=abc.NamespaceableABCMeta):
             """A throwaway test class."""
             @abstractthing
             def footer(self):
@@ -242,39 +245,39 @@ def test_abstractmethod_integration(abc):
 
             def barter(self):
                 pass  # concrete
-        assert C.__abstractmethods__ == {"footer"}
+        assert CClass.__abstractmethods__ == {"footer"}
         with pytest.raises(TypeError):
-            print(C())  # because footer is abstract
-        assert isabstract(C)
+            print(CClass())  # because footer is abstract
+        assert isabstract(CClass)
 
-        class D(C):
+        class DClass(CClass):
             """A throwaway test class."""
 
             def barter(self):
                 pass  # concrete override of concrete
-        assert D.__abstractmethods__ == {"footer"}
+        assert DClass.__abstractmethods__ == {"footer"}
         with pytest.raises(TypeError):
-            print(D())  # because footer is still abstract
-        assert isabstract(D)
+            print(DClass())  # because footer is still abstract
+        assert isabstract(DClass)
 
-        class E(D):
+        class EClass(DClass):
             """A throwaway test class."""
 
             def footer(self):
                 pass
-        assert E.__abstractmethods__ == set()
-        E()  # now footer is concrete, too
-        assert not isabstract(E)
+        assert EClass.__abstractmethods__ == set()
+        EClass()  # now footer is concrete, too
+        assert not isabstract(EClass)
 
-        class F(E):
+        class FClass(EClass):
             """A throwaway test class."""
             @abstractthing
             def barter(self):
                 pass  # abstract override of concrete
-        assert F.__abstractmethods__ == {"barter"}
+        assert FClass.__abstractmethods__ == {"barter"}
         with pytest.raises(TypeError):
-            print(F())  # because barter is abstract now
-        assert isabstract(F)
+            print(FClass())  # because barter is abstract now
+        assert isabstract(FClass)
 
 
 def test_abstractmethod_integration_namespaced(abc, namespace):
@@ -285,7 +288,7 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
     for abstractthing in [abstractmethod, abc_main.abstractproperty,
                           abc_main.abstractclassmethod,
                           abc_main.abstractstaticmethod]:
-        class C(metaclass=abc.NamespaceableABCMeta):
+        class CClass(metaclass=abc.NamespaceableABCMeta):
             """A throwaway test class."""
             with namespace() as ns:
                 @abstractthing
@@ -294,40 +297,40 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
 
                 def barter(self):
                     pass  # concrete
-        assert C.__abstractmethods__ == {"ns.footer"}
+        assert CClass.__abstractmethods__ == {"ns.footer"}
         with pytest.raises(TypeError):
-            print(C())  # because footer is abstract
-        assert isabstract(C)
+            print(CClass())  # because footer is abstract
+        assert isabstract(CClass)
 
-        class D(C):
+        class DClass(CClass):
             """A throwaway test class."""
             with namespace() as ns:
                 def barter(self):
                     pass  # concrete override of concrete
-        assert D.__abstractmethods__ == {"ns.footer"}
+        assert DClass.__abstractmethods__ == {"ns.footer"}
         with pytest.raises(TypeError):
-            print(D())  # because footer is still abstract
-        assert isabstract(D)
+            print(DClass())  # because footer is still abstract
+        assert isabstract(DClass)
 
-        class E(D):
+        class EClass(DClass):
             """A throwaway test class."""
             with namespace() as ns:
                 def footer(self):
                     pass
-        assert E.__abstractmethods__ == set()
-        E()  # now footer is concrete, too
-        assert not isabstract(E)
+        assert EClass.__abstractmethods__ == set()
+        EClass()  # now footer is concrete, too
+        assert not isabstract(EClass)
 
-        class F(E):
+        class FClass(EClass):
             """A throwaway test class."""
             with namespace() as ns:
                 @abstractthing
                 def barter(self):
                     pass  # abstract override of concrete
-        assert F.__abstractmethods__ == {"ns.barter"}
+        assert FClass.__abstractmethods__ == {"ns.barter"}
         with pytest.raises(TypeError):
-            print(F())  # because barter is abstract now
-        assert isabstract(F)
+            print(FClass())  # because barter is abstract now
+        assert isabstract(FClass)
 
 
 def test_descriptors_with_abstractmethod(abc):
@@ -335,7 +338,7 @@ def test_descriptors_with_abstractmethod(abc):
 
     Adapted from Python's test suite.
     """
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @property
         @abstractmethod
@@ -347,22 +350,22 @@ def test_descriptors_with_abstractmethod(abc):
         def footer(self, val):
             pass
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
-        @C.footer.getter
+        @CClass.footer.getter
         def footer(self):
             return super().footer
     with pytest.raises(TypeError):
-        print(D())
+        print(DClass())
 
-    class E(D):
+    class EClass(DClass):
         """A throwaway test class."""
-        @D.footer.setter
+        @DClass.footer.setter
         def footer(self, val):
             pass
-    assert E().footer == 3
+    assert EClass().footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
 
@@ -373,7 +376,7 @@ def test_descriptors_with_abstractmethod(abc):
             raise ValueError()
         __len__ = __bool__
     with pytest.raises(ValueError):
-        class F(C):
+        class FClass(CClass):
             """A throwaway test class."""
 
             def barter(self):
@@ -387,7 +390,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
 
     Adapted from Python's test suite.
     """
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @property
@@ -400,24 +403,24 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
             def footer(self, val):
                 pass
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         with namespace() as ns:
-            @C.ns.footer.getter
+            @CClass.ns.footer.getter
             def footer(self):
                 return super().ns.footer
     with pytest.raises(TypeError):
-        print(D())
+        print(DClass())
 
-    class E(D):
+    class EClass(DClass):
         """A throwaway test class."""
         with namespace() as ns:
-            @D.ns.footer.setter
+            @DClass.ns.footer.setter
             def footer(self, val):
                 pass
-    assert E().ns.footer == 3
+    assert EClass().ns.footer == 3
     # check that the property's __isabstractmethod__ descriptor does the
     # right thing when presented with a value that fails truth testing:
 
@@ -428,7 +431,7 @@ def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
             raise ValueError()
         __len__ = __bool__
     with pytest.raises(ValueError):
-        class F(C):
+        class FClass(CClass):
             """A throwaway test class."""
             with namespace() as ns:
                 def barter(self):
@@ -460,7 +463,7 @@ def test_customdescriptors_with_abstractmethod(abc):
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @Descriptor
         @abstractmethod
@@ -472,22 +475,22 @@ def test_customdescriptors_with_abstractmethod(abc):
         def footer(self, val):
             pass
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
-        @C.footer.getter
+        @CClass.footer.getter
         def footer(self):
             return super().footer
     with pytest.raises(TypeError):
-        print(D())
+        print(DClass())
 
-    class E(D):
+    class EClass(DClass):
         """A throwaway test class."""
-        @D.footer.setter
+        @DClass.footer.setter
         def footer(self, val):
             pass
-    assert not (E.footer.__isabstractmethod__)
+    assert not (EClass.footer.__isabstractmethod__)
 
 
 def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
@@ -513,7 +516,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             return (getattr(self._fget, '__isabstractmethod__', False) or
                     getattr(self._fset, '__isabstractmethod__', False))
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @Descriptor
@@ -526,24 +529,24 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             def footer(self, val):
                 pass
     with pytest.raises(TypeError):
-        print(C())
+        print(CClass())
 
-    class D(C):
+    class DClass(CClass):
         """A throwaway test class."""
         with namespace() as ns:
-            @C.ns.footer.getter
+            @CClass.ns.footer.getter
             def footer(self):
                 return super().ns.footer
     with pytest.raises(TypeError):
-        print(D())
+        print(DClass())
 
-    class E(D):
+    class EClass(DClass):
         """A throwaway test class."""
         with namespace() as ns:
-            @D.ns.footer.setter
+            @DClass.ns.footer.setter
             def footer(self, val):
                 pass
-    assert not (E.ns.footer.__isabstractmethod__)
+    assert not (EClass.ns.footer.__isabstractmethod__)
 
 
 def test_metaclass_abc(abc):
@@ -552,20 +555,20 @@ def test_metaclass_abc(abc):
     Adapted from Python's test suite.
     """
     # Metaclasses can be ABCs, too.
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         @abstractmethod
         def x(self):
             pass
-    assert A.__abstractmethods__ == {"x"}
+    assert AClass.__abstractmethods__ == {"x"}
 
-    class meta(type, A):
+    class meta(type, AClass):
         """A throwaway test metaclass."""
 
         def x(self):
             return 1
 
-    class C(metaclass=meta):
+    class CClass(metaclass=meta):
         """A throwaway test class."""
 
 
@@ -575,21 +578,21 @@ def test_metaclass_abc_namespaced(abc, namespace):
     Adapted from Python's test suite.
     """
     # Metaclasses can be ABCs, too.
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
         with namespace() as ns:
             @abstractmethod
             def x(self):
                 pass
-    assert A.__abstractmethods__ == {"ns.x"}
+    assert AClass.__abstractmethods__ == {"ns.x"}
 
-    class meta(type, A):
+    class meta(type, AClass):
         """A throwaway test metaclass."""
         with namespace() as ns:
             def x(self):
                 return 1
 
-    class C(metaclass=meta):
+    class CClass(metaclass=meta):
         """A throwaway test class."""
 
 
@@ -598,30 +601,30 @@ def test_registration_basics(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
-    class B(object):
+    class BClass(object):
         """A throwaway test class."""
-    b = B()
-    assert not (issubclass(B, A))
-    assert not (issubclass(B, (A,)))
-    assert not isinstance(b, A)
-    assert not isinstance(b, (A,))
-    B1 = A.register(B)
-    assert issubclass(B, A)
-    assert issubclass(B, (A,))
-    assert isinstance(b, A)
-    assert isinstance(b, (A,))
-    assert B1 is B
+    b = BClass()
+    assert not (issubclass(BClass, AClass))
+    assert not (issubclass(BClass, (AClass,)))
+    assert not isinstance(b, AClass)
+    assert not isinstance(b, (AClass,))
+    BClass1 = AClass.register(BClass)
+    assert issubclass(BClass, AClass)
+    assert issubclass(BClass, (AClass,))
+    assert isinstance(b, AClass)
+    assert isinstance(b, (AClass,))
+    assert BClass1 is BClass
 
-    class C(B):
+    class CClass(BClass):
         """A throwaway test class."""
-    c = C()
-    assert issubclass(C, A)
-    assert issubclass(C, (A,))
-    assert isinstance(c, A)
-    assert isinstance(c, (A,))
+    c = CClass()
+    assert issubclass(CClass, AClass)
+    assert issubclass(CClass, (AClass,))
+    assert isinstance(c, AClass)
+    assert isinstance(c, (AClass,))
 
 
 def test_register_as_class_deco(abc):
@@ -629,27 +632,27 @@ def test_register_as_class_deco(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
-    @A.register
-    class B(object):
+    @AClass.register
+    class BClass(object):
         """A throwaway test class."""
-    b = B()
-    assert issubclass(B, A)
-    assert issubclass(B, (A,))
-    assert isinstance(b, A)
-    assert isinstance(b, (A,))
+    b = BClass()
+    assert issubclass(BClass, AClass)
+    assert issubclass(BClass, (AClass,))
+    assert isinstance(b, AClass)
+    assert isinstance(b, (AClass,))
 
-    @A.register
-    class C(B):
+    @AClass.register
+    class CClass(BClass):
         """A throwaway test class."""
-    c = C()
-    assert issubclass(C, A)
-    assert issubclass(C, (A,))
-    assert isinstance(c, A)
-    assert isinstance(c, (A,))
-    assert C is A.register(C)
+    c = CClass()
+    assert issubclass(CClass, AClass)
+    assert issubclass(CClass, (AClass,))
+    assert isinstance(c, AClass)
+    assert isinstance(c, (AClass,))
+    assert CClass is AClass.register(CClass)
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
@@ -659,20 +662,20 @@ def test_isinstance_invalidation(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
-    class B:
+    class BClass:
         """A throwaway test class."""
-    b = B()
-    assert not (isinstance(b, A))
-    assert not (isinstance(b, (A,)))
+    b = BClass()
+    assert not (isinstance(b, AClass))
+    assert not (isinstance(b, (AClass,)))
     token_old = abc_main.get_cache_token()
-    A.register(B)
+    AClass.register(BClass)
     token_new = abc_main.get_cache_token()
     assert token_old != token_new
-    assert isinstance(b, A)
-    assert isinstance(b, (A,))
+    assert isinstance(b, AClass)
+    assert isinstance(b, (AClass,))
 
 
 def test_registration_builtins(abc):
@@ -680,26 +683,26 @@ def test_registration_builtins(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    A.register(int)
-    assert isinstance(42, A)
-    assert isinstance(42, (A,))
-    assert issubclass(int, A)
-    assert issubclass(int, (A,))
+    AClass.register(int)
+    assert isinstance(42, AClass)
+    assert isinstance(42, (AClass,))
+    assert issubclass(int, AClass)
+    assert issubclass(int, (AClass,))
 
-    class B(A):
+    class BClass(AClass):
         """A throwaway test class."""
-    B.register(str)
+    BClass.register(str)
 
-    class C(str):
+    class CClass(str):
         """A throwaway test class."""
-    assert isinstance("", A)
-    assert isinstance("", (A,))
-    assert issubclass(str, A)
-    assert issubclass(str, (A,))
-    assert issubclass(C, A)
-    assert issubclass(C, (A,))
+    assert isinstance("", AClass)
+    assert isinstance("", (AClass,))
+    assert issubclass(str, AClass)
+    assert issubclass(str, (AClass,))
+    assert issubclass(CClass, AClass)
+    assert issubclass(CClass, (AClass,))
 
 
 def test_registration_edge_cases(abc):
@@ -707,26 +710,26 @@ def test_registration_edge_cases(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    A.register(A)  # should pass silently
+    AClass.register(AClass)  # should pass silently
 
-    class A1(A):
+    class AClass1(AClass):
         """A throwaway test class."""
     with pytest.raises(RuntimeError):
-        A1.register(A)  # cycles not allowed
+        AClass1.register(AClass)  # cycles not allowed
 
-    class B(object):
+    class BClass(object):
         """A throwaway test class."""
-    A1.register(B)  # ok
-    A1.register(B)  # should pass silently
+    AClass1.register(BClass)  # ok
+    AClass1.register(BClass)  # should pass silently
 
-    class C(A):
+    class CClass(AClass):
         """A throwaway test class."""
-    A.register(C)  # should pass silently
+    AClass.register(CClass)  # should pass silently
     with pytest.raises(RuntimeError):
-        C.register(A)  # cycles not allowed
-    C.register(B)  # ok
+        CClass.register(AClass)  # cycles not allowed
+    CClass.register(BClass)  # ok
 
 
 def test_register_non_class(abc):
@@ -734,10 +737,10 @@ def test_register_non_class(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
     with pytest.raises(TypeError, message="Can only register classes"):
-        print(A.register(4))
+        print(AClass.register(4))
 
 
 def test_registration_transitiveness(abc):
@@ -745,48 +748,48 @@ def test_registration_transitiveness(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    assert issubclass(A, A)
-    assert issubclass(A, (A,))
+    assert issubclass(AClass, AClass)
+    assert issubclass(AClass, (AClass,))
 
-    class B(metaclass=abc.NamespaceableABCMeta):
+    class BClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    assert not (issubclass(A, B))
-    assert not (issubclass(A, (B,)))
-    assert not (issubclass(B, A))
-    assert not (issubclass(B, (A,)))
+    assert not (issubclass(AClass, BClass))
+    assert not (issubclass(AClass, (BClass,)))
+    assert not (issubclass(BClass, AClass))
+    assert not (issubclass(BClass, (AClass,)))
 
-    class C(metaclass=abc.NamespaceableABCMeta):
+    class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    A.register(B)
+    AClass.register(BClass)
 
-    class B1(B):
+    class BClass1(BClass):
         """A throwaway test class."""
-    assert issubclass(B1, A)
-    assert issubclass(B1, (A,))
+    assert issubclass(BClass1, AClass)
+    assert issubclass(BClass1, (AClass,))
 
-    class C1(C):
+    class CClass1(CClass):
         """A throwaway test class."""
-    B1.register(C1)
-    assert not issubclass(C, B)
-    assert not issubclass(C, (B,))
-    assert not issubclass(C, B1)
-    assert not issubclass(C, (B1,))
-    assert issubclass(C1, A)
-    assert issubclass(C1, (A,))
-    assert issubclass(C1, B)
-    assert issubclass(C1, (B,))
-    assert issubclass(C1, B1)
-    assert issubclass(C1, (B1,))
-    C1.register(int)
+    BClass1.register(CClass1)
+    assert not issubclass(CClass, BClass)
+    assert not issubclass(CClass, (BClass,))
+    assert not issubclass(CClass, BClass1)
+    assert not issubclass(CClass, (BClass1,))
+    assert issubclass(CClass1, AClass)
+    assert issubclass(CClass1, (AClass,))
+    assert issubclass(CClass1, BClass)
+    assert issubclass(CClass1, (BClass,))
+    assert issubclass(CClass1, BClass1)
+    assert issubclass(CClass1, (BClass1,))
+    CClass1.register(int)
 
     class MyInt(int):
         """A throwaway test class."""
-    assert issubclass(MyInt, A)
-    assert issubclass(MyInt, (A,))
-    assert isinstance(42, A)
-    assert isinstance(42, (A,))
+    assert issubclass(MyInt, AClass)
+    assert issubclass(MyInt, (AClass,))
+    assert isinstance(42, AClass)
+    assert isinstance(42, (AClass,))
 
 
 def test_all_new_methods_are_called(abc):
@@ -794,19 +797,19 @@ def test_all_new_methods_are_called(abc):
 
     Adapted from Python's test suite.
     """
-    class A(metaclass=abc.NamespaceableABCMeta):
+    class AClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
 
-    class B(object):
+    class BClass(object):
         """A throwaway test class."""
         counter = 0
 
         def __new__(cls):
-            B.counter += 1
+            BClass.counter += 1
             return super().__new__(cls)
 
-    class C(A, B):
+    class CClass(AClass, BClass):
         """A throwaway test class."""
-    assert B.counter == 0
-    C()
-    assert B.counter == 1
+    assert BClass.counter == 0
+    CClass()
+    assert BClass.counter == 1
