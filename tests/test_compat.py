@@ -187,7 +187,7 @@ def test_abstractstaticmethod_basics(abc):
     @staticmethod
     def barter():
         pass
-    assert not (getattr(barter, "__isabstractmethod__", False))
+    assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -490,7 +490,7 @@ def test_customdescriptors_with_abstractmethod(abc):
         @DClass.footer.setter
         def footer(self, val):
             pass
-    assert not (EClass.footer.__isabstractmethod__)
+    assert not EClass.footer.__isabstractmethod__
 
 
 def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
@@ -546,7 +546,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
             @DClass.ns.footer.setter
             def footer(self, val):
                 pass
-    assert not (EClass.ns.footer.__isabstractmethod__)
+    assert not EClass.ns.footer.__isabstractmethod__
 
 
 def test_metaclass_abc(abc):
@@ -562,13 +562,13 @@ def test_metaclass_abc(abc):
             pass
     assert AClass.__abstractmethods__ == {"x"}
 
-    class meta(type, AClass):
+    class Meta(type, AClass):
         """A throwaway test metaclass."""
 
         def x(self):
             return 1
 
-    class CClass(metaclass=meta):
+    class CClass(metaclass=Meta):
         """A throwaway test class."""
 
 
@@ -586,13 +586,13 @@ def test_metaclass_abc_namespaced(abc, namespace):
                 pass
     assert AClass.__abstractmethods__ == {"ns.x"}
 
-    class meta(type, AClass):
+    class Meta(type, AClass):
         """A throwaway test metaclass."""
         with namespace() as ns:
             def x(self):
                 return 1
 
-    class CClass(metaclass=meta):
+    class CClass(metaclass=Meta):
         """A throwaway test class."""
 
 
