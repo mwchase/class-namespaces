@@ -1,3 +1,5 @@
+"""Test the public behavior of namespaces."""
+
 import sys
 
 import pytest

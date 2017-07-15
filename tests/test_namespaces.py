@@ -1,3 +1,5 @@
+"""Test the internal details of namespaces."""
+
 import sys
 
 import pytest

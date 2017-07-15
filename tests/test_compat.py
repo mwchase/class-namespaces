@@ -1,3 +1,5 @@
+"""Test the integration of namespaces with abstract base classes."""
+
 from abc import abstractmethod
 import abc as abc_main
 from inspect import isabstract
