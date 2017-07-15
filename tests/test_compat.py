@@ -31,6 +31,7 @@ def test_abc_helper(abc):
         @classmethod
         @abstractmethod
         def footer(cls):
+            """Return the class's name. Abstract."""
             return cls.__name__
     assert isinstance(CClass, abc.NamespaceableABCMeta)
     with pytest.raises(TypeError):
@@ -40,6 +41,7 @@ def test_abc_helper(abc):
         """A throwaway test class."""
         @classmethod
         def footer(cls):
+            """Return the class's name. Concrete."""
             return super().footer()
     assert DClass.footer() == 'DClass'
 
