@@ -158,12 +158,12 @@ def test_resume(namespaceable, namespace):
     assert Test().namespace_.footer == 4
 
 
-def assert_equals(a, b):
-    """Compare a and b in a predictable scope.
+def assert_equals(expected, actual):
+    """Compare expected and actual in a predictable scope.
 
     pytest can get confused inside a Namespaceable class definition.
     """
-    assert a == b
+    assert expected == actual
 
 
 def test_recursive_get_in_definition(namespaceable, namespace):
@@ -177,7 +177,7 @@ def test_recursive_get_in_definition(namespaceable, namespace):
         with namespace() as namespace_:
             with namespace() as namespace_:
                 footer = 1
-        assert_equals(namespace_.namespace_.footer, 1)
+        assert_equals(1, namespace_.namespace_.footer)
 
 
 def test_basic_inherit(namespaceable, namespace):
