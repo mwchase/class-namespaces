@@ -636,25 +636,25 @@ def test_registration_basics(abc):
 
     class BClass(object):
         """A throwaway test class."""
-    b = BClass()
+    b_instance = BClass()
     assert not (issubclass(BClass, AClass))
     assert not (issubclass(BClass, (AClass,)))
-    assert not isinstance(b, AClass)
-    assert not isinstance(b, (AClass,))
+    assert not isinstance(b_instance, AClass)
+    assert not isinstance(b_instance, (AClass,))
     BClass1 = AClass.register(BClass)
     assert issubclass(BClass, AClass)
     assert issubclass(BClass, (AClass,))
-    assert isinstance(b, AClass)
-    assert isinstance(b, (AClass,))
+    assert isinstance(b_instance, AClass)
+    assert isinstance(b_instance, (AClass,))
     assert BClass1 is BClass
 
     class CClass(BClass):
         """A throwaway test class."""
-    c = CClass()
+    c_instance = CClass()
     assert issubclass(CClass, AClass)
     assert issubclass(CClass, (AClass,))
-    assert isinstance(c, AClass)
-    assert isinstance(c, (AClass,))
+    assert isinstance(c_instance, AClass)
+    assert isinstance(c_instance, (AClass,))
 
 
 def test_register_as_class_deco(abc):

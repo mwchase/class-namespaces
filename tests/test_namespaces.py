@@ -72,7 +72,7 @@ def test_basic_scope_len(namespaceable, namespace):
     class Test4(namespaceable):
         """Throwaway test class."""
         with namespace() as namespace_1:
-            with namespace() as ns:
+            with namespace() as namespace_:
                 footer = 1
             scopes[4] = get_ns(namespace_1).scope
         with namespace() as namespace_2:
@@ -290,7 +290,7 @@ def test_non_empty_nameless(namespaceable, namespace):
         """Throwaway test class."""
         with pytest.raises(RuntimeError, message='Namespace must be named.'):
             with namespace():
-                a = 1
+                attribute = 1
 
 
 def test_rename(namespaceable, namespace):

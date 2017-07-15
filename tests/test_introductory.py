@@ -463,9 +463,9 @@ def test_3_6_descriptor(namespaces, namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as namespace_:
-            d = Descriptor()
+            descriptor = Descriptor()
 
-    assert Test.namespace_.d.name == 'd'
+    assert Test.namespace_.descriptor.name == 'descriptor'
 
 
 def test_basic_meta(namespaceable, namespace):
