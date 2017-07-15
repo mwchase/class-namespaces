@@ -26,12 +26,12 @@ def test_basic_namespace(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as namespace_:
-            a = 1
+            attribute = 1
         assert namespace_
     assert Test
     assert Test().namespace_
-    assert Test.namespace_.a == 1
-    assert Test().namespace_.a == 1
+    assert Test.namespace_.attribute == 1
+    assert Test().namespace_.attribute == 1
 
 
 def test_delete(namespaceable, namespace):
@@ -48,21 +48,21 @@ def test_delete(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as namespace_:
-            a = 1
-            del a
-            b = 2
+            attribute = 1
+            del attribute
+            bttribute = 2
         assert namespace_
     assert Test
     assert Test().namespace_
-    assert Test.namespace_.b == 2
-    assert Test().namespace_.b == 2
-    with pytest.raises(AttributeError, message='b'):
-        del Test().namespace_.b
-    del Test.namespace_.b
-    with pytest.raises(AttributeError, message='b'):
-        print(Test.namespace_.b)
-    with pytest.raises(AttributeError, message='b'):
-        print(Test().namespace_.b)
+    assert Test.namespace_.bttribute == 2
+    assert Test().namespace_.bttribute == 2
+    with pytest.raises(AttributeError, message='bttribute'):
+        del Test().namespace_.bttribute
+    del Test.namespace_.bttribute
+    with pytest.raises(AttributeError, message='bttribute'):
+        print(Test.namespace_.bttribute)
+    with pytest.raises(AttributeError, message='bttribute'):
+        print(Test().namespace_.bttribute)
 
 
 def test_set(namespaceable, namespace):
@@ -77,25 +77,25 @@ def test_set(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as namespace_:
-            a = 1
-            del a
+            attribute = 1
+            del attribute
         assert namespace_
     assert Test
     assert Test().namespace_
-    Test.namespace_.b = 2
-    assert Test.namespace_.b == 2
-    assert Test().namespace_.b == 2
+    Test.namespace_.bttribute = 2
+    assert Test.namespace_.bttribute == 2
+    assert Test().namespace_.bttribute == 2
     test = Test()
-    test.namespace_.b = 3
-    assert Test.namespace_.b == 2
-    assert test.namespace_.b == 3
+    test.namespace_.bttribute = 3
+    assert Test.namespace_.bttribute == 2
+    assert test.namespace_.bttribute == 3
     test2 = Test()
-    test2.namespace_.c = 3
-    with pytest.raises(AttributeError, message='c'):
-        print(Test.namespace_.c)
-    with pytest.raises(AttributeError, message='c'):
-        print(test.namespace_.c)
-    assert test2.namespace_.c == 3
+    test2.namespace_.cttribute = 3
+    with pytest.raises(AttributeError, message='cttribute'):
+        print(Test.namespace_.cttribute)
+    with pytest.raises(AttributeError, message='cttribute'):
+        print(test.namespace_.cttribute)
+    assert test2.namespace_.cttribute == 3
 
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
@@ -112,11 +112,11 @@ def test_dir(namespaceable, namespace):
     class Test(namespaceable):
         """A throwaway test class."""
         with namespace() as namespace_:
-            a = 1
+            attribute = 1
         assert namespace_
-        assert dir(namespace_) == ['a']
-    assert dir(Test.namespace_) == ['a']
-    assert dir(Test().namespace_) == ['a']
+        assert dir(namespace_) == ['attribute']
+    assert dir(Test.namespace_) == ['attribute']
+    assert dir(Test().namespace_) == ['attribute']
 
 
 def test_shadow(namespaceable, namespace):
@@ -259,8 +259,8 @@ def test_nested_namespace(namespaceable, namespace):
         """A throwaway test class."""
         with namespace() as namespace_:
             with namespace() as namespace_:
-                a = 1
-    assert Test().namespace_.namespace_.a == 1
+                attribute = 1
+    assert Test().namespace_.namespace_.attribute == 1
 
 
 def test_basic_shadow(namespaceable, namespace):
