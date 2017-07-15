@@ -367,8 +367,8 @@ def test_block_reparent(namespaceable, namespace):
                 with namespace_:
                     pass
                 print(namespace_)
-        nonlocal shadow_ns1
-        nonlocal shadow_ns2
+        nonlocal shadow_ns1  # pylint disable=nonlocal-without-binding
+        nonlocal shadow_ns2  # pylint disable=nonlocal-without-binding
         with namespace_ as shadow_ns1:
             shadow_ns2 = namespace_
 
