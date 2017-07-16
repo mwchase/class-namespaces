@@ -21,7 +21,8 @@ def test_finalization(namespaceable, namespace):
     """Test error messages around finalization."""
     scopes = []
 
-    class Test(namespaceable):
+    # Class only exists to test scope finalization.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope finalization."""
         with namespace() as namespace_:
             with pytest.raises(ValueError,
@@ -49,19 +50,22 @@ def test_basic_scope_len(namespaceable, namespace):
     """Test the overall length behavior of scopes, with various layouts."""
     scopes = {}
 
-    class Test1(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test1(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope length."""
         with namespace() as namespace_:
             scopes[1] = get_ns(namespace_).scope
 
-    class Test2(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test2(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope length."""
         with namespace() as namespace_1:
             scopes[2] = get_ns(namespace_1).scope
         with namespace() as namespace_2:
             pass
 
-    class Test3(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test3(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope length."""
         with namespace() as namespace_1:
             footer = 1
@@ -69,7 +73,8 @@ def test_basic_scope_len(namespaceable, namespace):
         with namespace() as namespace_2:
             pass
 
-    class Test4(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test4(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope length."""
         with namespace() as namespace_1:
             with namespace() as namespace_:
@@ -96,19 +101,22 @@ def test_basic_scope_iter(namespaceable, namespace):
     """Test the overall iteration behavior of scopes, with various layouts."""
     scopes = {}
 
-    class Test1(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test1(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope iteration."""
         with namespace() as namespace_:
             scopes[1] = get_ns(namespace_).scope
 
-    class Test2(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test2(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope iteration."""
         with namespace() as namespace_1:
             scopes[2] = get_ns(namespace_1).scope
         with namespace() as namespace_2:
             pass
 
-    class Test3(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test3(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope iteration."""
         with namespace() as namespace_1:
             footer = 1
@@ -116,7 +124,8 @@ def test_basic_scope_iter(namespaceable, namespace):
         with namespace() as namespace_2:
             pass
 
-    class Test4(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test4(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope iteration."""
         with namespace() as namespace_1:
             with namespace() as namespace_:
@@ -145,7 +154,8 @@ def test_scope_nsd_get(namespaceable, namespace):
     """Test scope get with nesting."""
     scopes = {}
 
-    class Test(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing scope indexing."""
         with namespace() as namespace_:
             with namespace() as namespace_:
@@ -191,7 +201,8 @@ def test_scope_nsd_get_error(namespaceable, namespace):
     """Test getting a nonexistent member of a nested scope."""
     scopes = {}
 
-    class Test(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing failing scope get."""
         with namespace() as namespace_:
             with namespace() as namespace_:
@@ -208,7 +219,8 @@ def test_scope_nsd_get_non_ns(namespaceable, namespace):
     """Test a nested get that goes too deep."""
     scopes = {}
 
-    class Test(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing over-deep scope get."""
         with namespace() as namespace_:
             with namespace() as namespace_:
@@ -226,7 +238,8 @@ def test_scope_nsd_get_non_existent(namespaceable, namespace):
     """Test a nested get that's missing the first level of nesting."""
     scopes = {}
 
-    class Test(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing failing scope get."""
         with namespace() as namespace_:
             with namespace() as namespace_:
@@ -243,7 +256,8 @@ def test_scope_nsd_get_non_recursive(namespaceable, namespace):
     """Test a non-recursive scope get."""
     scopes = {}
 
-    class Test(namespaceable):
+    # Class only exists to extract a scope from it.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing basic scope get."""
         with namespace() as namespace_:
             with namespace() as namespace_:
@@ -277,7 +291,8 @@ def test_redundant_resume(namespaceable, namespace):
 
 def test_empty_nameless(namespaceable, namespace):
     """Test an unnamed namespace with nothing in it."""
-    class Test(namespaceable):
+    # Class only exists to confirm namespaces must be named.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing nameless namespace."""
         with pytest.raises(RuntimeError, message='Namespace must be named.'):
             with namespace():
@@ -286,7 +301,8 @@ def test_empty_nameless(namespaceable, namespace):
 
 def test_non_empty_nameless(namespaceable, namespace):
     """Test an unnamed namespace with something in it."""
-    class Test(namespaceable):
+    # Class only exists to confirm namespaces must be named.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing nameless namespace."""
         with pytest.raises(RuntimeError, message='Namespace must be named.'):
             with namespace():
@@ -295,7 +311,8 @@ def test_non_empty_nameless(namespaceable, namespace):
 
 def test_rename(namespaceable, namespace):
     """Test renaming a namespace."""
-    class Test(namespaceable):
+    # Class only exists to confirm rename fails.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing namespace rename."""
         with namespace() as namespace_:
             pass
@@ -330,7 +347,10 @@ def test_star_attr_functions(namespaceable, namespace):
 def test_dont_need_to_inherit(
         namespaceable):  # pylint: disable=unused-argument
     """Test using the metaclass without the convenience class."""
-    class Test(metaclass=type(namespaceable)):
+    metaclass = type(namespaceable)
+
+    # Class only exists to confirm the metaclass works.
+    class Test(metaclass=metaclass):  # pylint: disable=unused-variable
         """Throwaway test class, for testing the metaclass."""
 
 
@@ -405,7 +425,8 @@ def test_can_t_get_path(namespace):
 
 def test_non_existent_attribute_during_creation(namespaceable, namespace):
     """Test that looking for a non-existent attribute raises AttributeError."""
-    class Test(namespaceable):
+    # Class only exists to confirm get fails.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing nonexistent attribute get."""
         with namespace() as namespace_:
             pass
@@ -466,7 +487,8 @@ def test_namespace_is_truthy(namespace):
 
 def test_bad_del_in_definition(namespaceable, namespace):
     """Test that deletes of nonexistent attributes still raise NameError."""
-    class Test(namespaceable):
+    # Class only exists to confirm delete fails.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing failing delete."""
         with namespace() as namespace_:
             with pytest.raises(
@@ -477,7 +499,8 @@ def test_bad_del_in_definition(namespaceable, namespace):
 # Not 100% sure this is desired behavior. See Issue 12.
 def test_subtle_bad_del_in_definition(namespaceable, namespace):
     """Test that deletes of nonexistent attributes still raise NameError."""
-    class Test(namespaceable):
+    # Class only exists to confirm delete fails.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """Throwaway test class, for testing failing delete."""
         footer = 1
         with namespace() as namespace_:
