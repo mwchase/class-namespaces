@@ -24,7 +24,7 @@ def test_basic_namespace(namespaceable, namespace):
     both the class, and any instance of the class.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing get behavior."""
         with namespace() as namespace_:
             attribute = 1
         assert namespace_
@@ -46,7 +46,7 @@ def test_delete(namespaceable, namespace):
     Missing attributes have proper exception behavior.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing delete behavior."""
         with namespace() as namespace_:
             attribute = 1
             del attribute
@@ -75,7 +75,7 @@ def test_set(namespaceable, namespace):
     to the class Namespace.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing set behavior."""
         with namespace() as namespace_:
             attribute = 1
             del attribute
@@ -110,7 +110,7 @@ def test_dir(namespaceable, namespace):
     problem.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing dir behavior."""
         with namespace() as namespace_:
             attribute = 1
         assert namespace_
@@ -126,7 +126,7 @@ def test_shadow(namespaceable, namespace):
     place doesn't interfere with using the same name elsewhere.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing shadowing."""
         footer = 1
         with namespace() as namespace_:
             footer = 2
@@ -143,7 +143,7 @@ def test_resume(namespaceable, namespace):
     A resumed Namespace is truly the same scope.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing namespace resumption."""
         footer = 1
         with namespace() as namespace_:
             footer = 2
@@ -173,7 +173,7 @@ def test_recursive_get_in_definition(namespaceable, namespace):
     test.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing nested resolution."""
         with namespace() as namespace_:
             with namespace() as namespace_:
                 footer = 1
@@ -187,13 +187,13 @@ def test_basic_inherit(namespaceable, namespace):
     of inheritance structure should work (equally well as without namespacing).
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing inheritance."""
         footer = 1
         with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing inheritance."""
     assert Subclass().footer == 1
     assert Subclass().namespace_.footer == 2
 
@@ -205,14 +205,14 @@ def test_basic_super(namespaceable, namespace):
     well. That includes super().
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing super()."""
         with namespace() as namespace_:
             def hello(self):
                 """Return a predictable constant."""
                 return 1
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing super()."""
         with namespace() as namespace_:
             def hello(self):
                 """Return the superclass's hello."""
@@ -230,7 +230,7 @@ def test_private(namespaceable, namespace):
     happens for free, and is automatically correct.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing name mangling."""
         with namespace() as __namespace_:
             footer = 2
 
@@ -239,7 +239,7 @@ def test_private(namespaceable, namespace):
             return self.__namespace_.footer
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing name mangling."""
 
         def my_footer(self):
             """Access a non-existent private namespace."""
@@ -256,7 +256,7 @@ def test_private(namespaceable, namespace):
 def test_nested_namespace(namespaceable, namespace):
     """Define a Namespace in a Namespace."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing nesting."""
         with namespace() as namespace_:
             with namespace() as namespace_:
                 attribute = 1
@@ -266,12 +266,12 @@ def test_nested_namespace(namespaceable, namespace):
 def test_basic_shadow(namespaceable, namespace):
     """Define an attribute over a Namespace."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing shadowing via inheritance."""
         with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing shadowing via inheritance."""
         namespace_ = 1
     assert Subclass().namespace_ == 1
 
@@ -283,16 +283,16 @@ def test_double_shadow(namespaceable, namespace):
     classes.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing advanced shadowing."""
         with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing advanced shadowing."""
         namespace_ = 1
 
     class DoubleSubclass(Subclass):
-        """A throwaway test class."""
+        """A throwaway test class, for testing advanced shadowing."""
         with namespace() as namespace_:
             barter = 1
     assert not hasattr(DoubleSubclass().namespace_, 'footer')
@@ -304,12 +304,12 @@ def test_overlap(namespaceable, namespace):
     Namespaces delegate to parent classes, if not blocked.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing delegation."""
         with namespace() as namespace_:
             footer = 2
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing delegation."""
         with namespace() as namespace_:
             barter = 3
     assert Subclass().namespace_.footer == 2
@@ -319,14 +319,14 @@ def test_overlap(namespaceable, namespace):
 def test_advanced_overlap(namespaceable, namespace):
     """Do the same things as in test_overlap, but with a little nesting."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing delegation."""
         with namespace() as namespace_:
             footer = 2
             with namespace() as namespace_:
                 qux = 4
 
     class Subclass(Test):
-        """A throwaway test class."""
+        """A throwaway test class, for testing delegation."""
         with namespace() as namespace_:
             barter = 3
     assert Subclass().namespace_.footer == 2
@@ -337,7 +337,7 @@ def test_advanced_overlap(namespaceable, namespace):
 def test_use_namespace(namespaceable, namespace):
     """Interact with a namespace's attributes."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing creation-time interfaces."""
         with namespace() as namespace_:
             footer = 1
             qux = 3
@@ -358,7 +358,7 @@ def test_basic_prop(namespaceable, namespace):
     Data descriptors work.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing properties."""
         with namespace() as namespace_:
             @property
             def footer(self):
@@ -373,7 +373,7 @@ def test_complicated_prop(namespaceable, namespace):
     @property.method works.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing advanced properties."""
         with namespace() as namespace_:
             @property
             def var(self):
@@ -405,7 +405,7 @@ def test_override_method(namespaceable, namespace):
     Non-data descriptors work.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing method overrides."""
         with namespace() as namespace_:
             def footer(self):
                 """Return 1."""
@@ -425,7 +425,7 @@ def test_override_method(namespaceable, namespace):
 def test_add_later(namespaceable, namespace):
     """Add a Namespace to a class, post-creation."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing post-creation injection."""
 
     namespace_ = namespace()
     Test.namespace_ = namespace_
@@ -464,7 +464,7 @@ def test_3_6_descriptor(namespaces, namespaceable, namespace):
         Descriptor()).is_descriptor
 
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing __set_name__."""
         with namespace() as namespace_:
             descriptor = Descriptor()
 
@@ -479,7 +479,7 @@ def test_basic_meta(namespaceable, namespace):
             meta_var = 1
 
     class Test(namespaceable, metaclass=Meta):
-        """A throwaway test class."""
+        """A throwaway test class, for testing metaclasses."""
 
     assert Meta.namespace_.meta_var == 1
     assert Test.namespace_.meta_var == 1
@@ -495,7 +495,10 @@ def test_somewhat_weirder_meta(namespaceable, namespace):
             meta_var = 1
 
     class Test(namespaceable, metaclass=Meta):
-        """A throwaway test class."""
+        """A throwaway test class, for testing advanced metaclass interactions.
+
+        The same as above, but with an attribute.
+        """
         with namespace() as namespace_:
             cls_var = 2
 
@@ -518,7 +521,7 @@ def test_somewhat_weirder_meta(namespaceable, namespace):
 def test_classmethod_basic(namespaceable, namespace):
     """Test using a classmethod in a Namespace."""
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing classmethods."""
         with namespace() as namespace_:
             @classmethod
             def cls_mthd(cls):
@@ -540,7 +543,7 @@ def test_meta_plus_classmethod(namespaceable, namespace):
             pass
 
     class Test(namespaceable, metaclass=Meta):
-        """A throwaway test class."""
+        """A throwaway test class, for testing classmethods."""
         with namespace() as namespace_:
             @classmethod
             def cls_mthd(cls):
@@ -558,7 +561,7 @@ def test_get_through_namespace(namespaceable, namespace):
     outer scopes.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing chained get."""
         var = 1
         with namespace() as namespace_:
             var2 = var
@@ -574,18 +577,18 @@ def test_multiple_inheritance(namespaceable, namespace):
     well. That includes multiple inheritance.
     """
     class Test1(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing multiple inheritance."""
         with namespace() as namespace_:
             with namespace() as namespace_:
                 var = 1
 
     class Test2(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing multiple inheritance."""
         with namespace() as namespace_:
             var = 2
 
     class Test3(Test2, Test1):
-        """A throwaway test class."""
+        """A throwaway test class, for testing multiple inheritance."""
 
     assert Test3.namespace_.namespace_.var == 1
     assert Test3.namespace_.var == 2
@@ -598,7 +601,7 @@ def test_regular_delete(namespaceable):
     coverage gap.
     """
     class Test(namespaceable):
-        """A throwaway test class."""
+        """A throwaway test class, for testing vanilla get, set, delete."""
     Test.var = 1
     assert Test.var == 1
     del Test.var
