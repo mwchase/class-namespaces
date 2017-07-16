@@ -327,7 +327,8 @@ def test_star_attr_functions(namespaceable, namespace):
     assert not hasattr(Test, 'namespace_.namespace_.namespace_.var')
 
 
-def test_dont_need_to_inherit(namespaceable):
+def test_dont_need_to_inherit(
+        namespaceable):  # pylint: disable=unused-argument
     """Test using the metaclass without the convenience class."""
     class Test(metaclass=type(namespaceable)):
         """Throwaway test class, for testing the metaclass."""

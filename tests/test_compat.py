@@ -296,7 +296,8 @@ def test_abstractmethod_integration(abc):  # pylint: disable=unused-argument
         assert isabstract(FClass)
 
 
-def test_abstractmethod_integration_namespaced(abc, namespace):
+def test_abstractmethod_integration_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test abstract shortcut decorators work as expected, under a namespace.
 
     Adapted from Python's test suite.
@@ -462,7 +463,8 @@ def test_descriptors_with_abstractmethod_namespaced(
                 footer = property(barter)
 
 
-def test_customdescriptors_with_abstractmethod(abc):
+def test_customdescriptors_with_abstractmethod(
+        abc):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected.
 
     Adapted from Python's test suite.
@@ -520,7 +522,8 @@ def test_customdescriptors_with_abstractmethod(abc):
     assert not EClass.footer.__isabstractmethod__
 
 
-def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
+def test_customdescriptors_with_abstractmethod_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected under a namespace.
 
     Adapted from Python's test suite.
@@ -767,7 +770,7 @@ def test_registration_edge_cases(abc):  # pylint: disable=unused-argument
     CClass.register(BClass)  # ok
 
 
-def test_register_non_class(abc):
+def test_register_non_class(abc):  # pylint: disable=unused-argument
     """Test that non-classes cannot be registered.
 
     Adapted from Python's test suite.
