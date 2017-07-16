@@ -637,8 +637,8 @@ def test_registration_basics(abc):
     class BClass(object):
         """A throwaway test class."""
     b_instance = BClass()
-    assert not (issubclass(BClass, AClass))
-    assert not (issubclass(BClass, (AClass,)))
+    assert not issubclass(BClass, AClass)
+    assert not issubclass(BClass, (AClass,))
     assert not isinstance(b_instance, AClass)
     assert not isinstance(b_instance, (AClass,))
     BClass1 = AClass.register(BClass)
@@ -698,8 +698,8 @@ def test_isinstance_invalidation(abc):
     class BClass:
         """A throwaway test class."""
     b_instance = BClass()
-    assert not (isinstance(b_instance, AClass))
-    assert not (isinstance(b_instance, (AClass,)))
+    assert not isinstance(b_instance, AClass)
+    assert not isinstance(b_instance, (AClass,))
     token_old = abc_main.get_cache_token()
     AClass.register(BClass)
     token_new = abc_main.get_cache_token()
@@ -785,10 +785,10 @@ def test_registration_transitiveness(abc):
 
     class BClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
-    assert not (issubclass(AClass, BClass))
-    assert not (issubclass(AClass, (BClass,)))
-    assert not (issubclass(BClass, AClass))
-    assert not (issubclass(BClass, (AClass,)))
+    assert not issubclass(AClass, BClass)
+    assert not issubclass(AClass, (BClass,))
+    assert not issubclass(BClass, AClass)
+    assert not issubclass(BClass, (AClass,))
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
