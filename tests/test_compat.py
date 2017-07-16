@@ -393,7 +393,8 @@ def test_descriptors_with_method(
             raise ValueError()
         __len__ = __bool__
     with pytest.raises(ValueError):
-        class FClass(CClass):
+        # This class is not supposed to actually be created.
+        class FClass(CClass):  # pylint: disable=unused-variable
             """A throwaway test class."""
 
             def barter(self):
@@ -451,7 +452,8 @@ def test_descriptors_with_method_nsd(
             raise ValueError()
         __len__ = __bool__
     with pytest.raises(ValueError):
-        class FClass(CClass):
+        # This class is not supposed to actually be created.
+        class FClass(CClass):  # pylint: disable=unused-variable
             """A throwaway test class."""
             with namespace() as namespace_:
                 def barter(self):
@@ -601,7 +603,9 @@ def test_metaclass_abc(abc):  # pylint: disable=unused-argument
             """Return 1. Concrete."""
             return 1
 
-    class CClass(metaclass=Meta):
+    # Just checking that this class can be created, that is, that the metaclass
+    # is concrete.
+    class CClass(metaclass=Meta):  # pylint: disable=unused-variable
         """A throwaway test class."""
 
 
@@ -626,7 +630,9 @@ def test_metaclass_abc_nsd(abc, namespace):  # pylint: disable=unused-argument
                 """Return 1. Concrete."""
                 return 1
 
-    class CClass(metaclass=Meta):
+    # Just checking that this class can be created, that is, that the metaclass
+    # is concrete.
+    class CClass(metaclass=Meta):  # pylint: disable=unused-variable
         """A throwaway test class."""
 
 
