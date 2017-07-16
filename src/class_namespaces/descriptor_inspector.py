@@ -8,7 +8,7 @@ from .flags import ENABLE_SET_NAME
 from .inspector import _Inspector
 
 
-class _DescriptorInspector(_Inspector):
+class DescriptorInspector(_Inspector):
 
     """Wrapper around objects. Provides access to descriptor protocol."""
 

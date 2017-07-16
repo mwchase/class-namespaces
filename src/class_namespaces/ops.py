@@ -1,7 +1,7 @@
 """Common operations. Some assume use of _DescriptorInspector."""
 
 
-from .descriptor_inspector import _DescriptorInspector
+from .descriptor_inspector import DescriptorInspector
 
 
 def get(a_map, name):
@@ -11,7 +11,7 @@ def get(a_map, name):
     except KeyError:
         return None
     else:
-        return _DescriptorInspector(value)
+        return DescriptorInspector(value)
 
 
 def delete(dct, name):

@@ -13,7 +13,7 @@ import itertools
 import weakref
 
 from . import ops
-from .descriptor_inspector import _DescriptorInspector
+from .descriptor_inspector import DescriptorInspector
 from .flags import ENABLE_SET_NAME
 from .proxy import _Proxy
 from .scope_proxy import _ScopeProxy
@@ -504,7 +504,7 @@ class NamespaceableMeta(type):
             namespace.add(cls)
             if ENABLE_SET_NAME:
                 for name_, value in namespace.items():
-                    wrapped = _DescriptorInspector(value)
+                    wrapped = DescriptorInspector(value)
                     if wrapped.has_set_name:
                         wrapped.set_name(cls, name_)
         return cls

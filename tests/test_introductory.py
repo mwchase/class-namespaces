@@ -460,7 +460,7 @@ def test_3_6_descriptor(namespaces, namespaceable, namespace):
         def __set_name__(self, owner, name):
             self.owner = owner
             self.name = name
-    assert namespaces.namespaces._DescriptorInspector(
+    assert namespaces.namespaces.DescriptorInspector(
         Descriptor()).is_descriptor
 
     class Test(namespaceable):
