@@ -645,7 +645,7 @@ def test_registration_basics(abc):  # pylint: disable=unused-argument
     assert not issubclass(BClass, (AClass,))
     assert not isinstance(b_instance, AClass)
     assert not isinstance(b_instance, (AClass,))
-    BClass1 = AClass.register(BClass)
+    BClass1 = AClass.register(BClass)  # pylint: disable=invalid-name
     assert issubclass(BClass, AClass)
     assert issubclass(BClass, (AClass,))
     assert isinstance(b_instance, AClass)
