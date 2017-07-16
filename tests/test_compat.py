@@ -263,7 +263,7 @@ def test_method_integration(abc):  # pylint: disable=unused-argument
             print(CClass())  # because footer is abstract
         assert isabstract(CClass)
 
-        class DClass(CClass):
+        class DClass(CClass):  # pylint: disable=abstract-method
             """A throwaway test class."""
 
             def barter(self):
@@ -316,7 +316,7 @@ def test_method_integration_nsd(
             print(CClass())  # because footer is abstract
         assert isabstract(CClass)
 
-        class DClass(CClass):
+        class DClass(CClass):  # pylint: disable=abstract-method
             """A throwaway test class."""
             with namespace() as namespace_:
                 def barter(self):
