@@ -94,16 +94,15 @@ class _NamespaceProxy(_Proxy):
         mro_value = ops.get(mro_map, name)
         if ops.is_data(mro_value) and ops.has_get(mro_value):
             return mro_value.get(instance, owner)
-        elif issubclass(owner, type) and ops.has_get(instance_value):
+        if issubclass(owner, type) and ops.has_get(instance_value):
             return instance_value.get(None, instance)
-        elif instance_value is not None:
+        if instance_value is not None:
             return instance_value.object
-        elif ops.has_get(mro_value):
+        if ops.has_get(mro_value):
             return mro_value.get(instance, owner)
-        elif mro_value is not None:
+        if mro_value is not None:
             return mro_value.object
-        else:
-            raise AttributeError(name)
+        raise AttributeError(name)
 
     def __setattr__(self, name, value):
         self = _retarget(self)
