@@ -350,7 +350,7 @@ def test_method_integration_namespaced(
         assert isabstract(FClass)
 
 
-def test_descriptors_with_abstractmethod(
+def test_descriptors_with_method(
         abc):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected.
 
@@ -405,7 +405,7 @@ def test_descriptors_with_abstractmethod(
             footer = property(barter)
 
 
-def test_descriptors_with_abstractmethod_namespaced(
+def test_descriptors_with_method_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected under a namespace.
 
@@ -463,7 +463,7 @@ def test_descriptors_with_abstractmethod_namespaced(
                 footer = property(barter)
 
 
-def test_customdescriptors_with_abstractmethod(
+def test_customdescriptors_with_method(
         abc):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected.
 
@@ -522,7 +522,7 @@ def test_customdescriptors_with_abstractmethod(
     assert not EClass.footer.__isabstractmethod__
 
 
-def test_customdescriptors_with_abstractmethod_namespaced(
+def test_customdescriptors_with_method_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected under a namespace.
 
@@ -781,7 +781,7 @@ def test_register_non_class(abc):  # pylint: disable=unused-argument
         print(AClass.register(4))
 
 
-def test_registration_transitiveness(abc):  # pylint: disable=unused-argument
+def test_registration_transitive(abc):  # pylint: disable=unused-argument
     """Test that chains of registration hold.
 
     Adapted from Python's test suite.
