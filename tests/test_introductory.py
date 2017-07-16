@@ -166,7 +166,7 @@ def assert_equals(expected, actual):
     assert expected == actual
 
 
-def test_recursive_get_in_definition(namespaceable, namespace):
+def test_rec_get_in_definition(namespaceable, namespace):
     """Look at namespace attributes during class definition.
 
     Clearly, this should just work, yet it did not always, so now there is a
