@@ -63,8 +63,7 @@ def test_abstractmethod_basics():
     assert not hasattr(barter, "__isabstractmethod__")
 
 
-# IT IS TOO USED.
-def test_abstractproperty_basics(abc):
+def test_abstractproperty_basics(abc):  # pylint: disable=unused-argument
     """Test abstract property works as expected.
 
     Adapted from Python's test suite.
@@ -98,7 +97,8 @@ def test_abstractproperty_basics(abc):
     assert DClass().footer == 3
 
 
-def test_abstractproperty_namespaced(abc, namespace):
+def test_abstractproperty_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract properties."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -121,7 +121,7 @@ def test_abstractproperty_namespaced(abc, namespace):
     assert DClass().namespace_.footer == 3
 
 
-def test_abstractclassmethod_basics(abc):
+def test_abstractclassmethod_basics(abc):  # pylint: disable=unused-argument
     """Test abstract classmethod works as expected.
 
     Adapted from Python's test suite.
@@ -159,7 +159,8 @@ def test_abstractclassmethod_basics(abc):
     assert DClass().footer() == 'DClass'
 
 
-def test_abstractclassmethod_namespaced(abc, namespace):
+def test_abstractclassmethod_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract classmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -183,7 +184,7 @@ def test_abstractclassmethod_namespaced(abc, namespace):
     assert DClass().namespace_.footer() == 'DClass'
 
 
-def test_abstractstaticmethod_basics(abc):
+def test_abstractstaticmethod_basics(abc):  # pylint: disable=unused-argument
     """Test abstract staticmethod works as expected.
 
     Adapted from Python's test suite.
@@ -219,7 +220,8 @@ def test_abstractstaticmethod_basics(abc):
     assert DClass().footer() == 4
 
 
-def test_abstractstaticmethod_namespaced(abc, namespace):
+def test_abstractstaticmethod_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract staticmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class."""
@@ -243,7 +245,7 @@ def test_abstractstaticmethod_namespaced(abc, namespace):
     assert DClass().namespace_.footer() == 4
 
 
-def test_abstractmethod_integration(abc):
+def test_abstractmethod_integration(abc):  # pylint: disable=unused-argument
     """Test abstract shortcut decorators work as expected.
 
     Adapted from Python's test suite.
@@ -347,7 +349,8 @@ def test_abstractmethod_integration_namespaced(abc, namespace):
         assert isabstract(FClass)
 
 
-def test_descriptors_with_abstractmethod(abc):
+def test_descriptors_with_abstractmethod(
+        abc):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected.
 
     Adapted from Python's test suite.
@@ -401,7 +404,8 @@ def test_descriptors_with_abstractmethod(abc):
             footer = property(barter)
 
 
-def test_descriptors_with_abstractmethod_namespaced(abc, namespace):
+def test_descriptors_with_abstractmethod_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected under a namespace.
 
     Adapted from Python's test suite.
@@ -577,7 +581,7 @@ def test_customdescriptors_with_abstractmethod_namespaced(abc, namespace):
     assert not EClass.namespace_.footer.__isabstractmethod__
 
 
-def test_metaclass_abc(abc):
+def test_metaclass_abc(abc):  # pylint: disable=unused-argument
     """Test abstract metaclasses work as expected.
 
     Adapted from Python's test suite.
@@ -601,7 +605,8 @@ def test_metaclass_abc(abc):
         """A throwaway test class."""
 
 
-def test_metaclass_abc_namespaced(abc, namespace):
+def test_metaclass_abc_namespaced(
+        abc, namespace):  # pylint: disable=unused-argument
     """Test abstract metaclasses work as expected, with namespaces.
 
     Adapted from Python's test suite.
@@ -626,7 +631,7 @@ def test_metaclass_abc_namespaced(abc, namespace):
         """A throwaway test class."""
 
 
-def test_registration_basics(abc):
+def test_registration_basics(abc):  # pylint: disable=unused-argument
     """Test ABC registration.
 
     Adapted from Python's test suite.
@@ -657,7 +662,7 @@ def test_registration_basics(abc):
     assert isinstance(c_instance, (AClass,))
 
 
-def test_register_as_class_deco(abc):
+def test_register_as_class_deco(abc):  # pylint: disable=unused-argument
     """Test ABC registration decorator.
 
     Adapted from Python's test suite.
@@ -687,7 +692,7 @@ def test_register_as_class_deco(abc):
 
 @pytest.mark.xfail(sys.version_info < (3, 4),
                    reason="python3.4 api changes?", strict=True)
-def test_isinstance_invalidation(abc):
+def test_isinstance_invalidation(abc):  # pylint: disable=unused-argument
     """Test after-the-fact registration behavior.
 
     Adapted from Python's test suite.
@@ -708,7 +713,7 @@ def test_isinstance_invalidation(abc):
     assert isinstance(b_instance, (AClass,))
 
 
-def test_registration_builtins(abc):
+def test_registration_builtins(abc):  # pylint: disable=unused-argument
     """Test making builtin classes into registered subclasses.
 
     Adapted from Python's test suite.
@@ -735,7 +740,7 @@ def test_registration_builtins(abc):
     assert issubclass(CClass, (AClass,))
 
 
-def test_registration_edge_cases(abc):
+def test_registration_edge_cases(abc):  # pylint: disable=unused-argument
     """Test edge cases in registration: reflexive, cyclic, repeated...
 
     Adapted from Python's test suite.
@@ -773,7 +778,7 @@ def test_register_non_class(abc):
         print(AClass.register(4))
 
 
-def test_registration_transitiveness(abc):
+def test_registration_transitiveness(abc):  # pylint: disable=unused-argument
     """Test that chains of registration hold.
 
     Adapted from Python's test suite.
@@ -822,7 +827,7 @@ def test_registration_transitiveness(abc):
     assert isinstance(42, (AClass,))
 
 
-def test_all_new_methods_are_called(abc):
+def test_all_new_methods_are_called(abc):  # pylint: disable=unused-argument
     """Test that super delegation still works using abstract classes.
 
     Adapted from Python's test suite.
