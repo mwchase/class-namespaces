@@ -476,13 +476,13 @@ def test_customdescriptors_with_abstractmethod(
             self._fget = fget
             self._fset = fset
 
-        def getter(self, callable):
-            """Replace self._fget with callable."""
-            return Descriptor(callable, self._fset)
+        def getter(self, callable_):
+            """Replace self._fget with callable_."""
+            return Descriptor(callable_, self._fset)
 
-        def setter(self, callable):
-            """Replace self._fset with callable."""
-            return Descriptor(self._fget, callable)
+        def setter(self, callable_):
+            """Replace self._fset with callable_."""
+            return Descriptor(self._fget, callable_)
 
         @property
         def __isabstractmethod__(self):
@@ -535,13 +535,13 @@ def test_customdescriptors_with_abstractmethod_namespaced(
             self._fget = fget
             self._fset = fset
 
-        def getter(self, callable):
-            """Replace self._fget with callable."""
-            return Descriptor(callable, self._fset)
+        def getter(self, callable_):
+            """Replace self._fget with callable_."""
+            return Descriptor(callable_, self._fset)
 
-        def setter(self, callable):
-            """Replace self._fset with callable."""
-            return Descriptor(self._fget, callable)
+        def setter(self, callable_):
+            """Replace self._fset with callable_."""
+            return Descriptor(self._fget, callable_)
 
         @property
         def __isabstractmethod__(self):
