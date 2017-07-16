@@ -172,7 +172,9 @@ def test_recursive_get_in_definition(namespaceable, namespace):
     Clearly, this should just work, yet it did not always, so now there is a
     test.
     """
-    class Test(namespaceable):
+    # The class just exists as a means of creating the values that are
+    # asserted about.
+    class Test(namespaceable):  # pylint: disable=unused-variable
         """A throwaway test class, for testing nested resolution."""
         with namespace() as namespace_:
             with namespace() as namespace_:
