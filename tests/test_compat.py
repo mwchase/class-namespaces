@@ -347,7 +347,7 @@ def test_method_integration_nsd(
         assert isabstract(FClass)
 
 
-def test_descriptors_with_method(
+def test_dscrs_with_method(
         abc):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected.
 
@@ -403,7 +403,7 @@ def test_descriptors_with_method(
             footer = property(barter)
 
 
-def test_descriptors_with_method_nsd(
+def test_dscrs_with_method_nsd(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected under a namespace.
 
@@ -462,7 +462,7 @@ def test_descriptors_with_method_nsd(
                 footer = property(barter)
 
 
-def test_customdescriptors_with_method(
+def test_cstmdscrs_with_method(
         abc):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected.
 
@@ -521,7 +521,7 @@ def test_customdescriptors_with_method(
     assert not EClass.footer.__isabstractmethod__
 
 
-def test_customdescriptors_with_method_nsd(
+def test_cstmdscrs_with_method_nsd(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected under a namespace.
 
