@@ -252,7 +252,7 @@ def test_scope_nsd_get_non_existent(namespaceable, namespace):
         print(scope['namespace_.footer'])
 
 
-def test_scope_nsd_get_non_recursive(namespaceable, namespace):
+def test_scope_nsd_get_non_rec(namespaceable, namespace):
     """Test a non-recursive scope get."""
     scopes = {}
 
@@ -321,7 +321,7 @@ def test_rename(namespaceable, namespace):
                 pass
 
 
-def test_can_t_preload_with_namespace(namespace):
+def test_can_t_preload_with_ns(namespace):
     """Test using a namespace as an initial value."""
     with pytest.raises(ValueError, message='Bad values: {}'):
         print(namespace(namespace_=namespace()))
@@ -423,7 +423,7 @@ def test_can_t_get_path(namespace):
         print(namespace().path)
 
 
-def test_non_existent_attribute_during_creation(namespaceable, namespace):
+def test_bad_get_in_class(namespaceable, namespace):
     """Test that looking for a non-existent attribute raises AttributeError."""
     # Class only exists to confirm get fails.
     class Test(namespaceable):  # pylint: disable=unused-variable
@@ -485,7 +485,7 @@ def test_namespace_is_truthy(namespace):
     assert namespace()
 
 
-def test_bad_del_in_definition(namespaceable, namespace):
+def test_bad_del_in_class(namespaceable, namespace):
     """Test that deletes of nonexistent attributes still raise NameError."""
     # Class only exists to confirm delete fails.
     class Test(namespaceable):  # pylint: disable=unused-variable
@@ -497,7 +497,7 @@ def test_bad_del_in_definition(namespaceable, namespace):
 
 
 # Not 100% sure this is desired behavior. See Issue 12.
-def test_subtle_bad_del_in_definition(namespaceable, namespace):
+def test_subtle_bad_del_in_class(namespaceable, namespace):
     """Test that deletes of nonexistent attributes still raise NameError."""
     # Class only exists to confirm delete fails.
     class Test(namespaceable):  # pylint: disable=unused-variable
