@@ -97,8 +97,7 @@ def test_property_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer == 3
 
 
-def test_property_namespaced(
-        abc, namespace):  # pylint: disable=unused-argument
+def test_property_nsd(abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract properties."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class, for namespaced abstract properties."""
@@ -159,8 +158,7 @@ def test_classmethod_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer() == 'DClass'
 
 
-def test_classmethod_namespaced(
-        abc, namespace):  # pylint: disable=unused-argument
+def test_classmethod_nsd(abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract classmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class, for namespaced abstract classmethods."""
@@ -220,8 +218,7 @@ def test_staticmethod_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer() == 4
 
 
-def test_staticmethod_namespaced(
-        abc, namespace):  # pylint: disable=unused-argument
+def test_staticmethod_nsd(abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract staticmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
         """A throwaway test class, for namespaced abstract staticmethods."""
@@ -296,7 +293,7 @@ def test_method_integration(abc):  # pylint: disable=unused-argument
         assert isabstract(FClass)
 
 
-def test_method_integration_namespaced(
+def test_method_integration_nsd(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract shortcut decorators work as expected, under a namespace.
 
@@ -405,7 +402,7 @@ def test_descriptors_with_method(
             footer = property(barter)
 
 
-def test_descriptors_with_method_namespaced(
+def test_descriptors_with_method_nsd(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract property methods work as expected under a namespace.
 
@@ -522,7 +519,7 @@ def test_customdescriptors_with_method(
     assert not EClass.footer.__isabstractmethod__
 
 
-def test_customdescriptors_with_method_namespaced(
+def test_customdescriptors_with_method_nsd(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract custom descriptors work as expected under a namespace.
 
@@ -608,8 +605,7 @@ def test_metaclass_abc(abc):  # pylint: disable=unused-argument
         """A throwaway test class."""
 
 
-def test_metaclass_abc_namespaced(
-        abc, namespace):  # pylint: disable=unused-argument
+def test_metaclass_abc_nsd(abc, namespace):  # pylint: disable=unused-argument
     """Test abstract metaclasses work as expected, with namespaces.
 
     Adapted from Python's test suite.

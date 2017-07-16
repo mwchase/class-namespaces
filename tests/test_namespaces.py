@@ -141,7 +141,7 @@ def test_basic_scope_iter(namespaceable, namespace):
         {'namespace_1.namespace_', 'namespace_1.namespace_.footer'})
 
 
-def test_scope_namespaced_get(namespaceable, namespace):
+def test_scope_nsd_get(namespaceable, namespace):
     """Test scope get with nesting."""
     scopes = {}
 
@@ -155,7 +155,7 @@ def test_scope_namespaced_get(namespaceable, namespace):
     assert scopes[0]['namespace_.namespace_.footer'] == 1
 
 
-def test_scope_namespaced_set(namespaceable, namespace):
+def test_scope_nsd_set(namespaceable, namespace):
     """Test scope set with nesting."""
     scopes = {}
 
@@ -170,7 +170,7 @@ def test_scope_namespaced_set(namespaceable, namespace):
     assert Test.namespace_.namespace_.footer == 1
 
 
-def test_scope_namespaced_del(namespaceable, namespace):
+def test_scope_nsd_del(namespaceable, namespace):
     """Test scope del with nesting."""
     scopes = {}
 
@@ -187,7 +187,7 @@ def test_scope_namespaced_del(namespaceable, namespace):
         print(Test.namespace_.namespace_.footer)
 
 
-def test_scope_namespaced_get_error(namespaceable, namespace):
+def test_scope_nsd_get_error(namespaceable, namespace):
     """Test getting a nonexistent member of a nested scope."""
     scopes = {}
 
@@ -204,7 +204,7 @@ def test_scope_namespaced_get_error(namespaceable, namespace):
         print(scope['namespace_.namespace_.barter'])
 
 
-def test_scope_namespaced_get_non_ns(namespaceable, namespace):
+def test_scope_nsd_get_non_ns(namespaceable, namespace):
     """Test a nested get that goes too deep."""
     scopes = {}
 
@@ -222,7 +222,7 @@ def test_scope_namespaced_get_non_ns(namespaceable, namespace):
         print(scope['namespace_.namespace_.footer.__str__'])
 
 
-def test_scope_namespaced_get_non_existent(namespaceable, namespace):
+def test_scope_nsd_get_non_existent(namespaceable, namespace):
     """Test a nested get that's missing the first level of nesting."""
     scopes = {}
 
@@ -239,7 +239,7 @@ def test_scope_namespaced_get_non_existent(namespaceable, namespace):
         print(scope['namespace_.footer'])
 
 
-def test_scope_namespaced_get_non_recursive(namespaceable, namespace):
+def test_scope_nsd_get_non_recursive(namespaceable, namespace):
     """Test a non-recursive scope get."""
     scopes = {}
 
