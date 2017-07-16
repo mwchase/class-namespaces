@@ -8,7 +8,7 @@ import pytest
 def get_ns(namespace_):
     """Return the namespace associated with a scope proxy."""
     from class_namespaces import scope_proxy
-    return scope_proxy._ns(namespace_)
+    return scope_proxy.namespace(namespace_)
 
 
 def scope_dicts_length_equals(namespace_, length):

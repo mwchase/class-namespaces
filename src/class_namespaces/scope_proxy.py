@@ -9,7 +9,7 @@ _NAMESPACES = weakref.WeakKeyDictionary()
 _OWNERS = weakref.WeakKeyDictionary()
 
 
-def _ns(self):
+def namespace(self):
     """Return the associated Namespace."""
     return _owner(self).proxies[self]
 
@@ -30,10 +30,10 @@ class _ScopeProxy(_Proxy):
         owner.proxies[self] = dct
 
     def __dir__(self):
-        return _ns(self)
+        return namespace(self)
 
     def __getattribute__(self, name):
-        dct = _ns(self)
+        dct = namespace(self)
         try:
             value = dct[name]
         except KeyError:
@@ -41,13 +41,13 @@ class _ScopeProxy(_Proxy):
         return _owner(self).wrap(value)
 
     def __setattr__(self, name, value):
-        _ns(self)[name] = value
+        namespace(self)[name] = value
 
     def __delattr__(self, name):
-        ops.delete(_ns(self), name)
+        ops.delete(namespace(self), name)
 
     def __enter__(self):
-        return _ns(self).__enter__()
+        return namespace(self).__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return _ns(self).__exit__(exc_type, exc_value, traceback)
+        return namespace(self).__exit__(exc_type, exc_value, traceback)
