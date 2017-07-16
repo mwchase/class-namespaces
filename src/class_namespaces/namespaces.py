@@ -345,10 +345,10 @@ class _NamespaceScope(collections.abc.MutableMapping):
 
     """The class creation namespace for NamespaceableMetas."""
 
-    __slots__ = '_dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
+    __slots__ = 'dicts', 'namespaces', 'proxies', 'scope_proxy', 'finalized'
 
     def __init__(self, dct):
-        self._dicts = [dct]
+        self.dicts = [dct]
         self.namespaces = []
         self.proxies = weakref.WeakKeyDictionary()
         self.finalized = False
@@ -369,11 +369,11 @@ class _NamespaceScope(collections.abc.MutableMapping):
     @property
     def head(self):
         """Return the innermost Namespace scope."""
-        return self._dicts[0]
+        return self.dicts[0]
 
     def finalize(self):
         """Mark the scope as no longer active, and return the head."""
-        if len(self._dicts) != 1:
+        if len(self.dicts) != 1:
             raise ValueError('Cannot finalize a pushed scope!')
         self.finalized = True
         return self.head
@@ -382,13 +382,13 @@ class _NamespaceScope(collections.abc.MutableMapping):
         """Add a new active Namespace to the scope."""
         if self.finalized:
             raise ValueError('Cannot push a finalized scope!')
-        self._dicts.insert(0, dct)
+        self.dicts.insert(0, dct)
 
     def pop_(self):
         """Remove the current active Namespace from the scope."""
-        if len(self._dicts) == 1:
+        if len(self.dicts) == 1:
             raise ValueError('Cannot pop from a basal scope!')
-        self._dicts.pop(0)
+        self.dicts.pop(0)
 
     def _raw_get(self, parent, key):
         """Return the item under the given path, without wrapping."""
@@ -420,7 +420,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
             else:
                 value = self.head[key]
         else:
-            value = collections.ChainMap(*self._dicts)[key]
+            value = collections.ChainMap(*self.dicts)[key]
         return self.wrap(value)
 
     def _store(self, key, value, dct):
@@ -428,7 +428,7 @@ class _NamespaceScope(collections.abc.MutableMapping):
         # We just entered the context successfully.
         if not self.finalized:
             if value is dct:
-                dct = self._dicts[1]
+                dct = self.dicts[1]
             if isinstance(value, Namespace):
                 value.push(key, self, dct)
         if isinstance(value, self.scope_proxy):

@@ -14,7 +14,7 @@ def get_ns(namespace_):
 def scope_dicts_length_equals(namespace_, length):
     """Check the length of the associated namespace's scope."""
     scope = get_ns(namespace_).scope
-    assert len(scope._dicts) == length
+    assert len(scope.dicts) == length
 
 
 def test_finalization(namespaceable, namespace):
