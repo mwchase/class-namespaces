@@ -46,7 +46,7 @@ def test_abc_helper(abc):
     assert DClass.footer() == 'DClass'
 
 
-def test_abstractmethod_basics():
+def test_method_basics():
     """Test abstractmethod works as expected.
 
     Adapted from Python's test suite.
@@ -63,7 +63,7 @@ def test_abstractmethod_basics():
     assert not hasattr(barter, "__isabstractmethod__")
 
 
-def test_abstractproperty_basics(abc):  # pylint: disable=unused-argument
+def test_property_basics(abc):  # pylint: disable=unused-argument
     """Test abstract property works as expected.
 
     Adapted from Python's test suite.
@@ -97,7 +97,7 @@ def test_abstractproperty_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer == 3
 
 
-def test_abstractproperty_namespaced(
+def test_property_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract properties."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
@@ -121,7 +121,7 @@ def test_abstractproperty_namespaced(
     assert DClass().namespace_.footer == 3
 
 
-def test_abstractclassmethod_basics(abc):  # pylint: disable=unused-argument
+def test_classmethod_basics(abc):  # pylint: disable=unused-argument
     """Test abstract classmethod works as expected.
 
     Adapted from Python's test suite.
@@ -159,7 +159,7 @@ def test_abstractclassmethod_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer() == 'DClass'
 
 
-def test_abstractclassmethod_namespaced(
+def test_classmethod_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract classmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
@@ -184,7 +184,7 @@ def test_abstractclassmethod_namespaced(
     assert DClass().namespace_.footer() == 'DClass'
 
 
-def test_abstractstaticmethod_basics(abc):  # pylint: disable=unused-argument
+def test_staticmethod_basics(abc):  # pylint: disable=unused-argument
     """Test abstract staticmethod works as expected.
 
     Adapted from Python's test suite.
@@ -220,7 +220,7 @@ def test_abstractstaticmethod_basics(abc):  # pylint: disable=unused-argument
     assert DClass().footer() == 4
 
 
-def test_abstractstaticmethod_namespaced(
+def test_staticmethod_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract staticmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
@@ -245,7 +245,7 @@ def test_abstractstaticmethod_namespaced(
     assert DClass().namespace_.footer() == 4
 
 
-def test_abstractmethod_integration(abc):  # pylint: disable=unused-argument
+def test_method_integration(abc):  # pylint: disable=unused-argument
     """Test abstract shortcut decorators work as expected.
 
     Adapted from Python's test suite.
@@ -296,7 +296,7 @@ def test_abstractmethod_integration(abc):  # pylint: disable=unused-argument
         assert isabstract(FClass)
 
 
-def test_abstractmethod_integration_namespaced(
+def test_method_integration_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test abstract shortcut decorators work as expected, under a namespace.
 
