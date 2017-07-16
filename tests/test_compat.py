@@ -27,7 +27,7 @@ def test_abc_helper(abc):
     """Test the convenience class works as expected."""
     # create an ABC using the helper class and perform basic checks
     class CClass(abc.NamespaceableABC):
-        """A throwaway test class."""
+        """A throwaway test class, for testing the helper class."""
         @classmethod
         @abstractmethod
         def footer(cls):
@@ -38,7 +38,7 @@ def test_abc_helper(abc):
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for testing the helper class."""
         @classmethod
         def footer(cls):
             """Return the class's name. Concrete."""
@@ -79,7 +79,7 @@ def test_abstractproperty_basics(abc):  # pylint: disable=unused-argument
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract properties."""
         @property
         @abstractmethod
         def footer(self):
@@ -89,7 +89,7 @@ def test_abstractproperty_basics(abc):  # pylint: disable=unused-argument
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract properties."""
         @CClass.footer.getter
         def footer(self):
             """Return 3. Concrete."""
@@ -101,7 +101,7 @@ def test_abstractproperty_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract properties."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract properties."""
         with namespace() as namespace_:
             @property
             @abstractmethod
@@ -112,7 +112,7 @@ def test_abstractproperty_namespaced(
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract properties."""
         with namespace() as namespace_:
             @CClass.namespace_.footer.getter
             def footer(self):
@@ -140,7 +140,7 @@ def test_abstractclassmethod_basics(abc):  # pylint: disable=unused-argument
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract classmethods."""
         @classmethod
         @abstractmethod
         def footer(cls):
@@ -150,7 +150,7 @@ def test_abstractclassmethod_basics(abc):  # pylint: disable=unused-argument
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract classmethods."""
         @classmethod
         def footer(cls):
             """Return class name. Concrete."""
@@ -163,7 +163,7 @@ def test_abstractclassmethod_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract classmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract classmethods."""
         with namespace() as namespace_:
             @classmethod
             @abstractmethod
@@ -174,7 +174,7 @@ def test_abstractclassmethod_namespaced(
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract classmethods."""
         with namespace() as namespace_:
             @classmethod
             def footer(cls):
@@ -201,7 +201,7 @@ def test_abstractstaticmethod_basics(abc):  # pylint: disable=unused-argument
     assert not getattr(barter, "__isabstractmethod__", False)
 
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract staticmethods."""
         @staticmethod
         @abstractmethod
         def footer():
@@ -211,7 +211,7 @@ def test_abstractstaticmethod_basics(abc):  # pylint: disable=unused-argument
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for abstract staticmethods."""
         @staticmethod
         def footer():
             """Return 4. Concrete."""
@@ -224,7 +224,7 @@ def test_abstractstaticmethod_namespaced(
         abc, namespace):  # pylint: disable=unused-argument
     """Test interaction between namespaces and abstract staticmethods."""
     class CClass(metaclass=abc.NamespaceableABCMeta):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract staticmethods."""
         with namespace() as namespace_:
             @staticmethod
             @abstractmethod
@@ -235,7 +235,7 @@ def test_abstractstaticmethod_namespaced(
         print(CClass())
 
     class DClass(CClass):
-        """A throwaway test class."""
+        """A throwaway test class, for namespaced abstract staticmethods."""
         with namespace() as namespace_:
             @staticmethod
             def footer():
