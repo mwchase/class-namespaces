@@ -34,7 +34,7 @@ def test_finalization(namespaceable, namespace):
         scopes.append(get_ns(namespace_).scope)
         with pytest.raises(
                 ValueError,
-                metaclass='Length not defined on unfinalized scope.'):
+                message='Length not defined on unfinalized scope.'):
             print(len(get_ns(namespace_).scope))
         with pytest.raises(
                 ValueError,
