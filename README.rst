@@ -2,6 +2,10 @@
 class-namespaces
 ================
 
+.. image:: http://unmaintained.tech/badge.svg
+  :target: http://unmaintained.tech
+  :alt: No Maintenance Intended
+
 .. image:: https://readthedocs.org/projects/class-namespaces/badge/?version=latest
     :target: http://class-namespaces.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
